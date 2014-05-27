@@ -57,6 +57,8 @@ void AKUSimContextInitialize () {
 	REGISTER_LUA_CLASS ( MOAIEaseType )
 	REGISTER_LUA_CLASS ( MOAIFrameBuffer )
 	REGISTER_LUA_CLASS ( MOAIFrameBufferTexture )
+	REGISTER_LUA_CLASS ( MOAIGameAnalogSensor ) 
+	REGISTER_LUA_CLASS ( MOAIGameButtonSensor )
 	REGISTER_LUA_CLASS ( MOAIGfxDevice )
 	REGISTER_LUA_CLASS ( MOAIGfxQuad2D )
 	REGISTER_LUA_CLASS ( MOAIGfxQuadDeck2D )
@@ -150,6 +152,18 @@ void AKUEnqueueCompassEvent ( int deviceID, int sensorID, float heading ) {
 
 	MOAIInputMgr::Get ().EnqueueCompassEvent (( u8 )deviceID, ( u8 )sensorID, heading );
 }
+
+//----------------------------------------------------------------//         
+
+void AKUEnqueueGameAnalogEvent ( int deviceID, int sensorID, int idPlayer, float leftAxisX,float leftAxisY,float rightAxisX, float rightAxisY  ) {
+  MOAIInputMgr::Get ().EnqueueGameAnalogEvent (( u8 )deviceID, ( u8 )sensorID, idPlayer, leftAxisX, leftAxisY,rightAxisX,rightAxisY );
+}   
+
+
+//----------------------------------------------------------------//
+void AKUEnqueueGameButtonEvent ( int deviceID, int sensorID,int idPlayer, bool isDown,int idKey) {
+  MOAIInputMgr::Get ().EnqueueGameButtonEvent (( u8 )deviceID, ( u8 )sensorID,idPlayer, isDown, idKey );
+}   
 
 //----------------------------------------------------------------//
 void AKUEnqueueJoystickEvent( int deviceID, int sensorID, float x, float y ) {
@@ -329,6 +343,17 @@ void AKUSetInputDeviceCompass ( int deviceID, int sensorID, char const* name ) {
 
 	MOAIInputMgr::Get ().SetSensor (( u8 )deviceID, ( u8 )sensorID, name, MOAISensor::COMPASS );
 }
+
+//----------------------------------------------------------------//
+void AKUSetInputDeviceGameAnalog ( int deviceID, int sensorID, char const* name ) {
+  MOAIInputMgr::Get ().SetSensor (( u8 )deviceID, ( u8 )sensorID, name, MOAISensor::GAMEANALOG );
+}
+
+//----------------------------------------------------------------//
+void AKUSetInputDeviceGameButton ( int deviceID, int sensorID, char const* name ) {
+  MOAIInputMgr::Get ().SetSensor (( u8 )deviceID, ( u8 )sensorID, name, MOAISensor::GAMEBUTTON );
+} 
+
 
 //----------------------------------------------------------------//
 void AKUSetInputDeviceKeyboard ( int deviceID, int sensorID, char const* name ) {

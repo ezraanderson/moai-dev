@@ -5,6 +5,8 @@
 
 #include <moai-sim/MOAIButtonSensor.h>
 #include <moai-sim/MOAICompassSensor.h>
+#include <moai-sim/MOAIGameAnalogSensor.h>
+#include <moai-sim/MOAIGameButtonSensor.h>
 #include <moai-sim/MOAIInputDevice.h>
 #include <moai-sim/MOAIJoystickSensor.h>
 #include <moai-sim/MOAIKeyboardSensor.h>
@@ -119,6 +121,14 @@ void MOAIInputDevice::SetSensor ( u8 sensorID, cc8* name, u32 type ) {
 			sensor = new MOAICompassSensor ();
 			break;
 		}
+        case MOAISensor::GAMEANALOG: {
+            sensor = new MOAIGameAnalogSensor ();
+            break;
+        }
+         case MOAISensor::GAMEBUTTON: {
+            sensor = new MOAIGameButtonSensor ();
+            break;    
+        }
 		case MOAISensor::JOYSTICK: {
 			sensor = new MOAIJoystickSensor ();
 			break;

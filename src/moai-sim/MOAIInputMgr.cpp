@@ -5,6 +5,8 @@
 
 #include <moai-sim/MOAIButtonSensor.h>
 #include <moai-sim/MOAICompassSensor.h>
+#include <moai-sim/MOAIGameAnalogSensor.h> 
+#include <moai-sim/MOAIGameButtonSensor.h>
 #include <moai-sim/MOAIInputDevice.h>
 #include <moai-sim/MOAIInputMgr.h>
 #include <moai-sim/MOAIJoystickSensor.h>
@@ -49,6 +51,27 @@ void MOAIInputMgr::EnqueueCompassEvent ( u8 deviceID, u8 sensorID, float heading
 		this->WriteEventHeader ( deviceID, sensorID, MOAISensor::COMPASS );
 		MOAICompassSensor::WriteEvent ( this->mInput, heading );
 	}
+}
+
+//----------------------------------------------------------------//
+void MOAIInputMgr::EnqueueGameButtonEvent ( u8 deviceID, u8 sensorID, int idPlayer,bool isDown, int idKey ) {
+
+  if ( this->CheckSensor ( deviceID, sensorID, MOAISensor::GAMEBUTTON )) {
+    this->WriteEventHeader ( deviceID, sensorID, MOAISensor::GAMEBUTTON );  
+    MOAIGameButtonSensor::WriteEvent ( this->mInput,idPlayer, isDown, idKey );
+
+  }
+
+} 
+
+//----------------------------------------------------------------//
+void MOAIInputMgr::EnqueueGameAnalogEvent ( u8 deviceID, u8 sensorID,int idPlayer, float leftAxisX, float leftAxisY, float rightAxisX, float rightAxisY ) {
+
+  if ( this->CheckSensor ( deviceID, sensorID, MOAISensor::GAMEANALOG )) {
+    this->WriteEventHeader ( deviceID, sensorID, MOAISensor::GAMEANALOG ); 
+    MOAIGameAnalogSensor::WriteEvent ( this->mInput, idPlayer, leftAxisX,leftAxisY, rightAxisX,rightAxisY    );
+  }
+
 }
 
 //----------------------------------------------------------------//

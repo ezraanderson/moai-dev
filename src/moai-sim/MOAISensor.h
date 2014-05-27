@@ -25,6 +25,8 @@ public:
 	enum {
 		BUTTON,
 		COMPASS,
+		GAMEANALOG,
+		GAMEBUTTON,  
 		JOYSTICK,
 		KEYBOARD,
 		LEVEL,

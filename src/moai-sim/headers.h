@@ -33,6 +33,8 @@
 #include <moai-sim/MOAIEaseType.h>
 #include <moai-sim/MOAIFrameBuffer.h>
 #include <moai-sim/MOAIFrameBufferTexture.h>
+#include <moai-sim/MOAIGameAnalogSensor.h>
+#include <moai-sim/MOAIGameButtonSensor.h>
 #include <moai-sim/MOAIGfxDevice.h>
 #include <moai-sim/MOAIGfxQuad2D.h>
 #include <moai-sim/MOAIGfxQuadDeck2D.h>
