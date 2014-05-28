@@ -92,6 +92,8 @@
 		enum {
 			INPUTEVENT_LEVEL,
 			INPUTEVENT_COMPASS,
+            INPUTEVENT_GAMEANALOG, 
+			INPUTEVENT_GAMEBUTTON, 
 			INPUTEVENT_LOCATION,
 			INPUTEVENT_TOUCH,
 		};
@@ -111,6 +113,18 @@
 		// compass
 		int 	m_heading;
 
+		// gamepad
+		int		m_button_idPlayer;  
+		bool	m_button_isDown;  
+		int		m_button_idKey; 
+
+		int    m_analog_idPlayer;  
+		float  m_analog_leftAxisX;
+		float  m_analog_leftAxisY;
+		float  m_analog_rightAxisX;  
+		float  m_analog_rightAxisY;
+
+
 		// touch
 		int  	m_touchId;
 		bool 	m_down;
@@ -123,6 +137,8 @@
 		float  	m_hAccuracy;
 		float  	m_vAccuracy;
 		float  	m_speed;
+
+
 	};
 
 	LockingQueue < InputEvent > * inputQueue = NULL;
@@ -176,6 +192,39 @@
 		ievent.m_heading = heading;
 
 		inputQueue->Push ( ievent );
+	}
+
+
+
+	//----------------------------------------------------------------//
+	extern "C" void Java_com_ziplinegames_moai_Moai_AKUEnqueueGameAnalogEvent ( JNIEnv* env, jclass obj, jint deviceId, jint sensorId,int idPlayer, float leftAxisX, float leftAxisY, float rightAxisX,float rightAxisY ) {
+
+		InputEvent ievent;
+		ievent.m_type = InputEvent::INPUTEVENT_GAMEANALOG;
+		ievent.m_deviceId			= deviceId;
+		ievent.m_sensorId			= sensorId; 
+		ievent.m_analog_idPlayer    = idPlayer;  
+		ievent.m_analog_leftAxisX   = leftAxisX;
+		ievent.m_analog_leftAxisY   = leftAxisY;
+		ievent.m_analog_rightAxisX  = rightAxisX;
+		ievent.m_analog_rightAxisY  = rightAxisY;
+ 
+		inputQueue->Push ( ievent );
+
+        }
+
+	//----------------------------------------------------------------//
+	extern "C" void Java_com_ziplinegames_moai_Moai_AKUEnqueueGameButtonEvent ( JNIEnv* env, jclass obj, jint deviceId, jint sensorId, int idPlayer, jboolean isDown,int idKey) {               
+
+		InputEvent ievent;
+		ievent.m_type			 = InputEvent::INPUTEVENT_GAMEBUTTON;
+		ievent.m_deviceId		 = deviceId;
+		ievent.m_sensorId		 = sensorId; 
+		ievent.m_button_idPlayer = idPlayer; 
+		ievent.m_button_isDown   = isDown;
+		ievent.m_button_idKey    = idKey;
+		inputQueue->Push ( ievent );
+
 	}
 
 	//----------------------------------------------------------------//
@@ -501,6 +550,29 @@
 		JNI_RELEASE_CSTRING ( jname, name );
 	}
 
+
+	//----------------------------------------------------------------//
+	extern "C" void Java_com_ziplinegames_moai_Moai_AKUSetInputDeviceGameAnalog ( JNIEnv* env, jclass obj, jint deviceId, jint sensorId, jstring jname ) { 
+
+			JNI_GET_CSTRING ( jname, name ); 
+
+			AKUSetInputDeviceGameAnalog ( deviceId, sensorId, name ); 
+
+			JNI_RELEASE_CSTRING ( jname, name );
+
+	} 
+
+	//----------------------------------------------------------------//
+	extern "C" void Java_com_ziplinegames_moai_Moai_AKUSetInputDeviceGameButton ( JNIEnv* env, jclass obj, jint deviceId, jint sensorId, jstring jname ) {
+
+		JNI_GET_CSTRING ( jname, name );
+
+		AKUSetInputDeviceGameButton ( deviceId, sensorId, name );
+
+		JNI_RELEASE_CSTRING ( jname, name );
+
+	}
+
 	//----------------------------------------------------------------//
 	extern "C" void Java_com_ziplinegames_moai_Moai_AKUSetInputDeviceLevel ( JNIEnv* env, jclass obj, jint deviceId, jint sensorId, jstring jname ) {
 
@@ -578,12 +650,18 @@
 			case InputEvent::INPUTEVENT_COMPASS:
 				AKUEnqueueCompassEvent ( ievent.m_deviceId, ievent.m_sensorId, ievent.m_heading );
 				break;
+            case InputEvent::INPUTEVENT_GAMEANALOG:
+                AKUEnqueueGameAnalogEvent ( ievent.m_deviceId,ievent.m_sensorId,ievent.m_analog_idPlayer,  ievent.m_analog_leftAxisX, ievent.m_analog_leftAxisY, ievent.m_analog_rightAxisX, ievent.m_analog_rightAxisY);  
+                break;
+			case InputEvent::INPUTEVENT_GAMEBUTTON:     
+                AKUEnqueueGameButtonEvent ( ievent.m_deviceId, ievent.m_sensorId,ievent.m_button_idPlayer, ievent.m_button_isDown, ievent.m_button_idKey);
+                break;
 			case InputEvent::INPUTEVENT_LOCATION:
 				AKUEnqueueLocationEvent ( ievent.m_deviceId, ievent.m_sensorId, ievent.m_longitude, ievent.m_latitude, ievent.m_altitude, ievent.m_hAccuracy, ievent.m_vAccuracy, ievent.m_speed );
 				break;
 			}
 		}
-
+                
 		AKUModulesUpdate ();
 	}
 

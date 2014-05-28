@@ -87,6 +87,8 @@ public class Moai {
 
 	public enum InputSensor {
 		SENSOR_COMPASS,
+    SENSOR_GAMEANALOG,   
+    SENSOR_GAMEBUTTON,             
 		SENSOR_LEVEL,
 		SENSOR_LOCATION,
 		SENSOR_TOUCH;
@@ -134,6 +136,8 @@ public class Moai {
 	protected static native void	AKUEnqueueLevelEvent 			( int deviceId, int sensorId, float x, float y, float z );
 	protected static native void	AKUEnqueueLocationEvent			( int deviceId, int sensorId, double longitude, double latitude, double altitude, float hAccuracy, float vAccuracy, float speed );
 	protected static native void	AKUEnqueueCompassEvent			( int deviceId, int sensorId, float heading );
+  protected static native void  AKUEnqueueGameAnalogEvent   ( int deviceId, int sensorId, int idPlayer, float leftAxisX, float leftAxisY,float rightAxisX,float rightAxisY );  
+  protected static native void  AKUEnqueueGameButtonEvent   ( int deviceId, int sensorId, int idPlayer, boolean isDown, int idKey );           
 	protected static native void	AKUEnqueueTouchEvent 			( int deviceId, int sensorId, int touchId, boolean down, int x, int y, int tapCount );
 	protected static native void	AKUFinalize 					();
 	protected static native void	AKUInit 						();
@@ -151,6 +155,8 @@ public class Moai {
 	protected static native void	AKUSetInputConfigurationName	( String name );
 	protected static native void	AKUSetInputDevice		 		( int deviceId, String name );
 	protected static native void	AKUSetInputDeviceCompass 		( int deviceId, int sensorId, String name );
+  protected static native void  AKUSetInputDeviceGameAnalog ( int deviceId, int sensorId, String name );    
+  protected static native void  AKUSetInputDeviceGameButton ( int deviceId, int sensorId, String name );   
 	protected static native void	AKUSetInputDeviceLevel 			( int deviceId, int sensorId, String name );
 	protected static native void	AKUSetInputDeviceLocation 		( int deviceId, int sensorId, String name );
 	protected static native void	AKUSetInputDeviceTouch 			( int deviceId, int sensorId, String name );
@@ -239,6 +245,20 @@ public class Moai {
 			AKUEnqueueCompassEvent ( deviceId, sensorId, heading );
 		}
 	}
+  
+ 	//----------------------------------------------------------------// 
+  public static void enqueueGameButtonEvent ( int deviceId, int sensorId, int idPlayer, boolean isDown, int idKey) {  
+    synchronized ( sAkuLock ) { 
+       AKUEnqueueGameButtonEvent ( deviceId, sensorId,idPlayer, isDown, idKey );           
+      }    
+    }
+           
+	//----------------------------------------------------------------//
+  public static void enqueueGameAnalogEvent ( int deviceId, int sensorId, int idPlayer, float leftAxisX, float leftAxisY,float rightAxisX,float rightAxisY) { 
+      synchronized ( sAkuLock ) {   
+        AKUEnqueueGameAnalogEvent ( deviceId, sensorId,idPlayer, leftAxisX, leftAxisY,rightAxisX,rightAxisY  );       
+      }  
+  } 
 
 	//----------------------------------------------------------------//
 	public static void enqueueTouchEvent ( int deviceId, int sensorId, int touchId, boolean down, int x, int y, int tapCount ) {
@@ -270,14 +290,13 @@ public class Moai {
 
 			AKUReserveInputDeviceSensors ( Moai.InputDevice.INPUT_DEVICE.ordinal (), Moai.InputSensor.values ().length );
 			AKUSetInputDeviceCompass ( Moai.InputDevice.INPUT_DEVICE.ordinal (), Moai.InputSensor.SENSOR_COMPASS.ordinal (), "compass" );
+      AKUSetInputDeviceGameAnalog ( Moai.InputDevice.INPUT_DEVICE.ordinal (), Moai.InputSensor.SENSOR_GAMEANALOG.ordinal (), "gameAnalog" );        
+      AKUSetInputDeviceGameButton ( Moai.InputDevice.INPUT_DEVICE.ordinal (), Moai.InputSensor.SENSOR_GAMEBUTTON.ordinal (), "gameButton" );        
 			AKUSetInputDeviceLevel ( Moai.InputDevice.INPUT_DEVICE.ordinal (), Moai.InputSensor.SENSOR_LEVEL.ordinal (), "level" );
 			AKUSetInputDeviceLocation ( Moai.InputDevice.INPUT_DEVICE.ordinal (), Moai.InputSensor.SENSOR_LOCATION.ordinal (), "location" );
 			AKUSetInputDeviceTouch ( Moai.InputDevice.INPUT_DEVICE.ordinal (), Moai.InputSensor.SENSOR_TOUCH.ordinal (), "touch" );
 
-			AKUInit ();
-			
-
-		
+			AKUInit (); 	
 
 			String appId = sActivity.getPackageName ();
 			String appName;
