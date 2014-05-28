@@ -4,7 +4,9 @@
 // http://getmoai.com
 //----------------------------------------------------------------//
 
-package @PACKAGE@;
+package com.ezraanderson.test;
+
+import tv.ouya.console.api.OuyaController;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -26,7 +28,9 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.Display;
+import android.view.InputDevice;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
@@ -97,7 +101,7 @@ public class MoaiActivity extends Activity {
 			ApplicationInfo myApp = getPackageManager ().getApplicationInfo ( getPackageName (), 0 );
 
 			Moai.mount ( "bundle", myApp.sourceDir );
-			Moai.setWorkingDirectory ( "bundle/assets/@WORKING_DIR@" );
+			Moai.setWorkingDirectory ( "bundle/assets/lua" );
 		} catch ( NameNotFoundException e ) {
 
 			MoaiLog.e ( "MoaiActivity onCreate: Unable to locate the application bundle" );
@@ -135,6 +139,9 @@ public class MoaiActivity extends Activity {
 		setContentView ( con );
 		con.addView ( mMoaiView );
 		con.addView ( MoaiKeyboard.getEditText ());
+		
+		OuyaController.init(this);
+		
 		
 	}
 
@@ -328,6 +335,7 @@ public class MoaiActivity extends Activity {
 	//================================================================//
 	
 	//----------------------------------------------------------------//
+	/*
 	public boolean onKeyDown ( int keyCode, KeyEvent event ) {
 
 		MoaiLog.i ("MoaiActivity onKeyDown, keycode " + keyCode + " event: " + event );
@@ -340,6 +348,7 @@ public class MoaiActivity extends Activity {
 		}
 		return super.onKeyDown ( keyCode, event );
 	}
+	*/
 	
 	//================================================================//
 	// WindowEvent methods
@@ -511,5 +520,106 @@ public class MoaiActivity extends Activity {
 
 		//----------------------------------------------------------------//
 		public void onProviderDisabled ( String provider ) {}
-	};
+	};	
+	
+	// ================================================================//
+	// OuyaGamePad Button Down
+	// ================================================================//
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+		boolean handled = OuyaController.onKeyDown(keyCode, event);
+		int idPlayer = OuyaController.getPlayerNumByDeviceId(event
+				.getDeviceId());
+
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+		}
+
+		// OUYA QUICK EXIT
+		if (keyCode == 82) {
+		}
+
+		Moai.enqueueGameButtonEvent(0,Moai.InputSensor.SENSOR_GAMEBUTTON.ordinal(), idPlayer, true,keyCode);
+
+		return handled || super.onKeyDown(keyCode, event);
+
+	}
+
+	// ================================================================//
+	// OuyaGamePad Button Up
+	// ================================================================//
+
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+
+		boolean handled = OuyaController.onKeyUp(keyCode, event);
+		int idPlayer = OuyaController.getPlayerNumByDeviceId(event.getDeviceId());
+		Moai.enqueueGameButtonEvent(0,Moai.InputSensor.SENSOR_GAMEBUTTON.ordinal(), idPlayer, false,keyCode);
+		return handled || super.onKeyUp(keyCode, event);
+
+	}
+
+	// ================================================================//
+	// OuyaGamePad
+	// ================================================================//
+
+	@Override
+	public boolean onGenericMotionEvent(MotionEvent event) {
+
+		// if (isOUYA == true) {}//IS OUYA
+
+		boolean handled = OuyaController.onGenericMotionEvent(event);
+		int 	player 	= OuyaController.getPlayerNumByDeviceId(event.getDeviceId());
+
+		if ((event.getSource() & InputDevice.SOURCE_CLASS_POINTER) != 0) {
+
+			// float touchpadX = event.getX();
+			// float touchpadY = event.getY();
+			// MoaiOuya.NotifyOuyaMotionEventTouchpad( touchpadX, touchpadY,
+			// player);
+		} else {
+			float leftAxisX = event.getAxisValue(OuyaController.AXIS_LS_X);
+			float leftAxisY = event.getAxisValue(OuyaController.AXIS_LS_Y);
+			float rightAxisX = event.getAxisValue(OuyaController.AXIS_RS_X);
+			float rightAxisY = event.getAxisValue(OuyaController.AXIS_RS_Y);
+			float l2Axis = event.getAxisValue(OuyaController.AXIS_L2);
+			float r2Axis = event.getAxisValue(OuyaController.AXIS_R2);
+
+			boolean callNotification = false;
+			float c_minStickDistance = OuyaController.STICK_DEADZONE * OuyaController.STICK_DEADZONE;
+
+			if (leftAxisX * leftAxisX + leftAxisY * leftAxisY < c_minStickDistance) {
+				leftAxisX = leftAxisY = 0.0f;
+			} else {
+
+				callNotification = true;
+			}
+
+			if (rightAxisX * rightAxisX + rightAxisY * rightAxisY < c_minStickDistance) {
+				rightAxisX = rightAxisY = 0.0f;
+				callNotification = true;
+			} else {
+				callNotification = true;
+			}
+
+			if (l2Axis > 0.0f || r2Axis > 0.0f) {
+				callNotification = true;
+			}
+
+			if (callNotification) {
+				Moai.enqueueGameAnalogEvent(0,
+						Moai.InputSensor.SENSOR_GAMEANALOG.ordinal(), player,
+						leftAxisX, leftAxisY, rightAxisX, rightAxisY);
+
+			}
+		}
+
+		return handled || super.onGenericMotionEvent(event);
+
+	}
+	
+	
+	
+	
 }
