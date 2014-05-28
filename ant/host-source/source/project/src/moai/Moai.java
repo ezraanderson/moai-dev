@@ -290,13 +290,13 @@ public class Moai {
 
 			AKUReserveInputDeviceSensors ( Moai.InputDevice.INPUT_DEVICE.ordinal (), Moai.InputSensor.values ().length );
 			AKUSetInputDeviceCompass ( Moai.InputDevice.INPUT_DEVICE.ordinal (), Moai.InputSensor.SENSOR_COMPASS.ordinal (), "compass" );
-      AKUSetInputDeviceGameAnalog ( Moai.InputDevice.INPUT_DEVICE.ordinal (), Moai.InputSensor.SENSOR_GAMEANALOG.ordinal (), "gameAnalog" );        
-      AKUSetInputDeviceGameButton ( Moai.InputDevice.INPUT_DEVICE.ordinal (), Moai.InputSensor.SENSOR_GAMEBUTTON.ordinal (), "gameButton" );        
+            AKUSetInputDeviceGameAnalog ( Moai.InputDevice.INPUT_DEVICE.ordinal (), Moai.InputSensor.SENSOR_GAMEANALOG.ordinal (), "gameAnalog" );        
+            AKUSetInputDeviceGameButton ( Moai.InputDevice.INPUT_DEVICE.ordinal (), Moai.InputSensor.SENSOR_GAMEBUTTON.ordinal (), "gameButton" );        
 			AKUSetInputDeviceLevel ( Moai.InputDevice.INPUT_DEVICE.ordinal (), Moai.InputSensor.SENSOR_LEVEL.ordinal (), "level" );
 			AKUSetInputDeviceLocation ( Moai.InputDevice.INPUT_DEVICE.ordinal (), Moai.InputSensor.SENSOR_LOCATION.ordinal (), "location" );
 			AKUSetInputDeviceTouch ( Moai.InputDevice.INPUT_DEVICE.ordinal (), Moai.InputSensor.SENSOR_TOUCH.ordinal (), "touch" );
 
-			AKUInit (); 	
+				
 
 			String appId = sActivity.getPackageName ();
 			String appName;
@@ -341,7 +341,8 @@ public class Moai {
 
 	//----------------------------------------------------------------//
 	public static void onCreate ( Activity activity ) {
-		sActivity = activity;
+		sActivity = activity;	
+		AKUInit (); 
 		AKUAppInitialize();
 		MoaiMoviePlayer.onCreate ( activity );
 		MoaiBrowser.onCreate ( activity );
