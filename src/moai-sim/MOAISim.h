@@ -67,6 +67,8 @@ private:
 
 	u32				mLoopState;
 
+    double          timerStep;           //varible thats is used
+
 	double			mStep;			// simulation step size (in seconds)
 	double			mSimTime;		// elapsed simulation running time (in seconds)
 	double			mRealTime;		// time updated from system clock

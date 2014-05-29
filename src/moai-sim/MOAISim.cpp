@@ -940,173 +940,268 @@ double MOAISim::StepSim ( double step, u32 multiplier ) {
 	return ZLDeviceTime::GetTimeInSeconds () - time;
 }
 
+
+
+
+
+
+
 //----------------------------------------------------------------//
 void MOAISim::Update () {
 
 	MOAIScopedLuaState state = MOAILuaRuntime::Get ().State ();
 
-	if ( !this->mLuaGCFunc ) {
-	
-		lua_getglobal ( state, LUA_GC_FUNC_NAME );
-		this->mLuaGCFunc.SetRef ( *this, state, -1 );
-		lua_pop ( state, 1 );
-		
-		lua_pushcfunction ( state, _collectgarbage );
-		lua_setglobal ( state, LUA_GC_FUNC_NAME );
-	}
+	//if ( !this->mLuaGCFunc ) {
+	////
+	//	lua_getglobal ( state, LUA_GC_FUNC_NAME );
+	//	this->mLuaGCFunc.SetRef ( *this, state, -1 );
+	//	lua_pop ( state, 1 );
+	//	
+	//	lua_pushcfunction ( state, _collectgarbage );
+	//	lua_setglobal ( state, LUA_GC_FUNC_NAME );
+	//}
+ ////       
 
-	if ( this->mForceGC ) {
-		
-		// force a full cycle
-		MOAILuaRuntime::Get ().ForceGarbageCollection ();
-		this->mForceGC = false;
-	}
 
-	lua_gc ( state, LUA_GCSTOP, 0 );
+	//if ( this->mForceGC ) {   		
+	//	// force a full cycle
+	//	MOAILuaRuntime::Get ().ForceGarbageCollection ();
+	//	this->mForceGC = false;
+	//}
 
+	//lua_gc ( state, LUA_GCSTOP, 0 );
+
+
+	//********************************************************
+	//********************************************************
+	//********************************************************
 	// Measure performance
 	double simStartTime = ZLDeviceTime::GetTimeInSeconds ();
-
 	double interval = this->MeasureFrameRate ();
+	//********************************************************	
+	//********************************************************
+	//********************************************************
 
-	#if MOAI_WITH_HTTP_CLIENT && MOAI_WITH_LIBCURL
-		MOAIUrlMgrCurl::Get ().Process ();
-	#endif
-	
-	#if MOAI_WITH_HTTP_CLIENT && MOAI_OS_NACL
-		MOAIUrlMgrNaCl::Get ().Process ();
-	#endif
-	
-	MOAIMainThreadTaskSubscriber::Get ().Publish ();
-	
-	// try to account for timer error
-	if ( this->mTimerError != 0.0 ) {
-		
-		double steps = interval / this->mStep;
-		double integer = floor ( steps );
-		double decimal = steps - integer;
-		
-		if ( decimal <= this->mTimerError ) {
-			interval = this->mStep * integer;
-		}
-		else if ( decimal >= ( 1.0 - this->mTimerError )) {
-			interval = this->mStep * ( integer + 1.0 );
-		}
-	}
-	
-	// actual device time elapsed since starting or restarting the sim
-	this->mRealTime += interval;
-	
-	// bail if we're paused
-	if ( this->mLoopState == PAUSED ) {
-		return;
-	}
-	
-	// the reset clock flag warps the sim time ahead to match real time just once, then autoclears
-	// this means there will be no time deficit or attempted catch-up
-	// if spinning is not allowed, also clear prevent any time deficit
-	if ( this->mLoopFlags & SIM_LOOP_RESET_CLOCK ) {
-	
-		this->mLoopState = START;
-		this->mLoopFlags &= ~SIM_LOOP_RESET_CLOCK;
-	}
-	
-	// 'budget' will be used to measure the actual CPU time each sim step takes to proces
-	// initialize budget to limit time spent updating when the sim has fallen behind realtime
-	// this prevents a scenario where the sim falls behind but loops forever when attempting to catch up due to
-	// the update itself taking too long and increading the gap between real and target time
-	double budget = this->mStep * this->mCpuBudget;
 
-	// reset sim time on start
-	if ( this->mLoopState == START ) {
-		
-		this->mRealTime = this->mSimTime;
-		this->mLoopState = RUNNING;
-		
-		// perform an empty step to initialize the sim
-		// subtract the elapsed CPU time from the budget
-		budget -= this->StepSim ( 0.0, 1 );
-	}
-
-	// 'gap' is the time left to make up between sim time and real time
-	// i.e. the time deficit
-	double gap = this->mRealTime - this->mSimTime;
-
-	// long delay lets us ignore gaps bigger than a certain threshold
-	if (( this->mLoopFlags & SIM_LOOP_LONG_DELAY ) && ( gap > ( this->mStep * this->mLongDelayThreshold ))) {
-		budget -= this->StepSim ( this->mStep, 1 );
-		gap = 0.0f;
-		this->mRealTime = this->mSimTime;
-	}
-
-	// boost mode allows the sim to perform a large, variable-sized step to
-	// make up the entire time deficit - but only if the sim has fallen behind
-	// by a certain threshold (given in number of frames)
-	// we only boost if we've fallen behind the number of steps given by boost threshold
-	if (( this->mLoopFlags & SIM_LOOP_ALLOW_BOOST ) && ( gap > ( this->mStep * this->mBoostThreshold ))) {
-		budget -= this->StepSim ( gap, 1 );
-		gap = 0.0f;
-	}
-	else {
+	//#if MOAI_WITH_HTTP_CLIENT && MOAI_WITH_LIBCURL
+	//	MOAIUrlMgrCurl::Get ().Process ();
+	//#endif
 	
-		// we didn't boost, so process steps normally...
-	
-		// perform a single step only if the time deficit is greater than step time
-		// in other words, at least one interval of step time has elapsed in real time
-		// so we need to catch up
-		if (( this->mLoopFlags & SIM_LOOP_FORCE_STEP ) || (( this->mStep <= gap ) && ( budget > 0.0 ))) {
-			budget -= this->StepSim ( this->mStep, this->mStepMultiplier );
-			gap -= this->mStep * ( double )this->mStepMultiplier;
-		}
-		
-		// spin mode allows us to attempt to close the time deficit by using our
-		// budget to run additional sim steps
-		// of course, if the sim takes an excessively long time to process
-		// we may never catch up...
-		if ( this->mLoopFlags & SIM_LOOP_ALLOW_SPIN ) {
-			while (( this->mStep <= gap ) && ( budget > 0.0 )) {
-				budget -= this->StepSim ( this->mStep, this->mStepMultiplier );
-				gap -= this->mStep * ( double )this->mStepMultiplier;
-				
-			}
-		}
+	//#if MOAI_WITH_HTTP_CLIENT && MOAI_OS_NACL
+	//	MOAIUrlMgrNaCl::Get ().Process ();
+	//#endif
 
-		// Will use up the remaining 'frame' budget, e.g if step size 1 / 30, it will
-		// spin/sleep until this time has passed inside this update
-		if ( this->mLoopFlags & SIM_LOOP_ALLOW_SOAK ) {
-			
-			double startTime = ZLDeviceTime::GetTimeInSeconds ();
-			double remainingTime = budget - ( this->mStep * ( DEFAULT_CPU_BUDGET - 1 ) );
-			
-			// using 2ms buffer zone for sleeps
-			while ( ( remainingTime - ( ZLDeviceTime::GetTimeInSeconds() - startTime ) > 0.002 )) {
 
-				#ifndef MOAI_OS_WINDOWS
-					usleep ( 1000 );
-				#else
+                MOAIRenderMgr::Get ().Render ();
+                MOAIMainThreadTaskSubscriber::Get ().Publish ();
+
+
+                MOAIInputMgr::Get ().Update ();
+                MOAIActionMgr::Get ().Update (( float )timerStep );		
+                MOAINodeMgr::Get ().Update ();
+
+                this->mSimTime += timerStep;
+                timerStep = this->mStep;
+
+
+				//#ifndef MOAI_OS_WINDOWS
+				//	usleep ( 1000 );
+				//#else
 					// WARNING: sleep on windows is not quite as precise
-					Sleep ( 1 );
-				#endif
-			}
-		}
-	}
+					//Sleep ( 1 );
+				//#endif
+		
 
-	// if real time is more than a step ahead of sim time (for whatever reason), wait up
-	if (( this->mLoopFlags & SIM_LOOP_NO_DEFICIT ) && (( this->mRealTime - this->mSimTime ) >= this->mStep )) {
-		this->mRealTime = this->mSimTime;
-	}
-
-	// if real time is behind sim time (for whatever reason), catch up
-	if (( this->mLoopFlags & SIM_LOOP_NO_SURPLUS ) && ( this->mRealTime < this->mSimTime )) {
-		this->mRealTime = this->mSimTime;
-	}
 	
 	// Measure performance
+
 	double simEndTime = ZLDeviceTime::GetTimeInSeconds ();
-	this->mSimDuration = simEndTime - simStartTime;
-	
-	if ( this->mGCActive ) {
-		// crank the garbage collector
-		lua_gc ( state, LUA_GCSTEP, this->mGCStep );
-	}
+	this->mSimDuration = simEndTime - simStartTime;	
+
+
+	//if ( this->mGCActive ) {
+	//	// crank the garbage collector
+	//	lua_gc ( state, LUA_GCSTEP, this->mGCStep );
+	//}  
+
+
+
+
 }
+
+
+
+
+
+
+
+////----------------------------------------------------------------//
+//void MOAISim::Update () {
+//
+//	MOAIScopedLuaState state = MOAILuaRuntime::Get ().State ();
+//
+//	if ( !this->mLuaGCFunc ) {
+//	
+//		lua_getglobal ( state, LUA_GC_FUNC_NAME );
+//		this->mLuaGCFunc.SetRef ( *this, state, -1 );
+//		lua_pop ( state, 1 );
+//		
+//		lua_pushcfunction ( state, _collectgarbage );
+//		lua_setglobal ( state, LUA_GC_FUNC_NAME );
+//	}
+//
+//	if ( this->mForceGC ) {
+//		
+//		// force a full cycle
+//		MOAILuaRuntime::Get ().ForceGarbageCollection ();
+//		this->mForceGC = false;
+//	}
+//
+//	lua_gc ( state, LUA_GCSTOP, 0 );
+//
+//	// Measure performance
+//	double simStartTime = ZLDeviceTime::GetTimeInSeconds ();
+//
+//	double interval = this->MeasureFrameRate ();
+//
+//	#if MOAI_WITH_HTTP_CLIENT && MOAI_WITH_LIBCURL
+//		MOAIUrlMgrCurl::Get ().Process ();
+//	#endif
+//	
+//	#if MOAI_WITH_HTTP_CLIENT && MOAI_OS_NACL
+//		MOAIUrlMgrNaCl::Get ().Process ();
+//	#endif
+//	
+//	MOAIMainThreadTaskSubscriber::Get ().Publish ();
+//	
+//	// try to account for timer error
+//	if ( this->mTimerError != 0.0 ) {
+//		
+//		double steps = interval / this->mStep;
+//		double integer = floor ( steps );
+//		double decimal = steps - integer;
+//		
+//		if ( decimal <= this->mTimerError ) {
+//			interval = this->mStep * integer;
+//		}
+//		else if ( decimal >= ( 1.0 - this->mTimerError )) {
+//			interval = this->mStep * ( integer + 1.0 );
+//		}
+//	}
+//	
+//	// actual device time elapsed since starting or restarting the sim
+//	this->mRealTime += interval;
+//	
+//	// bail if we're paused
+//	if ( this->mLoopState == PAUSED ) {
+//		return;
+//	}
+//	
+//	// the reset clock flag warps the sim time ahead to match real time just once, then autoclears
+//	// this means there will be no time deficit or attempted catch-up
+//	// if spinning is not allowed, also clear prevent any time deficit
+//	if ( this->mLoopFlags & SIM_LOOP_RESET_CLOCK ) {
+//	
+//		this->mLoopState = START;
+//		this->mLoopFlags &= ~SIM_LOOP_RESET_CLOCK;
+//	}
+//	
+//	// 'budget' will be used to measure the actual CPU time each sim step takes to proces
+//	// initialize budget to limit time spent updating when the sim has fallen behind realtime
+//	// this prevents a scenario where the sim falls behind but loops forever when attempting to catch up due to
+//	// the update itself taking too long and increading the gap between real and target time
+//	double budget = this->mStep * this->mCpuBudget;
+//
+//	// reset sim time on start
+//	if ( this->mLoopState == START ) {
+//		
+//		this->mRealTime = this->mSimTime;
+//		this->mLoopState = RUNNING;
+//		
+//		// perform an empty step to initialize the sim
+//		// subtract the elapsed CPU time from the budget
+//		budget -= this->StepSim ( 0.0, 1 );
+//	}
+//
+//	// 'gap' is the time left to make up between sim time and real time
+//	// i.e. the time deficit
+//	double gap = this->mRealTime - this->mSimTime;
+//
+//	// long delay lets us ignore gaps bigger than a certain threshold
+//	if (( this->mLoopFlags & SIM_LOOP_LONG_DELAY ) && ( gap > ( this->mStep * this->mLongDelayThreshold ))) {
+//		budget -= this->StepSim ( this->mStep, 1 );
+//		gap = 0.0f;
+//		this->mRealTime = this->mSimTime;
+//	}
+//
+//	// boost mode allows the sim to perform a large, variable-sized step to
+//	// make up the entire time deficit - but only if the sim has fallen behind
+//	// by a certain threshold (given in number of frames)
+//	// we only boost if we've fallen behind the number of steps given by boost threshold
+//	if (( this->mLoopFlags & SIM_LOOP_ALLOW_BOOST ) && ( gap > ( this->mStep * this->mBoostThreshold ))) {
+//		budget -= this->StepSim ( gap, 1 );
+//		gap = 0.0f;
+//	}
+//	else {
+//	
+//		// we didn't boost, so process steps normally...
+//	
+//		// perform a single step only if the time deficit is greater than step time
+//		// in other words, at least one interval of step time has elapsed in real time
+//		// so we need to catch up
+//		if (( this->mLoopFlags & SIM_LOOP_FORCE_STEP ) || (( this->mStep <= gap ) && ( budget > 0.0 ))) {
+//			budget -= this->StepSim ( this->mStep, this->mStepMultiplier );
+//			gap -= this->mStep * ( double )this->mStepMultiplier;
+//		}
+//		
+//		// spin mode allows us to attempt to close the time deficit by using our
+//		// budget to run additional sim steps
+//		// of course, if the sim takes an excessively long time to process
+//		// we may never catch up...
+//		if ( this->mLoopFlags & SIM_LOOP_ALLOW_SPIN ) {
+//			while (( this->mStep <= gap ) && ( budget > 0.0 )) {
+//				budget -= this->StepSim ( this->mStep, this->mStepMultiplier );
+//				gap -= this->mStep * ( double )this->mStepMultiplier;
+//				
+//			}
+//		}
+//
+//		// Will use up the remaining 'frame' budget, e.g if step size 1 / 30, it will
+//		// spin/sleep until this time has passed inside this update
+//		if ( this->mLoopFlags & SIM_LOOP_ALLOW_SOAK ) {
+//			
+//			double startTime = ZLDeviceTime::GetTimeInSeconds ();
+//			double remainingTime = budget - ( this->mStep * ( DEFAULT_CPU_BUDGET - 1 ) );
+//			
+//			// using 2ms buffer zone for sleeps
+//			while ( ( remainingTime - ( ZLDeviceTime::GetTimeInSeconds() - startTime ) > 0.002 )) {
+//
+//				#ifndef MOAI_OS_WINDOWS
+//					usleep ( 1000 );
+//				#else
+//					// WARNING: sleep on windows is not quite as precise
+//					Sleep ( 1 );
+//				#endif
+//			}
+//		}
+//	}
+//
+//	// if real time is more than a step ahead of sim time (for whatever reason), wait up
+//	if (( this->mLoopFlags & SIM_LOOP_NO_DEFICIT ) && (( this->mRealTime - this->mSimTime ) >= this->mStep )) {
+//		this->mRealTime = this->mSimTime;
+//	}
+//
+//	// if real time is behind sim time (for whatever reason), catch up
+//	if (( this->mLoopFlags & SIM_LOOP_NO_SURPLUS ) && ( this->mRealTime < this->mSimTime )) {
+//		this->mRealTime = this->mSimTime;
+//	}
+//	
+//	// Measure performance
+//	double simEndTime = ZLDeviceTime::GetTimeInSeconds ();
+//	this->mSimDuration = simEndTime - simStartTime;
+//	
+//	if ( this->mGCActive ) {
+//		// crank the garbage collector
+//		lua_gc ( state, LUA_GCSTEP, this->mGCStep );
+//	}
+//}
