@@ -113,6 +113,8 @@ void Init ( int argc, char** argv ) {
 	AKUSetInputDeviceButton			( InputDeviceID::DEVICE, InputSensorID::MOUSE_MIDDLE,	"mouseMiddle" );
 	AKUSetInputDeviceButton			( InputDeviceID::DEVICE, InputSensorID::MOUSE_RIGHT,	"mouseRight" );
 
+    AKURunString("MOAISim.setTraceback(function() end)");
+
 	AKUSetFunc_EnterFullscreenMode ( _AKUEnterFullscreenModeFunc );
 	AKUSetFunc_ExitFullscreenMode ( _AKUExitFullscreenModeFunc );
 	AKUSetFunc_OpenWindow ( _AKUOpenWindowFunc );
@@ -134,8 +136,8 @@ void MainLoop () {
 		
 		while ( SDL_PollEvent ( &sdlEvent )) {  
 			   
-			switch ( sdlEvent.type )  {
-			
+			switch ( sdlEvent.type )  {	
+
 				case SDL_QUIT:
 				
 					running = false;
@@ -146,10 +148,36 @@ void MainLoop () {
 					int key = sdlEvent.key.keysym.sym;
 					if (key & 0x40000000) key = (key & 0x3FFFFFFF) + 256;
 			
-					AKUEnqueueKeyboardEvent ( InputDeviceID::DEVICE, InputSensorID::KEYBOARD, key, sdlEvent.key.type == SDL_KEYDOWN );
+					if ( (key == SDLK_RETURN) && (sdlEvent.key.keysym.mod & KMOD_ALT) && (sdlEvent.key.type == SDL_KEYDOWN) ) 
+					{
+								Uint32 flags = (SDL_GetWindowFlags(sWindow) ^ SDL_WINDOW_FULLSCREEN_DESKTOP);
+								if (SDL_SetWindowFullscreen(sWindow, flags) < 0) 
+								{
+										
+								}
 
-				} 	break;
+					} else {		
+
+							 AKUEnqueueKeyboardEvent ( InputDeviceID::DEVICE, InputSensorID::KEYBOARD, key, sdlEvent.key.type == SDL_KEYDOWN );
+
+					}; break;	
 					
+					
+				} 	break;
+
+				case SDL_WINDOWEVENT: 
+
+					switch (sdlEvent.window.event) {
+
+					case SDL_WINDOWEVENT_RESIZED: 
+
+						//SDL_Log("Window %d resized to %dx%d", sdlEvent.window.windowID, sdlEvent.window.data1,sdlEvent.window.data2);
+						AKUSetScreenSize ( sdlEvent.window.data1,sdlEvent.window.data2 );
+						AKUSetViewSize ( sdlEvent.window.data1,sdlEvent.window.data2);
+			
+				
+				}; break;
+
 				case SDL_MOUSEBUTTONDOWN:
 				case SDL_MOUSEBUTTONUP:
 	
@@ -174,12 +202,14 @@ void MainLoop () {
 				
 					AKUEnqueuePointerEvent ( InputDeviceID::DEVICE, InputSensorID::POINTER, sdlEvent.motion.x, sdlEvent.motion.y );
 					break;
+
+
 			}
 		}
 		
-		AKUModulesUpdate ();
-		
-		AKURender ();
+		AKUModulesUpdate ();		
+		//AKURender ();
+
 		SDL_GL_SwapWindow ( sWindow );
 		
 		Uint32 frameDelta = ( Uint32 )( AKUGetSimStep () * 1000.0 );
@@ -190,8 +220,16 @@ void MainLoop () {
 			SDL_Delay ( frameDelta - delta );
 		}
 		lastFrame = SDL_GetTicks();
+
+		//SDL_Delay (1 );
 	}
 }
+
+
+
+
+
+
 
 //----------------------------------------------------------------//
 void PrintMoaiVersion () {
