@@ -128,6 +128,7 @@ private:
 	static int		_setTexture			( lua_State* L );
 	static int		_setUVTransform		( lua_State* L );
 	static int		_setVisible			( lua_State* L );
+	static int		_vec				( lua_State* L );
 
 	//----------------------------------------------------------------//
 	void			DrawGrid			( int subPrimID );
@@ -169,6 +170,14 @@ public:
 
 	DECL_LUA_FACTORY ( MOAIProp )
 	DECL_ATTR_HELPER ( MOAIProp )
+
+
+	  //EZRA
+	  bool mBounce ;
+	  bool isBounce ;
+	  ZLVec3D mVec;
+	  ZLVec3D mNew;
+	  bool isUpdate ;
 
 	static const s32 UNKNOWN_PRIORITY	= 0x80000000;
 	static const int NO_SUBPRIM_ID		= 0xffffffff;

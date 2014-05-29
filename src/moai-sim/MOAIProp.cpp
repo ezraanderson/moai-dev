@@ -1085,6 +1085,12 @@ MOAIProp::MOAIProp () :
 	mCullMode ( 0 ),
 	mDepthTest ( 0 ),
 	mDepthMask ( true ) {
+
+		  //EZRA
+	//mBounce(0),
+	//isUpdate(0),
+
+
 	
 	RTTI_BEGIN
 		RTTI_EXTEND ( MOAITransform )
@@ -1094,7 +1100,40 @@ MOAIProp::MOAIProp () :
 	
 	this->mLinkInCell.Data ( this );
 	this->mBounds.Init ( 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f );
+
+	this->mVec.mX = (2 * (double)rand() / (double)RAND_MAX - 1)/10;;
+	this->mVec.mY = (2 * (double)rand() / (double)RAND_MAX - 1)/10;;
+
+
 }
+
+
+
+
+
+//----------------------------------------------------------------//
+// EZRA VEC
+
+int  MOAIProp::_vec ( lua_State* L ) {
+  MOAI_LUA_SETUP ( MOAIProp, "U" )
+  
+    self->mVec.mX = state.GetValue < float >( 2, 1.0f );
+    self->mVec.mY = state.GetValue < float >( 3, 1.0f  );
+    self->mVec.mZ = state.GetValue < float >( 4, 1.0f  );  
+  return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 //----------------------------------------------------------------//
 MOAIProp::~MOAIProp () {
@@ -1221,6 +1260,7 @@ void MOAIProp::RegisterLuaFuncs ( MOAILuaState& state ) {
 		{ "setTexture",			_setTexture },
 		{ "setUVTransform",		_setUVTransform },
 		{ "setVisible",			_setVisible },
+		{ "vec",				_vec },
 		{ NULL, NULL }
 	};
 	
