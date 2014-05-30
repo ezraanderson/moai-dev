@@ -18,21 +18,22 @@ fi
 usage="usage: $0  \
     [--use-untz true | false] [--use-luajit true | false] [--disable-adcolony] [--disable-billing] \
     [--disable-chartboost] [--disable-crittercism] [--disable-facebook] [--disable-push] [--disable-tapjoy] \
-    [--disable-twitter] [--disable-playservices] [--windows] [--release]"
+    [--disable-twitter] [--disable-playservices] [--windows] [--release] [--fast]"
 
 use_untz="true"
-use_luajit="true"
+use_luajit="true"  
 
-adcolony_flags=
+adcolony_flags="false"
 billing_flags=
-chartboost_flags=
-crittercism_flags=
-facebook_flags=
-push_flags=
-tapjoy_flags=
-twitter_flags=
+chartboost_flags="false"
+crittercism_flags="false"
+facebook_flags="false"
+push_flags="false"
+tapjoy_flags="false"
+twitter_flags="false"
 buildtype_flags="Debug"
 windows_flags=
+fast_flags=  
 playservices_flags=
 
 while [ $# -gt 0 ];	do
@@ -50,6 +51,7 @@ while [ $# -gt 0 ];	do
         --disable-playservices)  playservices_flags="-DDISABLE_PLAYSERVICES";;
         --release) buildtype_flags="Release";;
         --windows) windows_flags=-G"MinGW Makefiles";; 
+        --fast) fast_flags="true";; 
         -*)
             echo >&2 \
                 $usage
@@ -194,24 +196,48 @@ if [ x"$twitter_flags" != x ]; then
 fi 
 
 build_dir=${PWD}
-cd ../../cmake
-rm -rf build
-mkdir build
-cd build
+
+
+#cd ../../cmake  
+#rm -rf build    
+#mkdir build   
+#cd build 
  
-#create our makefiles
-cmake -DDISABLED_EXT="$disabled_ext" -DMOAI_BOX2D=1 \
--DMOAI_CHIPMUNK=1 -DMOAI_CURL=1 -DMOAI_CRYPTO=1 -DMOAI_EXPAT=1 -DMOAI_FREETYPE=1 \
--DMOAI_HTTP_CLIENT=1 -DMOAI_JSON=1 -DMOAI_JPG=1 -DMOAI_LUAEXT=1 \
--DMOAI_MONGOOSE=1 -DMOAI_OGG=1 -DMOAI_OPENSSL=1 -DMOAI_SQLITE3=1 \
--DMOAI_TINYXML=1 -DMOAI_PNG=1 -DMOAI_SFMT=1 -DMOAI_VORBIS=1 $untz_param $luajit_param \
--DBUILD_ANDROID=true \
--DCMAKE_TOOLCHAIN_FILE="../host-android/android.toolchain.cmake" \
--DLIBRARY_OUTPUT_PATH_ROOT="../../ant/libmoai" \
--DANDROID_NDK=${ANDROID_NDK}  \
--DCMAKE_BUILD_TYPE=$buildtype_flags \
-"${windows_flags}" "${make_flags}" \
-../
+buildtype_flags="Release"
+
+
+
+if [ x"$fast_flags" != x ]; then
+  #create our makefiles
+  echo "FAST ___________________"
+  cd ../../cmake
+  cd build 
+ 
+else 
+
+
+cd ../../cmake
+rm -rf build    
+mkdir build
+cd build 
+       
+  echo "BUILD ALL ___________________"
+         
+  cmake -DDISABLED_EXT="$disabled_ext" -DMOAI_BOX2D=1 \
+  -DMOAI_CHIPMUNK=1 -DMOAI_CURL=1 -DMOAI_CRYPTO=1 -DMOAI_EXPAT=1 -DMOAI_FREETYPE=1 \
+  -DMOAI_HTTP_CLIENT=1 -DMOAI_JSON=1 -DMOAI_JPG=1 -DMOAI_LUAEXT=1 \
+  -DMOAI_MONGOOSE=1 -DMOAI_OGG=1 -DMOAI_OPENSSL=1 -DMOAI_SQLITE3=1 \
+  -DMOAI_TINYXML=1 -DMOAI_PNG=1 -DMOAI_SFMT=1 -DMOAI_VORBIS=1 $untz_param $luajit_param \
+  -DBUILD_ANDROID=true \
+  -DCMAKE_TOOLCHAIN_FILE="../host-android/android.toolchain.cmake" \
+  -DLIBRARY_OUTPUT_PATH_ROOT="../../ant/libmoai" \
+  -DANDROID_NDK=${ANDROID_NDK}  \
+  -DCMAKE_BUILD_TYPE=$buildtype_flags \
+  "${windows_flags}" "${make_flags}" \
+  ../  
+fi
+
+
 #build them    
 if [ x"$windows_flags" != x ]; then
   cmake --build . --target moai
