@@ -125,6 +125,8 @@ void AKUSimContextInitialize () {
 	REGISTER_LUA_CLASS ( MOAITextBundle )
 	REGISTER_LUA_CLASS ( MOAITextBox )
 	REGISTER_LUA_CLASS ( MOAITextStyle )
+
+
 	
 	#if MOAI_WITH_TINYXML
 		REGISTER_LUA_CLASS ( MOAIParticlePexPlugin )
@@ -418,6 +420,18 @@ void AKUSetScreenSize ( int width, int height ) {
 	MOAIEnvironment::Get ().SetValue ( MOAI_ENV_verticalResolution, height );
 }
 
+
+
+void AKUSetdocumentDirectory ( const char* dir ) {
+	MOAIEnvironment::Get ().SetValue ( MOAI_ENV_documentDirectory, dir );
+}
+
+void AKUCacheDirectory ( const char* dir ) {
+	MOAIEnvironment::Get ().SetValue ( MOAI_ENV_cacheDirectory, dir );
+}
+
+
+
 //----------------------------------------------------------------//
 void AKUSetViewSize ( int width, int height ) {
 	
@@ -438,6 +452,12 @@ void AKUSetViewSize ( int width, int height ) {
 		}
 	}
 }
+
+
+
+
+
+
 
 //----------------------------------------------------------------//
 void AKUSoftReleaseGfxResources ( int age ) {

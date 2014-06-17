@@ -27,7 +27,24 @@ int MOAIXmlParser::_parseFile ( lua_State* L ) {
 	
 	cc8* filename = lua_tostring ( state, 1 );
 	
+
+
+
+
 	if ( MOAILogMessages::CheckFileExists ( filename, L )) {
+
+
+    //TiXmlDocument docc;
+    //bool loadOkay = docc.LoadFile(filename);
+    //if ( !loadOkay ) {
+    //    cerr << "Could not load test file. Error='" << docc.ErrorDesc() << "'. Exiting.\n";
+    //    return 1;
+    //} 
+
+
+
+
+
 		TiXmlDocument doc;
 		doc.LoadFile ( filename );
 		MOAIXmlParser::Parse ( state, doc.RootElement ());

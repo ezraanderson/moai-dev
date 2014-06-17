@@ -93,17 +93,20 @@ int bottom		   =-1;
 int top			   =-1;
 int left		   =-1;
 
-int size		   =16;
+int size		   =32;
 
+int threadState   = 0;
 
-MOAITaskThread * tThread;
-MOAIEzraTask*		task;
-MOAITaskQueue*	queue;
+//
+MOAITaskThread  * tThread;
+MOAIEzraTask    * task;
+//MOAITaskQueue   * queue;
+
 MOAIProp*		drawProp;  
 
 //TEXTURE
 MOAITexture * texture;
-MOAIShader * shader;
+MOAIShader  * shader;
 
 //BUFFERS
 MOAIVertexBuffer * vbo;
@@ -723,7 +726,7 @@ int	MOAIBox::_results ( lua_State* L ) {
 
 //----------------------------------------------------------------//
 //COLLSION
-void  MOAIBox::Collide(MOAIProp * circleA, MOAIProp * circleB){
+bool  MOAIBox::Collide(MOAIProp * circleA, MOAIProp * circleB){
 
 
 float balls_i_x  =  circleA->GetXLoc();
@@ -792,6 +795,8 @@ float ballB = balls_j_y - balls_i_y;
 	
 
 
+        return true;
+
 //CIRCLES
 		//circleA->mVec.mX  =balls_i_vx - p * nx  * 1;
 		//circleA->mVec.mY = balls_i_vy - p * ny  * 1;
@@ -812,6 +817,8 @@ float ballB = balls_j_y - balls_i_y;
 }; //END MOVING
 
 
+return false;
+
 
 //};
 
@@ -830,9 +837,13 @@ float ballB = balls_j_y - balls_i_y;
 void MOAIBox::Loop () {
 
 
- total_loop		= 0;
+if (threadState == 1) {
+
+   // printf("START \n");
+
+ total_loop		 = 0;
  total_screen    = 0;
- total_collid	= 0;
+ total_collid	 = 0;
 
 //this->mMutex.Lock ();
 // Sleep(1);
@@ -959,13 +970,20 @@ void MOAIBox::Loop () {
 //COLLID
 
 
+ //  for (size_t i = 0, ilen = things.size(); i < ilen; ++i) { /**/ }
 
+ //TOP EXPLOED
 
-for ( u32 x = 0; x < _GRID_WIDTH; ++x ) {
-
+ float simStartTime = ZLDeviceTime::GetTimeInSeconds ();
 
 
 for ( u32 y = 0; y < _GRID_HEIGHT; ++y ) {
+
+for ( u32 x = 0; x < _GRID_WIDTH; ++x ) {
+
+ 
+
+
 
 		for(std::vector<int>::size_type i = 0; i != _grid[x][y].size(); i++) {
 
@@ -977,7 +995,9 @@ for ( u32 y = 0; y < _GRID_HEIGHT; ++y ) {
 ////CENTER
 				for(std::vector<int>::size_type j = 0; j != _grid[x][y].size(); j++) {
 						++total_loop;
-						Collide(sendMe, _grid[x][y][j]);						
+						if (Collide(sendMe, _grid[x][y][j])) {
+                            //break;
+                        }
 				}; //J
 
 
@@ -988,7 +1008,9 @@ for ( u32 y = 0; y < _GRID_HEIGHT; ++y ) {
 		
 					for(std::vector<int>::size_type j = 0; j != _grid[x][y-1].size(); j++) {
 							++total_loop;
-							Collide(sendMe, _grid[x][y-1][j]);
+							if (Collide(sendMe, _grid[x][y-1][j]) ){
+                                //break;
+                            }
 					}; //J
 
 
@@ -998,7 +1020,10 @@ for ( u32 y = 0; y < _GRID_HEIGHT; ++y ) {
 
 										for(std::vector<int>::size_type j = 0; j != _grid[x-1][y-1].size(); j++) {
 													++total_loop;
-													Collide(sendMe, _grid[x-1][y-1][j]);
+                                                    if (Collide(sendMe, _grid[x-1][y-1][j])){ 
+                                                    //    break; 
+                                                    };
+
 										}; //J
 
 							}
@@ -1006,10 +1031,14 @@ for ( u32 y = 0; y < _GRID_HEIGHT; ++y ) {
 
 						//********************************************************
 						//RIGHT
+                                  
+
 							if (x < _GRID_WIDTH-1) {
 										for(std::vector<int>::size_type j = 0; j != _grid[x+1][y-1].size(); j++) {
 													++total_loop;
-													Collide(sendMe, _grid[x+1][y-1][j]);
+													if (Collide(sendMe, _grid[x+1][y-1][j])){ 
+                                                    //    break; 
+                                                    };
 										}; //J
 							};
 							
@@ -1022,7 +1051,9 @@ for ( u32 y = 0; y < _GRID_HEIGHT; ++y ) {
 			
 							for(std::vector<int>::size_type j = 0; j != _grid[x][y+1].size(); j++) {
 									++total_loop;
-									Collide(sendMe, _grid[x][y+1][j]);
+									if (Collide(sendMe, _grid[x][y+1][j])){ 
+                                        //break; 
+                                    };
 							}; //J
 
 
@@ -1033,7 +1064,9 @@ for ( u32 y = 0; y < _GRID_HEIGHT; ++y ) {
 
 										for(std::vector<int>::size_type j = 0; j != _grid[x-1][y+1].size(); j++) {
 													++total_loop;
-													Collide(sendMe, _grid[x-1][y+1][j]);
+													if (Collide(sendMe, _grid[x-1][y+1][j])){ 
+                                                        //break; 
+                                                    };
 										}; //J
 
 							};
@@ -1046,7 +1079,9 @@ for ( u32 y = 0; y < _GRID_HEIGHT; ++y ) {
 
 										for(std::vector<int>::size_type j = 0; j != _grid[x+1][y+1].size(); j++) {
 													++total_loop;
-													Collide(sendMe, _grid[x+1][y+1][j]);
+													if (Collide(sendMe, _grid[x+1][y+1][j])){ 
+                                                        //break; 
+                                                    };
 										}; //J
 							};
 
@@ -1064,7 +1099,9 @@ if (x > 0)  {
 
 		for(std::vector<int>::size_type j = 0; j != _grid[x-1][y].size(); j++) {
 				  	++total_loop;
-					Collide(sendMe, _grid[x-1][y][j]);
+					if (Collide(sendMe, _grid[x-1][y][j])){ 
+                        //break; 
+                    };
 		}; //J
 
 }
@@ -1075,7 +1112,10 @@ if (x < _GRID_WIDTH-1) {
 
 		for(std::vector<int>::size_type j = 0; j != _grid[x+1][y].size(); j++) {
 					++total_loop;
-					Collide(sendMe, _grid[x+1][y][j]);
+
+					if (Collide(sendMe, _grid[x+1][y][j])){ 
+                        //break; 
+                    };
 		}; //J
 
 }; //IF
@@ -1089,6 +1129,17 @@ if (x < _GRID_WIDTH-1) {
 
 }; //Y
 
+
+        //printf("%f \n", (ZLDeviceTime::GetTimeInSeconds ()-simStartTime)*1000);
+        float end = ZLDeviceTime::GetTimeInSeconds()-simStartTime;
+        if ( end > 5) {
+            printf("WTF %f \n", end);
+            break;
+        };
+
+
+//CEHCK BREAK
+
 }; //X
 
 
@@ -1099,14 +1150,18 @@ if (x < _GRID_WIDTH-1) {
 this->mCollid	= total_collid;
 this->mScreen   = total_screen;
 this->mTotal	= total_loop;
+
+//printf("%f \n", (ZLDeviceTime::GetTimeInSeconds ()-simStartTime)*1000);
+
+
 /////////////////////////////////////////////////////////////////////////////////////
 
  //  #ifndef MOAI_OS_WINDOWS
    //   Sleep ( 1);
    //#endif 
 
-
-
+  //  printf("FINISH \n");
+}; //THREAD RUNNING
 
 //} //DELETE STEP
 
@@ -1121,14 +1176,20 @@ this->mTotal	= total_loop;
 //this->mMutex.Unlock ();
 
 
+
+
 };
 
 
 
 
-
-
-
+vector<unsigned char> intToBytes(int paramInt)
+{
+     vector<unsigned char> arrayOfByte(4);
+     for (int i = 0; i < 4; i++)
+         arrayOfByte[3 - i] = (paramInt >> (i * 8));
+     return arrayOfByte;
+}
 
 
 
@@ -1143,7 +1204,7 @@ void MOAIBox::Draw ( int subPrimID ) {
 	MOAIViewport& viewport = *this->mViewport;
 	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
 	
-	//gfxDevice.ResetState ();
+	gfxDevice.ResetState ();
 	
 	ZLRect viewportRect = viewport;
 
@@ -1174,37 +1235,75 @@ void MOAIBox::Draw ( int subPrimID ) {
 //*******************************************************
 this->mProps	= _mResults.size();
 
-//gfxDevice.Flush ();
 
-gfxDevice.SetTexture ( texture );		
-MOAIQuadBrush::BindVertexFormat ( gfxDevice );
+
+
+
+
+//SET SUBPRIME
+
+
+
 drawProp->Draw (  subPrimID);
 
-if (blend == 1) {
-	gfxDevice.SetBlendMode ( ZGL_BLEND_FACTOR_SRC_ALPHA, ZGL_BLEND_FACTOR_ONE );	
-}
 
 
 
 
-gfxDevice.SetShader(shader);
 
 
-//VBO
-//vbo->reset_box();
+
+
+
+
+
+//********************************************************************************************
+//********************************************************************************************
+
+
+//QUAD BRUSH
+//gfxDevice.SetTexture ( texture );	
+//gfxDevice.SetShader(shader);
+//if (blend == 1) {
+//	gfxDevice.SetBlendMode ( ZGL_BLEND_FACTOR_SRC_ALPHA, ZGL_BLEND_FACTOR_ONE );	
+//}
+//
+//MOAIQuadBrush::BindVertexFormat ( gfxDevice );
+//MOAIQuadBrush quad;
+
+
+
+//********************************************************************************************
+//********************************************************************************************
+
+
+//printf("********************\n");
+
+//VBO NOT  NEEDED
+ vbo->SetCursor(0); //CASUES CRASHES
+ vbo->reset_box(); //NEEDS THIS TO RESET POINT TRIAL //THIS SETS CURSOR TO ZERO
+
+  
+
+   // ibo->Update(); //UPDATE ONCE
+
+
+int cursor   = 0;
+float cX     = 0;
+float cY     = 0;
+
 	//for(std::vector<int>::size_type i = 0; i != _mResults.size(); i++) {
-	int current_max = this->mHigh;
 
+int current_max = this->mHigh;
+
+
+//double simStartTime = ZLDeviceTime::GetTimeInSeconds ();
 
 	for(std::vector<int>::size_type i = 0; i != current_max; i++) {
 
 				MOAIProp * prop = _mResults[i];	
 
 
-				//prop->Draw (  subPrimID);
-				//printf("%d \n",i);
-
-				//ID DON"T KNO
 
 				if 	(prop->isBounce == false) {
 						prop->mVec.mX = prop->mVec.mX+(this->mForce.mX);
@@ -1213,49 +1312,368 @@ gfxDevice.SetShader(shader);
 
 
 
-				float	 ax = prop->GetXLoc();
-				float	 ay = prop->GetYLoc();		
+                        float	 ax = prop->GetXLoc();
+                        float	 ay = prop->GetYLoc();						
 
-				
+                        prop->isBounce = false;		
+                        prop->SetLoc(ax+(prop->mVec.mX),ay+(prop->mVec.mY),0);
 
-						prop->isBounce = false;
+
+
+
+//*****************************************************************************************
+
+
+         /*               float	 ax = 500;
+                        float	 ay = 500;	
+
+                        float	 vxx = 0;
+                        float	 vyy = 0;
+                       
+
+                        float	 ddx = 500;
+                        float	 ddy = 500;	
+                        float	 ddz = 500;	*/
+
+//printf("--------%d \n",i);
+
+
+
+//*****************************************************************
+//*****************************************************************
 		
-						prop->SetLoc(ax+(prop->mVec.mX),ay+(prop->mVec.mY),0);
-
-
-						gfxDevice.SetPenColor ( prop->mR, prop->mG, prop->mB, prop->mA );	
-
-						MOAIQuadBrush quad;
+ /*                       gfxDevice.SetPenColor ( prop->mR, prop->mG, prop->mB, prop->mA );	
 						quad.SetVerts ( ax-size, ay-size, ax+size, ay+size );
 						quad.SetUVs ( 0, 0, 1, 1 );	
-						quad.Draw ();
+						quad.Draw ();*/
+//*****************************************************************
+//*****************************************************************
+//STRIPES : IBO
+					    //vbo->writeFloat_loc ( ax - size, ay - size);
+         //               cursor = cursor + 24;
+         //               vbo->SetCursor(cursor);
+
+					    //vbo->writeFloat_loc( ax - size, ay + size );			
+         //               cursor = cursor + 24;
+         //               vbo->SetCursor(cursor);
+	
+					    //vbo->writeFloat_loc ( ax + size, ay - size );
+         //               cursor = cursor + 24;
+         //               vbo->SetCursor(cursor);
+
+					    //vbo->writeFloat_loc ( ax + size, ay + size );
+         //               cursor = cursor + 24;
+         //               vbo->SetCursor(cursor);		
+ 
+
+
+
+
+
+
+//*****************************************************************
+//*****************************************************************
+
+
+
+
+  /*      if (i > 0) {
+
+                vbo->writeFloat_loc( cX, cY );        
+                cursor = cursor + 24;
+                vbo->SetCursor(cursor);
+
+                vbo->writeFloat_loc( ax - size, ay - size );
+                cursor = cursor + 24;
+                vbo->SetCursor(cursor);
+	
+
+        };
+
+
+                    vbo->writeFloat_loc( ax - size, ay - size );				
+                    cursor = cursor + 24;
+                    vbo->SetCursor(cursor);
+ 
+                    vbo->writeFloat_loc ( ax + size, ay - size );
+                    cursor = cursor + 24;
+                    vbo->SetCursor(cursor);
+
+
+                    vbo->writeFloat_loc ( ax - size, ay + size);
+                    cursor = cursor + 24;
+                    vbo->SetCursor(cursor);
+
+ 
+                    vbo->writeFloat_loc ( ax + size, ay + size );
+                    cursor = cursor + 24;
+                    vbo->SetCursor(cursor);
+ 
+
+
+                 cX  =   ax + size;
+                 cY  =  ay + size ;
+
+*/
+
+ // vbo->SetCursor(cursor);
+
+					            //float R =prop->mR;
+					            //float G =prop->mG; 
+					            //float B =prop->mB; 
+					            //float A =prop->mA;
+
+
+   /*                             vbo->writeFloat_loc( ax - size, ay - size );
+                                vbo->writeFloat_uv ( 0, 0);
+                                vbo->writeColor_rgb (R,G,B,A );
+ 
+
+                                vbo->writeFloat_loc ( ax + size, ay + size );
+                                vbo->writeFloat_uv ( 1, 0 );
+                                vbo->writeColor_rgb (R,G,B,A );
+*/
+
+
+
+    //vertexBuffer:writeFloat(math.random(500,600),math.random(300,400),0) --POSITION
+    //vertexBuffer:writeColor32(math.random(), math.random(), math.random(), 1) --COLOR
+    //vertexBuffer:writeFloat(math.random(20,20)) --SIZE
+
+//printf("\n");
+//vbo->SetCursor(cursor);
+//
+//vbo->pCursor();
+
+//if (i == 0) { ax = 100.0f; }
+//if (i == 1) { ax = 200.0f; }
+//if (i == 2) { ax = 300.0f; }
+//if (i == 3) { ax = 400.0f; }
+//if (i == 4) { ax = 500.0f; }
+//
+//
+//if (i == 5) { ax = 600.0f; }
+//if (i == 6) { ax = 700.0f; }
+//if (i == 7) { ax = 800.0f; }
+//if (i == 8) { ax = 900.0f; }
+//if (i == 9) { ax = 1000.0f; }
+
+
+
+//*******************************************************************************************
+//*******************************************************************************************
+//*******************************************************************************************
+//SKIP BUFFER
+//vbo->writeFloat_loc ( ax, ay  );
+//cursor = cursor + 20;
+//vbo->SetCursor(cursor);
+
+//*******************************************************************************************
+//*******************************************************************************************
+//*******************************************************************************************
+
+//float R =prop->mR;
+//float G =prop->mG; 
+//float B =prop->mB; 
+//float A =prop->mA;
+
+//printf("%f _ %f \n",ax,ay);
+
+vbo->writeFloat_loc ( ax,ay);
+
+//vbo->writeColor_rgb (R,G,B,A );
+//vbo->writeFloat_size (size);
+
+
+
+//vbo->pCursor();
+
+cursor = cursor + 20;
+vbo->SetCursor(cursor);
+
+
+
+
+
+
+
+
+//vbo->pCursor();
+//
+//cursor = cursor + 24;
+//vbo->SetCursor(cursor);
+//vbo->pCursor();
+////
+////cursor = cursor + 4;
+////vbo->SetCursor(cursor);
+////vbo->pCursor();
+
+//vbo->writeColor_rgb (R,G,B,A );
+//vbo->writeFloat_size (size);
+
+
+//
+//cursor = cursor + 20;
+//vbo->SetCursor(cursor);
+
+
+  //  vbo->pCursor();
+
+  //  vbo->pCursor();
+
+
+//printf("\n");
+
+
+
+
+                                //if (i > 0) {
+
+                                //        vbo->writeFloat_loc( cX,cY );
+                                //        vbo->writeFloat_uv ( 1, 1 );
+                                //        vbo->writeColor_rgb (R,G,B,A );
+
+                                //        cursor = cursor + 24;
+                                //        vbo->SetCursor(cursor);
+                                //             
+                                //        vbo->writeFloat_loc( ax - size, ay - size );
+                                //        vbo->writeFloat_uv ( 0, 0 );
+                                //        vbo->writeColor_rgb (R,G,B,A );
+                                //      //  cursor = cursor + 24;
+                                //      //  vbo->SetCursor(cursor);
+
+
+                                //};
+
+
+
+
+                              //  vbo->writeFloat_loc( ax - size, ay - size );
+
+                              //  vbo->writeFloat_uv ( 0, 0);
+                              //  vbo->writeColor_rgb (R,G,B,A );
+ 
+                              ////  cursor = cursor + 24;
+                              ////  vbo->SetCursor(cursor);
+
+                              //  vbo->writeFloat_loc ( ax + size, ay - size );
+                              //  vbo->writeFloat_uv ( 1, 0 );
+                              //  vbo->writeColor_rgb (R,G,B,A );
+
+                              // // cursor = cursor + 24;
+                              // // vbo->SetCursor(cursor);
+
+
+                              //  vbo->writeFloat_loc ( ax - size, ay + size);
+                              //   vbo->writeFloat_uv ( 0, 1 );
+                              //  vbo->writeColor_rgb (R,G,B,A );
+
+                              //  //cursor = cursor + 24;
+                              //  //vbo->SetCursor(cursor);
+
+ 
+                              //  vbo->writeFloat_loc ( ax + size, ay + size );
+					           
+                              //  vbo->writeFloat_uv ( 1, 1 );
+                              //  vbo->writeColor_rgb (R,G,B,A ); 
+
+                              // // cursor = cursor + 24;
+                              // // vbo->SetCursor(cursor);
+              
+                              //  cX =   ax + size;
+                              //  cY =   ay + size; 
+
+
+//printf("\n");
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+                 //if (i > 0) {
+
+                 //       vbo->writeFloat_loc( cX,cY );
+                 //       cursor = cursor + 24;
+                 //       vbo->SetCursor(cursor);
+				
+
+
+                 //       vbo->writeFloat_loc( ax - size, ay - size );
+		
+                 //       cursor = cursor + 24;
+                 //       vbo->SetCursor(cursor);
+
+                 //       };
+
+
+
+
+                 //       vbo->writeFloat_loc( ax - size, ay - size );
+                 //       cursor = cursor + 24;
+                 //       vbo->SetCursor(cursor);
+ 
+                 //       vbo->writeFloat_loc ( ax + size, ay - size );
+                 //       cursor = cursor + 24;
+                 //       vbo->SetCursor(cursor);
+
+
+                 //       vbo->writeFloat_loc ( ax - size, ay + size);
+                 //       cursor = cursor + 24;
+                 //       vbo->SetCursor(cursor);
+
+ 
+                 //       vbo->writeFloat_loc ( ax + size, ay + size );
+                 //       cursor = cursor + 24;
+                 //       vbo->SetCursor(cursor);
+              
+                 //       cX =   ax + size;
+                 //       cY =   ay + size;                       
+
+
+
+
+//*****************************************************************
+//*****************************************************************
+
+
+
 
 
 
 
 				////VBO	shit	
-				//	int R =prop->mR;
-				//	int G =prop->mG; 
-				//	int B =prop->mB; 
-				//	int A =prop->mA;
+					//int R =prop->mR;
+					//int G =prop->mG; 
+					//int B =prop->mB; 
+					//int A =prop->mA;
 
-				//	vbo->writeFloat_loc( ax - size, ay + size, 0 );
-				//	vbo->writeFloat_uv ( 0, 0 );
-				//	vbo->writeColor_rgb (R,G,B,A );
+					//vbo->writeFloat_loc( ax - size, ay + size );
+					//vbo->writeFloat_uv ( 0, 0 );
+					//vbo->writeColor_rgb (R,G,B,A );
  
-				//	vbo->writeFloat_loc ( ax + size, ay + size, 0 );
-				//	vbo->writeFloat_uv ( 1, 0 );
-				//	vbo->writeColor_rgb (R,G,B,A );
+					//vbo->writeFloat_loc ( ax + size, ay + size );
+					//vbo->writeFloat_uv ( 1, 0 );
+					//vbo->writeColor_rgb (R,G,B,A );
  
-				//	vbo->writeFloat_loc ( ax + size, ay - size, 0 );
-				//	vbo->writeFloat_uv ( 1, 1 );
-				//	vbo->writeColor_rgb (R,G,B,A );
+					//vbo->writeFloat_loc ( ax + size, ay - size );
+					//vbo->writeFloat_uv ( 1, 1 );
+					//vbo->writeColor_rgb (R,G,B,A );
  
-				//	vbo->writeFloat_loc ( ax - size, ay - size, 0 );
-				//	vbo->writeFloat_uv ( 0, 1 );
-				//	vbo->writeColor_rgb (R,G,B,A );
-				//	
-				//
+					//vbo->writeFloat_loc ( ax - size, ay - size );
+					//vbo->writeFloat_uv ( 0, 1 );
+					//vbo->writeColor_rgb (R,G,B,A );
+					
+				
+                   
  
  
 
@@ -1265,22 +1683,22 @@ gfxDevice.SetShader(shader);
 
 
 					
-		/*			gfxDevice.SetPenColor ( 1, 0, 1, 1 );
-					MOAIQuadBrush::BindVertexFormat ( gfxDevice );
+	        		//gfxDevice.SetPenColor ( 1, 0, 1, 1 );
+					//MOAIQuadBrush::BindVertexFormat ( gfxDevice );
 
-					quad.SetVerts ( ax-100, ay-100, ax-32-100, ay-100-32 );
-					quad.SetUVs ( 0, 0, 1, 1 );	
-					quad.Draw ();
-
-
+					//quad.SetVerts ( ax-100, ay-100, ax-32-100, ay-100-32 );
+					//quad.SetUVs ( 0, 0, 1, 1 );	
+					//quad.Draw ();
 
 
-					gfxDevice.SetPenColor ( 1, 1, 0, 1 );
-					MOAIQuadBrush::BindVertexFormat ( gfxDevice );
 
-					quad.SetVerts ( ax+100, ay+100, ax+32+100, ay+100+32 );
-					quad.SetUVs ( 0, 0, 1, 1 );	
-					quad.Draw ();*/
+
+     //   			gfxDevice.SetPenColor ( 1, 1, 0, 1 );
+					//MOAIQuadBrush::BindVertexFormat ( gfxDevice );
+
+					//quad.SetVerts ( ax+100, ay+100, ax+32+100, ay+100+32 );
+					//quad.SetUVs ( 0, 0, 1, 1 );	
+					//quad.Draw ();
 
 
 
@@ -1291,7 +1709,8 @@ gfxDevice.SetShader(shader);
 			
 
 
-
+//**********************************************************************
+//RORATE
 
 
 			//	MOAIDraw::DrawEllipseFill ( ax, ay, 20, 20, 40 );
@@ -1309,23 +1728,50 @@ gfxDevice.SetShader(shader);
 
 				//prop->ScheduleUpdate ();
 
+                        
+
 	}
 
 
-//vbo->bless_box();
+   // vbo->bless_box();
+
+//printf("%f \n", (ZLDeviceTime::GetTimeInSeconds ()-simStartTime)*1000);
 
 
 
 
 
-//vbo->Bind();
+//NOT NEEDED
+
+
+//****************************************************
+//VERTEX 
+
+
+
+//ALWAYS
 //gfxDevice.Flush ();
 
+  
 
 
+       // vbo->bless_box();
+        //vbo->Bind();
+       // gfxDevice.Flush ();
+
+
+
+
+
+
+
+
+
+//****************************************************
 //CALL EITHER FOR LESS PROPS
-	//MOAIDraw::Bind ();
-	gfxDevice.Flush ();
+
+            //MOAIDraw::Bind ();
+            //gfxDevice.Flush ();
 
 
 
@@ -1486,49 +1932,133 @@ int	MOAIBox::_setforce ( lua_State* L ) {
 
 //**************************************************************************************************
 //THREAD
-int	MOAIBox::_thread ( lua_State* L ) {
+int	MOAIBox::_threadMake ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBox, "U" )
+
+    //** 1.4p0 -->	task->Start ( *tThread, MOAISim::Get ().GetTaskSubscriber ());
+
 
 
 tThread = new	MOAITaskThread();
 task	= new	MOAIEzraTask ();
-task->Init ( *self, MOAIEzraTask::SAVE_ACTION );
-//	task->Start ( *tThread, MOAISim::Get ().GetTaskSubscriber ());
-task->Start ( *tThread, MOAIMainThreadTaskSubscriber::Get ());
+task->Init ( *self, MOAIEzraTask::SAVE_ACTION ); 
 
 
 
-
-printf("DONE THREAD \n");
-
+//task->threadRunning(true);
+//task->Start ( *tThread, MOAIMainThreadTaskSubscriber::Get ());
+//task->mLoopState = false;
+//tThread->Stop();
+//task->mLoopState = false;
+//task->mLoopState = true;
+//task->Execute();
+//tThread->Stop();
+//task->Start ( *tThread, MOAIMainThreadTaskSubscriber::Get ());
 //task->Start ( *tThread, MOAISim::Get ().GetTaskSubscriber );
 
 
 
+
+
+//*******************************************************************
+//*******************************************************************
 //*******************************************************************
 //BUFFER ARRAY
-		//MOAIVertexFormat * vertexFormat = new MOAIVertexFormat();
-		//cord
-		//vertexFormat->DeclareAttribute ( 0, GL_FLOAT, 0, 3, false );
-		//UV
-		//vertexFormat->DeclareAttribute ( 1, GL_FLOAT, 0, 2, false );
-		//color
-		//vertexFormat->DeclareAttribute ( 2, GL_UNSIGNED_BYTE, 5, 0, true );
 
+printf("SET VERTEX BUFFER\n");
 
+// *******MAKE THEM IN LUA **************//
+
+		//MOAIVertexFormat * vertexFormat = new MOAIVertexFormat();	
+		//vertexFormat->DeclareAttribute ( 0, ZGL_TYPE_FLOAT, 0, 3, false );	
+		//vertexFormat->DeclareAttribute ( 1, ZGL_TYPE_FLOAT, 0, 2, false );	
+		//vertexFormat->DeclareAttribute ( 2, ZGL_TYPE_UNSIGNED_BYTE, 5, 0, true );
 		//
 		//MOAIVertexBuffer * vbo = new MOAIVertexBuffer;
-		//vbo->mFormat.Set ( *vertexFormat ); //IN ACCESIABLE
+		//vbo->mFormat.Set (*self, vertexFormat ); //IN ACCESIABLE
 		//vbo->Reserve ( 4 * 10000 );
 
 
 	
 
 
-
+    printf("THREAD MAKE : DONE  \n");
 
 	return 0;
 }
+
+
+
+
+
+
+//**************************************************************************************************
+//**************************************************************************************************
+//**************************************************************************************************
+
+
+//START
+int	MOAIBox::_threadStart ( lua_State* L ) {
+
+MOAI_LUA_SETUP ( MOAIBox, "U" )
+
+    task->threadRunning(true);
+    threadState = 1;
+    task->Start ( *tThread, MOAIMainThreadTaskSubscriber::Get ());
+    //task->IsRunning
+    //task->IsRun
+    //printf("THREAD STARTED \n");
+    //tThread->mThread->IsRunning();
+
+  
+    return 0;
+};
+
+
+//STOP
+int	MOAIBox::_threadStop ( lua_State* L ) {
+
+	MOAI_LUA_SETUP ( MOAIBox, "U" )       
+
+   task->threadRunning(false);
+   threadState = 0;
+   tThread->Stop();
+
+
+   printf("THREAD STOPPED \n");
+  
+   return 0;
+};
+
+
+//RELEASE
+int	MOAIBox::_threadRelease ( lua_State* L ) {
+
+	MOAI_LUA_SETUP ( MOAIBox, "U" )       
+
+            task->threadRunning(false);
+            threadState = 0;
+            tThread->Stop();
+            tThread->Release();  
+      
+        
+             printf("THREAD RELEASE \n");
+
+   return 0;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 //**************************************************************************************************
@@ -1580,6 +2110,30 @@ int	MOAIBox::_size ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBox, "U" )	
 
 	 size 		= state.GetValue < int >( 2, 0 );
+
+     vbo->reset_box();     
+
+    for(std::vector<int>::size_type i = 0; i != _mResults.size(); i++) {
+
+		                MOAIProp* prop = _mResults[i];   
+				        float	 ax = prop->GetXLoc();
+				        float	 ay = prop->GetYLoc();		
+                            
+				
+					    float R =prop->mR;
+					    float G =prop->mG; 
+					    float B =prop->mB; 
+					    float A =prop->mA;
+
+                        vbo->writeFloat_loc ( ax, ay  );
+                        vbo->writeColor_rgb (R,G,B,A );
+                        vbo->writeFloat_size (size);
+
+    };
+
+
+
+
 
 
 
@@ -1710,6 +2264,76 @@ int	MOAIBox::_bounce ( lua_State* L ) {
 
 
 
+
+
+
+
+//**************************************************************************************************
+//BOUNCE
+int	MOAIBox::_color ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIBox, "U" )	
+
+
+   vbo->reset_box();     
+
+    for(std::vector<int>::size_type i = 0; i != _mResults.size(); i++) {
+
+		                MOAIProp* prop = _mResults[i];   
+				        float	 ax = prop->GetXLoc();
+				        float	 ay = prop->GetYLoc();		
+                            
+				    ////VBO	shit	
+					    float R =prop->mR;
+					    float G =prop->mG; 
+					    float B =prop->mB; 
+					    float A =prop->mA;
+
+                        vbo->writeFloat_loc ( ax, ay  );
+                        vbo->writeColor_rgb (R,G,B,A );
+                        vbo->writeFloat_size (size);
+
+              
+
+
+                         //printf("UPDATING COLOR %f %f %f %f\n",R,G,B,A);
+
+					    //vbo->writeFloat_loc( ax - size, ay + size );
+					    //vbo->writeFloat_uv ( 0, 0 );
+					    //vbo->writeColor_rgb (R,G,B,A );
+ 
+					    //vbo->writeFloat_loc ( ax + size, ay + size );
+					    //vbo->writeFloat_uv ( 1, 0 );
+					    //vbo->writeColor_rgb (R,G,B,A );
+ 
+					    //vbo->writeFloat_loc ( ax + size, ay - size );
+					    //vbo->writeFloat_uv ( 1, 1 );
+					    //vbo->writeColor_rgb (R,G,B,A );
+ 
+					    //vbo->writeFloat_loc ( ax - size, ay - size);
+					    //vbo->writeFloat_uv ( 0, 1 );
+					    //vbo->writeColor_rgb (R,G,B,A );
+
+
+
+
+
+
+
+
+    };
+
+// vbo->reset_box();  
+//vbo->bless_box();
+
+    return 0;
+
+
+}
+
+
+
+
+
 //**************************************************************************************************
 //BOUNCE
 int	MOAIBox::_high ( lua_State* L ) {
@@ -1729,43 +2353,234 @@ int	MOAIBox::_high ( lua_State* L ) {
 
 //**********************************************************************
 //REMOVE TO PARTIN
-if (newHigh > 0)  {
+//if (newHigh > 0)  {
 
-int curSprite =0;
 
-	for(std::vector<int>::size_type i = oldhigh; i != temphigh; i++) {
 
-		MOAIProp* prop = _mResults[i];
-		self->mPartition->InsertProp (*prop);
 
-		
-	/*				ibo->SetIndex ( curSprite * 6 + 0, curSprite * 4 + 0 );
-					ibo->SetIndex ( curSprite * 6 + 1, curSprite * 4 + 3 );
-					ibo->SetIndex ( curSprite * 6 + 2, curSprite * 4 + 2 );
-					ibo->SetIndex ( curSprite * 6 + 3, curSprite * 4 + 0 );
-					ibo->SetIndex ( curSprite * 6 + 4, curSprite * 4 + 2 );
-					ibo->SetIndex ( curSprite * 6 + 5, curSprite * 4 + 1 );
+printf("_high _high : _high %d\n",temphigh);
+printf("_high _high : _high %d\n",temphigh);
+printf("_high _high : _high %d\n",temphigh);
 
-					++curSprite; */
 
-	}
 
-}
 
-//**********************************************************************
-//REMOVE TO PARTIN
-if (newHigh < 0)  {
-	for(std::vector<int>::size_type i = temphigh; i != oldhigh; i++) {
-	MOAIProp* prop = _mResults[i];
-	self->mPartition->RemoveProp ( *prop );	
+//*******************************************************************************************
+//*******************************************************************************************
+//*******************************************************************************************
+//VBO
+    // vbo->reset_box(); //NEDS THIS TO RESET POINT TRIAL
+    // vbo->SetCursor(-1);
+     int curSprite =0;
 
-	}
 
-}
+
+vbo->ReserveV (temphigh);
+vbo->reset_box();
+
+
+//vbo->ReserveV (4 * temphigh);
+
+ibo->ReserveIndices(temphigh);
+
+
+int cX = 0;
+int cY = 0;
+
+
+
+
+
+    int current_max = self->mHigh;
+	for(std::vector<int>::size_type i = 0; i != current_max; i++) {
+
+		                MOAIProp* prop = _mResults[i];
+
+              
+
+             
+
+//******************************************************************************
+//******************************************************************************   
+//******************************************************************************
+//DONT TOUCH : INDEX FOR TRAINAGLES :
+
+				                     ibo->SetIndex ( i * 1 + 0, i * 1 + 0 );
+
+					                //ibo->SetIndex ( i * 6 + 1, i * 4 + 3 );
+					                //ibo->SetIndex ( i * 6 + 2, i * 4 + 2 );
+					                //ibo->SetIndex ( i * 6 + 3, i * 4 + 0 );
+					                //ibo->SetIndex ( i * 6 + 4, i * 4 + 2 );
+					                //ibo->SetIndex ( i * 6 + 5, i * 4 + 1 );	
+//******************************************************************************
+//******************************************************************************   
+//******************************************************************************
+//DONT TOUCH : INDEX FOR TRAINAGLES_STRIP
+                        
+
+				                 //   ibo->SetIndex ( i * 8 + 0, i * 4 + 0 );
+					                //ibo->SetIndex ( i * 8 + 1, i * 4 + 1 );
+					                //ibo->SetIndex ( i * 8 + 2, i * 4 + 2 );
+					                //ibo->SetIndex ( i * 8 + 3, i * 4 + 3 );
+					                //ibo->SetIndex ( i * 8 + 4, i * 4 + 3 );
+					                //ibo->SetIndex ( i * 8 + 5, i * 4 + 0 );	
+					                //ibo->SetIndex ( i * 8 + 6, i * 4 + 0 );
+					                //ibo->SetIndex ( i * 8 + 7, i * 4 + 4 );	
+
+
+                           //FRIST DRAW
+				                float	 ax = prop->GetXLoc();
+				                float	 ay = prop->GetYLoc();		
+                            
+				            ////VBO	shit	
+					            float R =prop->mR;
+					            float G =prop->mG; 
+					            float B =prop->mB; 
+					            float A =prop->mA;
+
+
+                                vbo->writeFloat_loc ( ax, ay  );
+                                vbo->writeColor_rgb (R,G,B,A );
+                                vbo->writeFloat_size (size);
+
+
+
+//******************************************************************************
+//******************************************************************************   
+//******************************************************************************
+	/*				    vbo->writeFloat_loc( ax - size, ay + size );
+					    vbo->writeFloat_uv ( 0, 0 );
+					    vbo->writeColor_rgb (R,G,B,A );
+ 
+					    vbo->writeFloat_loc ( ax + size, ay + size );
+					    vbo->writeFloat_uv ( 1, 0 );
+					    vbo->writeColor_rgb (R,G,B,A );
+ 
+					    vbo->writeFloat_loc ( ax + size, ay - size );
+					    vbo->writeFloat_uv ( 1, 1 );
+					    vbo->writeColor_rgb (R,G,B,A );
+ 
+					    vbo->writeFloat_loc ( ax - size, ay - size);
+					    vbo->writeFloat_uv ( 0, 1 );
+					    vbo->writeColor_rgb (R,G,B,A );*/
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
+
+         //               vbo->writeFloat_loc ( ax - size, ay - size);
+					    //vbo->writeFloat_uv ( 0, 1 );
+         //               vbo->writeColor_rgb (1,1,1,1 );
+
+
+					    //vbo->writeFloat_loc( ax - size, ay + size );
+					    //vbo->writeFloat_uv ( 0, 0 );
+					    //vbo->writeColor_rgb (1,1,1,1 );
+ 
+
+					    //vbo->writeFloat_loc ( ax + size, ay - size );
+					    //vbo->writeFloat_uv ( 1, 1 );
+		       //         vbo->writeColor_rgb (1,1,1,1 );
+
+					    //vbo->writeFloat_loc ( ax + size, ay + size );
+					    //vbo->writeFloat_uv ( 1, 0 );
+		       //         vbo->writeColor_rgb (1,1,1,1 );
+ 
+
+ 
+
+
+
+		//--TOP-LEFT
+		//vbo:writeFloat ( -32, -32 )
+		//vbo:writeFloat ( 0, 0 )
+		//vbo:writeColor32 ( 1, 1, 1 )
+
+		//--TOP-RIGHT
+		//vbo:writeFloat ( 32, -32 )
+		//vbo:writeFloat ( 1, 0 )
+		//vbo:writeColor32 ( 1, 1, 1 )
+
+
+		//--BOTTOM-RIGHT
+		//vbo:writeFloat ( -32, 32 )
+		//vbo:writeFloat ( 0, 1 )
+		//vbo:writeColor32 ( 1, 1, 1 )
+
+
+
+		//--BOTTOM-LEFT
+		//vbo:writeFloat ( 32, 32 )
+		//vbo:writeFloat ( 1, 1 )
+		//vbo:writeColor32 ( 1, 1, 1 )
+
+
+
+
+
+              //                   if (i > 0) {
+
+              //                        			vbo->writeFloat_loc( cX,cY );
+					         //                   vbo->writeFloat_uv ( 0, 0 );
+					         //                         vbo->writeColor_rgb (R,G,B,A );
+
+
+				          //                      vbo->writeFloat_loc( ax - size, ay - size );
+					         //                   vbo->writeFloat_uv ( 0, 0 );
+					         //                   vbo->writeColor_rgb (R,G,B,A );
+
+
+              //                  };
+
+
+
+
+	             //               vbo->writeFloat_loc( ax - size, ay - size );
+					         //   vbo->writeFloat_uv ( 0, 0);
+					         //   vbo->writeColor_rgb (R,G,B,A );
+ 
+					         //   vbo->writeFloat_loc ( ax + size, ay - size );
+					         //   vbo->writeFloat_uv ( 1, 0 );
+					         //   vbo->writeColor_rgb (R,G,B,A );
+
+
+					         //   vbo->writeFloat_loc ( ax - size, ay + size);
+					         //   vbo->writeFloat_uv ( 0, 1 );
+					         //   vbo->writeColor_rgb (R,G,B,A );
+
+ 
+					         //   vbo->writeFloat_loc ( ax + size, ay + size );
+					         //   vbo->writeFloat_uv ( 1, 1 );
+						        //vbo->writeColor_rgb (R,G,B,A ); 
+              //
+              //                  cX =   ax + size;
+              //                  cY =   ay + size; 
+
+
+
+	        };
+
+
+//vbo->reset_box();
+//vbo->bless_box();
+
+//vbo->reset_box();
+
+ //vbo->reset_box();
+
+
+
+
+
+
+
+
+//}
 
 lua_pushnumber ( state, self->mHigh);
 
 	return 1;
+
+
 }
 
 
@@ -1793,21 +2608,130 @@ MOAIBox::MOAIBox () :
 	this->mThread    =0;
 	this->mHigh		 =0;
 
+    tThread = 0;
+    task    = 0;
+
+
+       printf(">>>>>>>>> START\n");
+//MAKE THREAD
+     //   tThread = new	MOAITaskThread();
+     //   task	= new	MOAIEzraTask ();
+     //   task->Init ( *this, MOAIEzraTask::SAVE_ACTION ); 
+   //   printf(">>>>>>>>> END\n");
+
+
+
+}
+
+
+void MOAIBox::Finalize() {
+
+     printf(" \n Finalize Finalize Finalize \n");
+     printf(" \n Finalize Finalize Finalize \n");
+     printf(" \n Finalize Finalize Finalize \n");
+
+   task->threadRunning(false);
+   threadState = 0;
+   tThread->Stop();
+
+
+};
+
+
+//----------------------------------------------------------------//
+void MOAIBox::Clear () {
+
+	////this->mMutex.Lock ();
+	////this->mBytes.Clear ();
+ //           //tThread->Stop();
+ //          // printf("RELEASE DONE");
+ //           ////////////////
+
+ //           //if (tThread) {
+ //           //        //printf(" \n RELEASE \n");
+ //           //       //  tThread->Release();
+ //           //            printf(" \n TASK RELASE \n");
+ //           //            task->LatchRelease();
+ //           //            //task->LatchRelease();
+
+ //           //            tThread->Stop();
+
+ //           //        printf(" \n DELETE THREAD \n");
+	//           //     delete tThread;
+	//	          //  tThread = 0;
+ //           //};
+
+
+
+ //           //if (task) {
+ //           //         printf("\n DELETE TASK \n");
+	//           //     delete task;
+	//	          //  task = 0;
+ //           //};
+	////this->mMutex.Unlock ();
+
 }
 
 
 
-
+//----------------------------------------------------------------//
+//MOAIBox::!MOAIBox () {
+//     printf(">>>>>>>>>C  CRASH box\n");
+//};
 
 //----------------------------------------------------------------//
 MOAIBox::~MOAIBox () {
+    
+	//this->mMutex.Lock ();
+	//this->mBytes.Clear ();
+	//this->mMutex.Unlock ();
 
-	//this->mCamera.Set ( *this, 0 );
-	//this->mViewport.Set ( *this, 0 );
-	//this->mPartition.Set ( *this, 0 );
+   // tThread->Join();
+     //tThread->Join();
 
-	//printf("\nDESTRUCTION>>>>>>>>>>>>>>>>>>>\n");
-	//tThread->Stop();
+    printf(">>>>>>>>>C  CRASH box\n");
+	this->mCamera.Set ( *this, 0 );
+	this->mViewport.Set ( *this, 0 );
+	this->mPartition.Set ( *this, 0 );
+
+    printf(">>>>>>>>>> D CRASH box -DONE\n");
+
+     this->Clear ();
+
+////	//printf("\nDESTRUCTION>>>>>>>>>>>>>>>>>>>\n");
+//if (threadState == 1) {
+//
+//        this->Clear ();
+//  //tThread->Join();
+//        printf(">>>>>>>>>> D THREAD KILL\n");
+//     //   threadState = 0;
+//        //task->Clear();
+//       // tThread->Clear();
+//	   // tThread->Stop();
+//
+//      //  task->
+//
+//
+//        // delete task;
+//
+//         //delete tThread;
+//        // delete task;
+//
+//            //tThread = new	MOAITaskThread();
+//            //task	= new	MOAIEzraTask ();
+//            //task->Init ( *self, MOAIEzraTask::SAVE_ACTION ); 
+//       printf(">>>>>>>>>> E THREAD KILL - done\n");
+//}
+//
+//
+//	//this->mMutex.Lock ();
+//	//this->mBytes.Clear ();
+//	//this->mMutex.Unlock ();
+//
+//  printf("\n \n **** 4. MOAIBox --> FIRE DESTRUCTOR  ****  \n\n");
+//
+
+
 	//self->Clear ();
 	//self->Clear ();
 
@@ -1867,7 +2791,11 @@ void MOAIBox::RegisterLuaFuncs ( MOAILuaState& state ) {
 		{ "bounce",					_bounce },
 		{ "getTotal",				_total },	
 		{ "sethigh",				_high },	
-		{ "makeThread",				_thread },
+		{ "makeThread",				_threadMake },
+        { "startThread",			_threadStart },
+        { "stopThread",				_threadStop },
+        { "releaseThread",  		_threadRelease },
+
 		{ "results",				_results },
 		{ "makeSoup",				_soup },
 		{ "setBounds",				_bounds },
@@ -1877,6 +2805,7 @@ void MOAIBox::RegisterLuaFuncs ( MOAILuaState& state ) {
 		{ "setShader",				_shader },
 		{ "setBoom",				_boom },
 		{ "setBuffers",				_buffers },
+        { "updateColor",			_color },
 
 		{ NULL, NULL }
 	};

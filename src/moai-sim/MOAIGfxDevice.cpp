@@ -995,13 +995,13 @@ void MOAIGfxDevice::SetPenWidth ( float penWidth ) {
 void MOAIGfxDevice::SetPointSize ( float pointSize ) {
 	UNUSED ( pointSize );
 
-	#if USE_OPENGLES1
+	//#if USE_OPENGLES1
 		if ( this->mPointSize != pointSize ) {
 			this->Flush ();
 			this->mPointSize = pointSize;
 			zglPointSize ( pointSize );
 		}
-	#endif
+	//#endif
 }
 
 //----------------------------------------------------------------//

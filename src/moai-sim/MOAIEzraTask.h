@@ -20,6 +20,7 @@ private:
 	MOAILuaMemberRef						mOnFinish;
 	u32										mAction;
 	MOAIMutex								mMutex;
+    bool									mLoopState;
 	//bool									mInflateOnLoad;
 	//bool									mInflateOnTaskThread;
 	//int									mWindowBits;
@@ -40,6 +41,8 @@ public:
 		SAVE_ACTION,
 	};
 
+
+
 	DECL_LUA_FACTORY ( MOAIEzraTask )
 
 	//----------------------------------------------------------------//
@@ -47,9 +50,13 @@ public:
 				MOAIEzraTask		();
 				~MOAIEzraTask		();
 
-	void		Execute				();
+	void	    Execute				();
+    void	    threadRunning		(bool isRun);
 	void		Publish				();
 	void		capFrameRate		(double fps);
+
+
+
 	//void		RegisterLuaClass	( MOAILuaState& state );
 	//void		RegisterLuaFuncs	( MOAILuaState& state );
 	//void		SaveData			( cc8* filename, MOAIDataBuffer& target );

@@ -949,7 +949,13 @@ double MOAISim::StepSim ( double step, u32 multiplier ) {
 //----------------------------------------------------------------//
 void MOAISim::Update () {
 
-	MOAIScopedLuaState state = MOAILuaRuntime::Get ().State ();
+    if ( this->mLoopState == PAUSED ) {
+		return;
+	}
+
+
+
+	//MOAIScopedLuaState state = MOAILuaRuntime::Get ().State ();
 
 	//if ( !this->mLuaGCFunc ) {
 	////
@@ -977,7 +983,8 @@ void MOAISim::Update () {
 	//********************************************************
 	// Measure performance
 	double simStartTime = ZLDeviceTime::GetTimeInSeconds ();
-	double interval = this->MeasureFrameRate ();
+	this->MeasureFrameRate ();
+
 	//********************************************************	
 	//********************************************************
 	//********************************************************
@@ -1008,7 +1015,7 @@ void MOAISim::Update () {
 				//	usleep ( 1000 );
 				//#else
 					// WARNING: sleep on windows is not quite as precise
-					//Sleep ( 1 );
+				//	Sleep ( 1 );
 				//#endif
 		
 

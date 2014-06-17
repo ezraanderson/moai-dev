@@ -50,13 +50,15 @@ static TextDrawContext* g_CurrentTextDrawContext = 0;
 void MOAIDraw::BeginDrawString ( float scale, MOAIFont& font, float fontSize, float shadowOffsetX, float shadowOffsetY ) {
 	
 	assert ( g_CurrentTextDrawContext == 0 );
-	g_CurrentTextDrawContext = &g_TextDrawContext;
 
-	g_CurrentTextDrawContext->mFont = &font;
-	g_CurrentTextDrawContext->mFontSize = fontSize;
-	g_CurrentTextDrawContext->mScale = scale;
-	g_CurrentTextDrawContext->mShadowOffsetX = shadowOffsetX;
-	g_CurrentTextDrawContext->mShadowOffsetY = shadowOffsetY;
+
+
+	g_CurrentTextDrawContext                    = &g_TextDrawContext;
+	g_CurrentTextDrawContext->mFont             = &font;
+	g_CurrentTextDrawContext->mFontSize         = fontSize;
+	g_CurrentTextDrawContext->mScale            = scale;
+	g_CurrentTextDrawContext->mShadowOffsetX    = shadowOffsetX;
+	g_CurrentTextDrawContext->mShadowOffsetY    = shadowOffsetY;
 }
 
 //----------------------------------------------------------------//
@@ -71,6 +73,12 @@ void MOAIDraw::DrawString ( cc8* text, float x, float y, float width, float heig
 
 	// Transform the center into 'world' space
 	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
+
+
+    //gfxDevice.SetBlendMode ( ZGL_BLEND_FACTOR_SRC_ALPHA, ZGL_BLEND_FACTOR_ONE );
+    	gfxDevice.SetShaderPreset ( MOAIShaderMgr::FONT_SHADER );
+
+
 	const ZLMatrix4x4& orgWorldTransform = gfxDevice.GetVertexTransform ( MOAIGfxDevice::VTX_WORLD_TRANSFORM );
 	USVec2D pos ( x, y );
 	orgWorldTransform.Transform ( pos );
@@ -78,9 +86,9 @@ void MOAIDraw::DrawString ( cc8* text, float x, float y, float width, float heig
 	y = pos.mY;
 
 	// Extract the 'state'
-	MOAIFont& font = *g_CurrentTextDrawContext->mFont;
-	float scale = g_CurrentTextDrawContext->mScale;
-	float fontSize = g_CurrentTextDrawContext->mFontSize;
+	MOAIFont& font      = *g_CurrentTextDrawContext->mFont;
+	float scale         = g_CurrentTextDrawContext->mScale;
+	float fontSize      = g_CurrentTextDrawContext->mFontSize;
 	
 	MOAIGlyphSet* glyphSet = font.GetGlyphSet ( fontSize );
 	assert ( glyphSet );
@@ -90,6 +98,8 @@ void MOAIDraw::DrawString ( cc8* text, float x, float y, float width, float heig
 	float cursorY = y + glyphSet->GetAscent() * scale;
 	MOAIGlyph* prevGlyph = 0;
 	
+   
+
 	// Update the glyph cache
 	for ( size_t i = 0; i < textLength; i++ ) {
 
@@ -99,8 +109,8 @@ void MOAIDraw::DrawString ( cc8* text, float x, float y, float width, float heig
 			font.AffirmGlyph ( fontSize, c );
 		}
 	}
-	font.ProcessGlyphs ();
 
+	font.ProcessGlyphs ();
 	glyphSet = font.GetGlyphSet ( fontSize );
 	assert ( glyphSet );
 
@@ -178,9 +188,13 @@ void MOAIDraw::EndDrawString () {
 	//glGetIntegerv ( GL_BLEND_DST, &orgDestBlend );
 
 	// Apply render state
+
 	gfxDevice.SetShaderPreset ( MOAIShaderMgr::FONT_SHADER );
 	gfxDevice.SetVertexMtxMode ( MOAIGfxDevice::VTX_STAGE_WORLD, MOAIGfxDevice::VTX_STAGE_PROJ );
+
+
 	gfxDevice.SetBlendMode ( ZGL_BLEND_FACTOR_ONE, ZGL_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA );
+
 	MOAIQuadBrush::BindVertexFormat ( gfxDevice );
 
 	// Get the context data
@@ -563,24 +577,26 @@ int MOAIDraw::_drawText ( lua_State* L ) {
 	MOAILuaState state ( L );
 
 	// TODO	
-	//cc8* text = lua_tostring ( state, 3 );
-	//if ( text ) {
+	cc8* text = lua_tostring ( state, 4 );
+	if ( text ) {
+          printf("PRINTING TEXT A\n");
 
-	//	float x = state.GetValue < float >( 4, 0.0f );
-	//	float y = state.GetValue < float >( 5, 0.0f );
-	//	float scale = state.GetValue < float >( 6, 1.0f );
 
-	//	float shadowOffsetX = state.GetValue < float >( 7, 0.0f );
-	//	float shadowOffsetY = state.GetValue < float >( 8, 0.0f );
+		float x = state.GetValue < float >( 5, 0.0f );
+		float y = state.GetValue < float >( 6, 0.0f );
+		float scale = state.GetValue < float >( 7, 1.0f );
 
-	//	MOAIFont* font = state.GetLuaObject < MOAIFont >( 1, true );
-	//	if ( font ) {
+		float shadowOffsetX = state.GetValue < float >( 8, 0.0f );
+		float shadowOffsetY = state.GetValue < float >( 9, 0.0f );
 
-	//		float fontSize = state.GetValue < float >( 2, font->GetDefaultSize () );
+		MOAIFont* font = state.GetLuaObject < MOAIFont >( 2, false );
+		if ( font ) {
+            printf("PRINTING TEXT B\n");
+			float fontSize = state.GetValue < float >( 3, font->GetDefaultSize () );
 
-	//		MOAIDraw::DrawText ( text, x, y, scale, *font, fontSize, shadowOffsetX, shadowOffsetY, 0, 0 );
-	//	}
-	//}
+			MOAIDraw::DrawString ( text, x, y, scale, *font, fontSize, shadowOffsetX, shadowOffsetY, 0, 0 );
+		}
+	}
 
 	return 0;
 }

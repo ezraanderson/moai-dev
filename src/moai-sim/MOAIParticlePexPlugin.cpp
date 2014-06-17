@@ -109,23 +109,83 @@ int MOAIParticlePexPlugin::_load( lua_State* L ){
 	UNUSED ( L );
 
 	#if MOAI_WITH_TINYXML
-		MOAILuaState state ( L );										
-		if ( !state.CheckParams ( 1, "S" )) {							
-			MOAILog ( L, MOAILogMessages::MOAI_ParamTypeMismatch );		
-			return 0;													
-		}																
-			
-		cc8* xml = lua_tostring ( state, 1 );
+		MOAILuaState state ( L );		
 
-		if ( MOAILogMessages::CheckFileExists ( xml, L )) {
-			TiXmlDocument doc;
-			doc.LoadFile ( xml );
+//		if ( !state.CheckParams ( 1, "S" )) {							
+//			MOAILog ( L, MOAILogMessages::MOAI_ParamTypeMismatch );		
+//			return 0;													
+//		}*/																
+			
+		cc8* fileName = lua_tostring ( state, 1 );
+
+		if ( MOAILogMessages::CheckFileExists ( fileName, L )) {
+
+  //printf("\n\n\n\n");
+
+	        //TiXmlDocument docc("menu.xml");
+
+         //  
+
+	        //bool loadOkay = docc.LoadFile();
+
+         //   docc.ErrorDesc();
+
+	        //if (loadOkay)
+	        //{
+		       // printf("\n \n we are good to go \n\n");
+
+	        //}
+	        //else
+	        //{
+		       // printf("A>>>>>>>>Failed to load file \n");
+	        //}
+
+
+    //TiXmlDocument docc;
+    //bool loadOkay = docc.LoadFile(fileName);
+    //if ( !loadOkay ) {
+    //    cerr << "Could not load test file. Error='" << docc.ErrorDesc() << "'. Exiting.\n";
+    //    return 1;
+    //} 
+
+
+
+
+
+          
+			TiXmlDocument doc;          
+			doc.LoadFile ( fileName );      ;
 			MOAIParticlePexPlugin *particle = new MOAIParticlePexPlugin();
-			MOAIParticlePexPlugin::Parse ( xml, *particle, doc.RootElement ());
+			MOAIParticlePexPlugin::Parse ( fileName, *particle, doc.RootElement ());
 			particle->PushLuaUserdata( state );
+
+
+
+
+
+
+
+                    //printf(" ********************** LOADING PARTICLE \n\n\n\n\n");
+
+                    //    TiXmlNode* child = doc.RootElement ();
+
+                    //    if (child != NULL)
+                    //    {
+                    //             printf("hello chilrder %s \n",xml);
+
+                    //      //A child exists....
+                    //    }
+
+
+
+
 			return 1;
 		}
+
+
 	#endif	
+
+
 	return 0;
 }
 //================================================================//
@@ -135,8 +195,17 @@ int MOAIParticlePexPlugin::_load( lua_State* L ){
 #include <zl-gfx/headers.h>
 void MOAIParticlePexPlugin::Parse( cc8* filename, MOAIParticlePexPlugin& plugin, TiXmlNode* node )
 {
+
+    //printf("ENTER\n\n\n");
+    //  printf("ENTER\n\n\n");
+    //    printf("ENTER\n\n\n");
+
 	if ( !node ) return;
 	
+    //printf("WTFTFWTFWTFWTFWTFWTFWTF\n\n\n");
+    //  printf("WTFTFWTFWTFWTFWTFWTFWTF\n\n\n");
+    //    printf("WTFTFWTFWTFWTFWTFWTFWTF\n\n\n");
+
 	plugin.mParticlePath = filename;
 	
 	STLString absFilePath = ZLFileSys::GetAbsoluteFilePath ( filename );

@@ -19,12 +19,13 @@ private:
 	size_t		mCapacity;
 
 	//----------------------------------------------------------------//
-	int			SetCursor		( long offset );
+	
 
 public:
 
 	//----------------------------------------------------------------//
 	size_t		GetCapacity		();
+    int			SetCursor		( long offset );
 	u32			GetCaps			();
 	size_t		GetCursor		();
 	void*		GetBuffer		();

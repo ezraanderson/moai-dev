@@ -156,7 +156,9 @@ void MOAIThread::Start ( Func main, void* param, u32 stackSize ) {
 	this->mMain = main;
 	this->mParam = param;
 
-	assert ( !this->mImpl );
+	//assert ( !this->mImpl );
+    //EZRA
+
 	this->mImpl = new MOAIThreadImpl ();
 	this->mImpl->Start ( *this, stackSize );
 }

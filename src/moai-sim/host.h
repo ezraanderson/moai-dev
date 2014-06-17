@@ -38,6 +38,10 @@ AKU_API void			AKUSetScreenDpi					( int dpi );
 AKU_API void			AKUSetScreenSize				( int width, int height );
 AKU_API void			AKUSetViewSize					( int width, int height );
 AKU_API void			AKUSoftReleaseGfxResources		( int age );
+
+AKU_API void            AKUSetdocumentDirectory         ( const char* dir );
+AKU_API void            AKUCacheDirectory               ( const char* dir );
+
 AKU_API void			AKUUpdate						();
 
 // callback management

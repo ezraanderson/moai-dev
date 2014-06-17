@@ -18,21 +18,26 @@ void MOAITask::LatchRelease () {
 //----------------------------------------------------------------//
 void MOAITask::LatchRetain () {
 
-	assert ( !this->mLatch );
+	//assert ( !this->mLatch );
+    //EZRA
+
 	this->GetRef ( this->mLatch );
 }
 
 //----------------------------------------------------------------//
 MOAITask::MOAITask () :
-	mPriority ( PRIORITY_HIGH ),
-	mQueue ( 0 ),
+	mPriority ( PRIORITY_LOW ),
+    //mPriority ( PRIORITY_HIGH ),
+    mQueue ( 0 ),
 	mSubscriber ( 0 ) {
 	
 	this->mLink.Data ( this );
 }
-
+    
 //----------------------------------------------------------------//
 MOAITask::~MOAITask () {
+    //this->mThis->
+    printf("\n \n **** . MOAITASK --> FIRE DESTRUCTOR  ****  \n\n");
 }
 
 //----------------------------------------------------------------//

@@ -1,8 +1,14 @@
 // Copyright (c) 2010-2011 Zipline Games, Inc. All Rights Reserved.
 // http://getmoai.com
 
+
+
+
+
+
 #include "pch.h"
 #include <zl-gfx/headers.h>
+#include <zl-util/STLArray.h>
 
 SUPPRESS_EMPTY_FILE_WARNING
 #if MOAI_GFX_OPENGL
@@ -428,10 +434,14 @@ void zglInitialize () {
 	#endif
 
 	string version = zglGetString ( ZGL_STRING_VERSION );
-    for ( u32 i = 0; version.length(); i++ ) {
+
+    printf("Crash \n");
+    //for ( u32 i = 0; version.length(); i++ ) {
+    for ( u32 i = 0; version.length() > i; i++ ) {
 		version [ i ] = ( char )tolower ( version [ i ]);
 	}
-	
+	   printf("Crash-done \n");
+
 	string gles = "opengl es";
 	
 	if ( version.find ( gles ) != version.npos ) {
@@ -621,12 +631,50 @@ void zglDisable ( u32 cap ) {
 
 //----------------------------------------------------------------//
 void zglDrawArrays ( u32 primType, u32 first, u32 count ) {
-	glDrawArrays ( _remapEnum ( primType ), ( GLint )first, ( GLsizei )count );
+
+	//glDrawArrays ( _remapEnum ( primType ), ( GLint )first, ( GLsizei )count );
+    
+    //glTexEnvi( GL_POINT_SPRITE_ARB, GL_COORD_REPLACE_ARB, GL_TRUE );
+
+   // glEnable( GL_POINT_SPRITE_ARB );
+  //  glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+#if defined(__SDL__)
+     glEnable( GL_POINT_SPRITE_ARB );
+     glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+    // printf("WTF \n\n");
+     //glEnable( GL_NORMALIZE );
+
+     //glHint(GL_CLIP_VOLUME_CLIPPING_HINT_EXT,GL_FASTEST) ;
+     //glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+    // glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+    // glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+#endif
+
+    glDrawArrays ( _remapEnum ( primType ), ( GLint )first, ( GLsizei )count );
+
+     //  glDisable( GL_POINT_SPRITE_ARB );
+    //   glDisable(GL_VERTEX_PROGRAM_POINT_SIZE);
+
 }
 
 //----------------------------------------------------------------//
 void zglDrawElements ( u32 primType, u32 count, u32 indexType, const void* indices ) {
-	glDrawElements ( _remapEnum ( primType ), ( GLsizei )count, _remapEnum ( indexType ), ( const GLvoid* )indices );
+    // glEnable( GL_POINT_SPRITE_ARB );
+    // glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+
+
+#if defined(__SDL__)
+
+     glEnable( GL_POINT_SPRITE_ARB );
+     glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+#endif
+
+
+
+	    glDrawElements ( _remapEnum ( primType ), ( GLsizei )count, _remapEnum ( indexType ), ( const GLvoid* )indices );
+
+       //glDisable( GL_POINT_SPRITE_ARB );
+       //glDisable(GL_VERTEX_PROGRAM_POINT_SIZE);
 }
 
 //----------------------------------------------------------------//
@@ -760,6 +808,7 @@ void zglViewport ( s32 x, s32 y, u32 w, u32 h ) {
 //----------------------------------------------------------------//
 void zglColorPointer ( u32 size, u32 type, u32 stride, const void* pointer ) {
   #if !MOAI_OS_NACL
+     //   printf("zglColorPointer \n");
 	  glColorPointer (( GLint )size, _remapEnum ( type ), ( GLsizei )stride, ( const GLvoid* )pointer );
 	#endif
 }
@@ -806,6 +855,8 @@ void zglVertexAttribPointer ( u32 index, u32 size, u32 type, bool normalized, u3
 void zglVertexPointer ( u32 size, u32 type, u32 stride, const void* pointer ) {
   #if !MOAI_OS_NACL
 	  glVertexPointer (( GLint )size, _remapEnum ( type ), ( GLsizei )stride, ( const GLvoid* )pointer );
+
+     //  glVertexPointer (( GLint )size, _remapEnum ( type ), ( GLsizei )stride, ( const GLvoid* )pointer );
 	#endif
 }
 
@@ -1058,8 +1109,83 @@ void zglBindBuffer ( u32 target, u32 buffer ) {
 
 //----------------------------------------------------------------//
 void zglBufferData ( u32 target, u32 size, const void* data, u32 usage ) {
-	glBufferData ( _remapEnum ( target ), ( GLsizeiptr )size, ( const GLvoid* )data, _remapEnum ( usage ));
+	        glBufferData ( _remapEnum ( target ), ( GLsizeiptr )size, ( const GLvoid* )data, _remapEnum ( usage ));
+       
+};
+
+
+//----------------------------------------------------------------//
+void zglBufferDataUpdate ( u32 target, u32 sizeIndex,u32 size, const void* data, u32 usage ) {
+
+
+
+    // glBufferData ( _remapEnum ( target ), ( GLsizeiptr )size, ( const GLvoid* )data, _remapEnum ( usage ));
+
+
+
+    // printf("UPDATING BUFFER\n");
+
+
+    //glBufferSubData(GL_UNIFORM_BUFFER,
+                      //sizeof(MyStruct) * structIndex, 
+                      // sizeof(MyStruct), 
+                      //data);
+
+
+    //glBufferSubData( _remapEnum ( target ), 
+    //                4 * sizeof(unsigned short), 
+    //                sizeof(unsigned short),
+    //                (const GLvoid* )data
+    //                );
+
+
+
+        //glBufferSubData( _remapEnum ( target ), 
+        //             ( GLsizeiptr )sizeIndex, 
+        //            ( GLsizeiptr )size,  
+        //            data
+        //            );
+
+
+
+
+
+   // glBufferData ( _remapEnum ( target ), ( GLsizeiptr )size, ( const GLvoid* )data, _remapEnum ( usage ));
+
+           // printf("UPDATING BUFFER \n");
+
+    //glBindBuffer(GL_ARRAY_BUFFER, positionBufferObject);
+    //glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertexPositions), &fNewData[0]);
+    //glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+
+        // std::vector<float> fNewData(2);
+        //memcpy(&fNewData[0], vertexPositions, sizeof(vertexPositions));
+   // glBufferData(GL_ELEMENT_ARRAY_BUFFER, 36 * sizeof(GLubyte), index, GL_STATIC_DRAW);
+
+
+	      //  glBufferData ( _remapEnum ( target ), ( GLsizeiptr )size, ( const GLvoid* )data, _remapEnum ( usage ));
+
+            //glBufferSubData(_remapEnum ( target ), ( GLsizeiptr )size,( const GLvoid* )data, _remapEnum ( usage ));
+
+
+//FloatBuffer vertexFloatBuffer = vertexByteBuffer.asFloatBuffer();
+//vertexFloatBuffer.rewind();
+//vertexFloatBuffer.put(vertex.getElements());
+//vertexFloatBuffer.flip();
+
+           //  unsigned short Indice =  100000*4;
+           //  glBufferSubData(_remapEnum ( target ), 4 * sizeof(unsigned short), sizeof(unsigned short), &(Indice));
+
+
+          /// glBufferData(     GL15.GL_ARRAY_BUFFER, verticesFloatBuffer       ,GL15.GL_STREAM_DRAW);
+           // glBufferSubData(  GL15.GL_ARRAY_BUFFER, i * TexturedVertex.stride ,vertexByteBuffer);
 }
+
+
+
+
+
 
 //----------------------------------------------------------------//
 u32 zglCreateBuffer () {

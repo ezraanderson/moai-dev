@@ -18,6 +18,7 @@ MOAITaskQueue::MOAITaskQueue () {
 
 //----------------------------------------------------------------//
 MOAITaskQueue::~MOAITaskQueue () {
+   // printf("\ndes MOAITaskQueue\n");
 }
 
 //----------------------------------------------------------------//

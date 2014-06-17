@@ -36,14 +36,14 @@ private:
 	
 	float	mPenWidth;
 	float	mPointSize;
-
+    int	    mHigh;
 	//----------------------------------------------------------------//
 	static int		_setIndexBuffer		( lua_State* L );
 	static int		_setPenWidth		( lua_State* L );
 	static int		_setPointSize		( lua_State* L );
 	static int		_setPrimType		( lua_State* L );
 	static int		_setVertexBuffer	( lua_State* L );
-
+    static int		_setHigh	        ( lua_State* L );
 	//----------------------------------------------------------------//
 	ZLBox			ComputeMaxBounds		();
 	ZLBox			GetItemBounds			( u32 idx );

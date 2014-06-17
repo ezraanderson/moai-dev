@@ -13,9 +13,17 @@ void MOAITaskThread::_main ( void* param, MOAIThreadState& threadState ) {
 
 	MOAITaskThread* taskThread = ( MOAITaskThread* )param;
 	
-	while ( threadState.IsRunning ()) {
+        //printf("\nxxxxx\n");
+        //printf("\nxxxxx\n");
+        //printf("\nxxxxx\n");
+        //printf("\nxxxxx\n");
+        //printf("\nxxxxx\n");
+        //printf("\nxxxxx\n");
+
+	while ( threadState.IsRunning ()) {         
 		taskThread->Process ();
 		MOAIThread::Sleep ();
+   
 	}
 }
 
@@ -25,15 +33,16 @@ void MOAITaskThread::_main ( void* param, MOAIThreadState& threadState ) {
 
 //----------------------------------------------------------------//
 MOAITaskThread::MOAITaskThread () {
-
-	RTTI_SINGLE ( MOAITaskQueue )
+	 RTTI_SINGLE ( MOAITaskQueue )
+     printf("\n \n **** CREATE CREATE MOAITaskThread --> FIRE DESTRUCTOR  \n\n");
 }
 
 //----------------------------------------------------------------//
 MOAITaskThread::~MOAITaskThread () {
-
-	this->Stop ();
+        printf("\n \n ****  MOAITaskThread --> FIRE DESTRUCTOR  **** \n\n");
+	    this->Stop ();
 }
+
 
 //----------------------------------------------------------------//
 void MOAITaskThread::PushTask ( MOAITask& task ) {
@@ -55,6 +64,22 @@ void MOAITaskThread::RegisterLuaFuncs ( MOAILuaState& state ) {
 //----------------------------------------------------------------//
 void MOAITaskThread::Stop () {
 
-	this->mThread.Stop ();
+        printf(" \n ******* THREAD IS BEING STOPED IN MOAITASKTHREAD--A ****** \n");	
+    this->mThread.Stop ();
+        printf(" \n ******* THREAD IS BEING STOPED IN MOAITASKTHREAD--B ****** \n");
+	this->mThread.Join ();
+        printf(" \n ******* THREAD IS BEING STOPED IN MOAITASKTHREAD--C ****** \n");
+}
+
+//----------------------------------------------------------------//
+void MOAITaskThread::Join () {
+	
 	this->mThread.Join ();
 }
+
+
+////----------------------------------------------------------------//
+//void MOAITaskThread::Start () {
+//	
+//	this->mThread->is
+//}

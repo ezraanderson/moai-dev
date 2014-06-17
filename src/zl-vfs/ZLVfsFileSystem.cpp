@@ -363,12 +363,12 @@ void ZLVfsFileSystem::Init () {
 	#ifdef ANDROID
 		this->mWorkingPath = this->NormalizeDirPath ( "/" );
 	#else
-		char buffer [ FILENAME_MAX ];
-	
+
+		char buffer [ FILENAME_MAX ];	
 		char* result = getcwd ( buffer, FILENAME_MAX );
-		assert ( result );
-		
+		assert ( result );		
 		this->mWorkingPath = this->NormalizeDirPath ( buffer );
+
 	#endif
 }
 

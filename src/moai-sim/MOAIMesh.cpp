@@ -13,6 +13,8 @@
 #include <moai-sim/MOAIVertexBuffer.h>
 #include <moai-sim/MOAIVertexFormat.h>
 
+
+ 
 //================================================================//
 // local
 //================================================================//
@@ -101,6 +103,28 @@ int MOAIMesh::_setVertexBuffer ( lua_State* L ) {
 	return 0;
 }
 
+
+//----------------------------------------------------------------//
+/**	@name	setVertexBuffer
+	@text	Set the vertex buffer to render.
+	
+	@in		MOAIMesh self
+	@in		MOAIVertexBuffer vertexBuffer
+	@out	nil
+*/
+int MOAIMesh::_setHigh ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIMesh, "U" )
+	
+	self->mHigh = state.GetValue < u32 >( 2, 0 );
+
+	return 0;
+}
+
+
+
+
+
+
 //================================================================//
 // MOAIMesh
 //================================================================//
@@ -122,31 +146,84 @@ void MOAIMesh::DrawIndex ( u32 idx, float xOff, float yOff, float zOff, float xS
 
 	// TODO: make use of offset and scale
 
-	if ( !this->mVertexBuffer ) return;
-	if ( !this->mVertexBuffer->IsValid ()) return;
+	//if ( !this->mVertexBuffer ) return;
+	//if ( !this->mVertexBuffer->IsValid ()) return;
 
-	if ( this->mVertexBuffer->Bind ()) {
+	//if ( this->mVertexBuffer->Bind ()) {
 		
 		MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();	
 
 		gfxDevice.SetVertexMtxMode ( MOAIGfxDevice::VTX_STAGE_MODEL, MOAIGfxDevice::VTX_STAGE_MODEL );
 		gfxDevice.SetUVMtxMode ( MOAIGfxDevice::UV_STAGE_MODEL, MOAIGfxDevice::UV_STAGE_TEXTURE );
-		gfxDevice.SetGfxState ( this->mTexture );
-		
-		gfxDevice.SetPenWidth ( this->mPenWidth );
+
+
+		gfxDevice.SetGfxState  ( this->mTexture );		
+		gfxDevice.SetPenWidth  ( this->mPenWidth );
 		gfxDevice.SetPointSize ( this->mPointSize );
+
+        
 		
 		// TODO: use gfxDevice to cache buffers
-		if ( this->mIndexBuffer ) {
-			if ( this->mIndexBuffer->LoadGfxState ()) {
-				zglDrawElements ( this->mPrimType, this->mIndexBuffer->GetIndexCount (), ZGL_TYPE_UNSIGNED_SHORT, 0 );
-			}
-		}
-		else {
-			zglDrawArrays ( this->mPrimType, 0, this->mVertexBuffer->GetVertexCount ());
-		}
-	}
+		//if ( this->mIndexBuffer ) {
+		//	if ( this->mIndexBuffer->LoadGfxState ()) {
+
+
+
+//********************************************* 
+//*********************************************  
+//printf("DRAW ELEMENTS \n");
+//this->mVertexBuffer->Bind ();
+//this->mIndexBuffer->LoadGfxState ();  
+//zglDrawElements ( this->mPrimType, this->mIndexBuffer->GetIndexCount (), ZGL_TYPE_UNSIGNED_INT, 0 );
+//********************************************* 
+//*********************************************  
+
+
+
+
+
+
+
+
+		            //zglDrawElements ( this->mPrimType, this->mIndexBuffer->GetIndexCount (), ZGL_TYPE_UNSIGNED_SHORT, 0 );
+
+        		    //zglDrawElements ( this->mPrimType, this->mIndexBuffer->GetIndexCount (), ZGL_TYPE_UNSIGNED_SHORT, 0 );
+		//	}
+		//}
+		//else {
+
+
+
+//********************************************* 
+//*********************************************            
+//printf("DRAW ARRAY %d %d \n",this->mVertexBuffer->GetVertexCount (),this->mHigh);
+this->mVertexBuffer->Bind ();
+zglDrawArrays ( this->mPrimType, 0, this->mHigh);
+//********************************************* 
+//*********************************************  
+
+
+
+
+
+    //        
+    //            //zglDrawArrays(this->mPrimType, 0, 3);
+ 
+    //this->mVertexBuffer->Bind ();
+			 //      zglDrawArrays ( this->mPrimType, 0, this->mVertexBuffer->GetVertexCount ());
+
+
+
+
+
+		//}
+	//}
 }
+
+
+
+
+
 
 //----------------------------------------------------------------//
 ZLBox MOAIMesh::GetItemBounds ( u32 idx ) {
@@ -165,6 +242,7 @@ ZLBox MOAIMesh::GetItemBounds ( u32 idx ) {
 MOAIMesh::MOAIMesh () :
 	mPrimType ( 0 ),
 	mPenWidth ( 1.0f ),
+    mHigh      ( 0),
 	mPointSize ( 1.0f ) {
 
 	RTTI_BEGIN
@@ -208,6 +286,7 @@ void MOAIMesh::RegisterLuaFuncs ( MOAILuaState& state ) {
 		{ "setPointSize",			_setPointSize },
 		{ "setPrimType",			_setPrimType },
 		{ "setVertexBuffer",		_setVertexBuffer },
+	    { "setHigh",		        _setHigh},
 		{ NULL, NULL }
 	};
 	

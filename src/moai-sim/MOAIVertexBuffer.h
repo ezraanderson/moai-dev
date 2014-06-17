@@ -55,6 +55,26 @@ public:
 	void			RegisterLuaFuncs		( MOAILuaState& state );
 	void			Reserve					( u32 size );
 	void			Unbind					();
+
+	void			writeFloat_loc			(float a, float b);
+    void			writeColor_rgb			(float r, float g,float b, float a);
+    void			writeFloat_size			(float a);
+
+    void            SetCursor               (long index );
+    void            pCursor                 ();	
+
+	void			writeFloat_uv			(s8 a, s8 b);
+
+	
+
+
+	void			bless_box				( );
+	void			reset_box				( ) ;
+    void            ReserveV                ( long size ); 
+
+
 };
 
 #endif
+
+

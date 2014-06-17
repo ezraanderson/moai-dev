@@ -54,6 +54,9 @@ private:
 	MOAILuaSharedPtr < MOAIViewport >		mViewport;
 	MOAILuaSharedPtr < MOAIPartition >		mPartition;
 
+
+
+
 	#if MOAI_WITH_CHIPMUNK
 		MOAILuaSharedPtr < MOAICpSpace >	mCpSpace;
 	#endif
@@ -112,10 +115,15 @@ private:
 	static int	_wndToWorld			( lua_State* L );
 	static int	_worldToWnd			( lua_State* L );
 
-	static int	_bounce			( lua_State* L );
-	static int	_setforce		( lua_State* L );
-	static int	_total			( lua_State* L );
-	static int	_thread			( lua_State* L );
+	static int	_bounce			    ( lua_State* L );
+	static int	_setforce		    ( lua_State* L );
+	static int	_total			    ( lua_State* L );
+
+	static int	_threadMake			( lua_State* L );
+    static int	_threadStart		( lua_State* L );
+    static int	_threadStop		    ( lua_State* L );
+    static int	_threadRelease	    ( lua_State* L );
+
 	static int	_results	( lua_State* L );
 	static int	_high		( lua_State* L );
 	static int	_soup		( lua_State* L );
@@ -126,7 +134,7 @@ private:
 	static int	_shader	( lua_State* L );
 	static int	_boom	( lua_State* L );
 	static int	_buffers	( lua_State* L );
-
+	static int	_color	( lua_State* L );
 
 	//----------------------------------------------------------------//
 	void			AffirmPartition			();
@@ -134,7 +142,7 @@ private:
 	void			GetProjectionMtx		( ZLMatrix4x4& proj );
 	void			GetViewMtx				( ZLMatrix4x4& view );
 
-	void			Collide(MOAIProp * circleA, MOAIProp * circleB);
+	bool			Collide(MOAIProp * circleA, MOAIProp * circleB);
 
 
 public:	
@@ -149,8 +157,9 @@ public:
 	u32				GetPropBounds			( ZLBox& bounds );
 	void			GetWndToWorldMtx		( ZLMatrix4x4& wndToWorld );
 	void			GetWorldToWndMtx		( ZLMatrix4x4& worldToWnd );
-
+    void            Clear                   ();
 					MOAIBox					();
+   // void           !MOAIBox                ();
 					~MOAIBox				();
 
 
@@ -164,7 +173,7 @@ public:
 	void	  	    Loop					();
 	void	  	    results					();
 
-
+	void static     Finalize				();
 
 };
 

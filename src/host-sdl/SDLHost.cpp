@@ -58,9 +58,10 @@ void _AKUExitFullscreenModeFunc () {
 void _AKUOpenWindowFunc ( const char* title, int width, int height ) {
 	
 	if ( !sWindow ) {
-		sWindow = SDL_CreateWindow ( title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN );
+		sWindow = SDL_CreateWindow ( title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN |  SDL_WINDOW_RESIZABLE );
 		SDL_GL_CreateContext ( sWindow );
 		SDL_GL_SetSwapInterval ( 1 );
+        SDL_ShowCursor(false);
 		AKUDetectGfxContext ();
 		AKUSetScreenSize ( width, height );
 	}
@@ -88,11 +89,16 @@ void Finalize () {
 void Init ( int argc, char** argv ) {
 
 	SDL_Init ( SDL_INIT_EVERYTHING );
-	PrintMoaiVersion ();
 
+
+
+	PrintMoaiVersion ();
 	#ifdef _DEBUG
 		printf ( "DEBUG BUILD\n" );
 	#endif
+
+
+
 
 	AKUAppInitialize ();
 	AKUModulesAppInitialize ();
@@ -114,6 +120,16 @@ void Init ( int argc, char** argv ) {
 	AKUSetInputDeviceButton			( InputDeviceID::DEVICE, InputSensorID::MOUSE_RIGHT,	"mouseRight" );
 
     AKURunString("MOAISim.setTraceback(function() end)");
+  
+    //AKURunScript("main.lua");
+    //cc8 myPath[] = "SHIT";
+
+   //std::string str = "string";
+   // const cc8 *cstr = str.c_str();
+
+   // the_path = "SHIT";
+
+    AKUSetdocumentDirectory( "HELLO");
 
 	AKUSetFunc_EnterFullscreenMode ( _AKUEnterFullscreenModeFunc );
 	AKUSetFunc_ExitFullscreenMode ( _AKUExitFullscreenModeFunc );

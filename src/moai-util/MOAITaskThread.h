@@ -34,6 +34,7 @@ public:
 	void			RegisterLuaClass		( MOAILuaState& state );
 	void			RegisterLuaFuncs		( MOAILuaState& state );
 	void			Stop					();
+    void			Join					();
 };
 
 #endif

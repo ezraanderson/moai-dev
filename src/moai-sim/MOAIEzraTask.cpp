@@ -4,7 +4,7 @@
 #include "pch.h"
 #include <moai-sim/MOAIBox.h>
 #include <moai-sim/MOAIEzraTask.h>
-
+#include <moai-sim/MOAISim.h>
 
 //================================================================//
 // MOAIEzraTask
@@ -40,19 +40,71 @@ void MOAIEzraTask::capFrameRate(double fps) {
 //----------------------------------------------------------------//
 void MOAIEzraTask::Execute () {
 
+
+
+
+
+   //while (this->mLoopState) {
+   //     this->mMutex.Lock();
+   //     // printf("LOOPING  THREAD\n");
+   //      this->mMutex.Unlock();
+   // };
+
+
+  // this->mMutex.Clear();
+ // this->mthr
+
+    //if ( this->mLoopState == PAUSED ) {
+	//	return;
+	//}
+
+    //while (this->mLoopState) {
+    //     printf("LOOPING  THREAD\n");
+    //};
 	
-	while ( 1) {
+	while (this->mLoopState) {
 
-	//printf("C>>>>>>>>>>>>>THREAD--Execute\n");	
-			this->mMutex.Lock();	
-					this->mData->Loop();				
-			this->mMutex.Unlock();
+       //if (this->mLoopState) { return 1; };
+	   //printf("C>>>>>>>>>>>>>THREAD--Execute\n");
+        //
+			//this->mMutex.Lock();	
+			   this->mData->Loop();				
+			//this->mMutex.Unlock();
 
-			//capFrameRate(30);
+			//capFrameRate(60);
 
-		};
+
+           // printf("LOOPING  THREAD\n");
+
+               //#ifndef MOAI_OS_WINDOWS
+              //      usleep(1000);
+              // #endif
+
+	};
+
+
+
+      printf("\n **** 2. MOAIEzraTask -> SHUT DOWN THREAD DONE **** \n");
+
 
 };
+
+
+
+void MOAIEzraTask::threadRunning ( bool isRun ) {
+
+	//this->mMutex.Lock();
+         this->mLoopState = isRun;
+         printf("----- mLoopState\n");
+
+	//this->mMutex.Unlock();
+
+};
+
+
+//void MOAIEzraTask::threadStop ( bool isRun ) {
+//    this->mLoopState = isRun;
+//};
 
 
 
@@ -62,9 +114,12 @@ void MOAIEzraTask::Init ( MOAIBox& target, u32 action ) {
 
 	///printf("C>>>>>>>>>>>>>THREAD--INIT\n");
 	//this->mPriority = PRIORITY_LOW;
+    this->mLoopState = true;
 	this->mData.Set ( *this, &target );
-	this->mAction = action;
-	//this->
+	
+
+	//this->mAction = action;
+
 
 };
 
@@ -72,7 +127,8 @@ void MOAIEzraTask::Init ( MOAIBox& target, u32 action ) {
 
 //----------------------------------------------------------------//
 MOAIEzraTask::MOAIEzraTask () :
-	mAction ( NONE )
+	mAction      ( NONE ),
+    mLoopState   ( false )
 	{	
 	RTTI_SINGLE ( MOAITask )
 }
@@ -80,14 +136,22 @@ MOAIEzraTask::MOAIEzraTask () :
 
 //
 ////----------------------------------------------------------------//
-MOAIEzraTask::~MOAIEzraTask () {
+MOAIEzraTask::~MOAIEzraTask () {   
+        // printf("a \n");
+      
+        this->mData.Set ( *this, 0 ); 
+        this->mLoopState =   false;
+  printf("\n \n **** 1. MOAIEzraTask --> FIRE DESTRUCTOR  ****  \n\n");
 
-	//this->mData.Set ( *this, 0 );
+        // printf("b \n");
 }
 
 
 //----------------------------------------------------------------//
 void MOAIEzraTask::Publish () {
+
+
+
 
 	//if ( this->mInflateOnLoad && ( !this->mInflateOnTaskThread )) {
 	//	this->mData->Inflate ( this->mWindowBits );

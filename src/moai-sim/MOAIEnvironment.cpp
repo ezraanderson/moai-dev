@@ -4,6 +4,14 @@
 #include "pch.h"
 #include <moai-sim/MOAIEnvironment.h>
 
+#ifdef MOAI_OS_IPHONE 
+    #include <sys/sysctl.h>
+#endif
+
+//#ifdef MOAI_OS_OSX
+//#import <Foundation/Foundation.h>
+//#endif
+
 #ifdef _WIN32
 	#include <shlobj.h>
 	typedef void (WINAPI *PGNSI)(LPSYSTEM_INFO);
@@ -70,7 +78,26 @@ void MOAIEnvironment::DetectEnvironment () {
 
 	RTTI_SINGLE ( MOAIGlobalEventSource )
 	
+
+
+
+
+
+
 	#if defined( MOAI_OS_WINDOWS )
+
+
+
+       // NUMBER OF CORES
+        SYSTEM_INFO sysinfo;
+        GetSystemInfo( &sysinfo );
+        unsigned int numCPU = sysinfo.dwNumberOfProcessors;
+
+        this->SetValue ( MOAI_ENV_numProcessors, numCPU);
+
+
+
+
 	
 		//printf ( "Env Windows\n" );
 		this->SetValue ( MOAI_ENV_osBrand, "Windows" );
@@ -151,11 +178,37 @@ void MOAIEnvironment::DetectEnvironment () {
 	
 		//printf ( "Env Linux\n" );
 		this->SetValue ( MOAI_ENV_osBrand, "Linux" );
+	
+    #elif defined ( MOAI_OS_IPHONE )
+
+        size_t len;
+        unsigned int ncpu;
+
+        len = sizeof(ncpu);
+        sysctlbyname ("hw.ncpu",&ncpu,&len,NULL,0);
+
+	    this->SetValue ( MOAI_ENV_numProcessors, ncpu);
+
 
 	#elif defined ( MOAI_OS_OSX )
 	
 		//printf ( "Env OSX\n" );
 		this->SetValue ( MOAI_ENV_osBrand, "OSX" );
+
+ //   NSArray *documentsPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+	//NSString *documentsDirectory = [documentsPath objectAtIndex:0];
+	//
+	//printf("CC documentsDirectory: %s \n", [documentsDirectory UTF8String]);
+	//
+	//NSArray *cachPath = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+	//NSString *cacheDirectory = [cachPath objectAtIndex:0];
+	//
+	//printf("CC cacheDirectory: %s \n", [cacheDirectory UTF8String]);  
+
+
+
+ 
+
 	  #if 0 /* doesn't compile yet */
 		// OS Version
 		SInt32 majorVersion,minorVersion,bugFixVersion;
@@ -167,6 +220,12 @@ void MOAIEnvironment::DetectEnvironment () {
 		char buffer[256];
 		sprintf(buffer, "%d.%d.%d",majorVersion,minorVersion,bugFixVersion);
 		this->SetValue ( MOAI_ENV_osVersion, buffer );
+
+
+
+
+
+
 	  #endif
 	#else
 		//printf ( "No environment detected\n" );
