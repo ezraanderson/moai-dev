@@ -11,10 +11,23 @@
 #
 
 cd `dirname $0`/..
-cd cmake
-rm -rf build
-mkdir build
-cd build
+
+
+if [ $1 = "--fast" ]; then
+
+echo "FAST_________________"
+
+cd cmake     
+cd build-osx
+
+else
+
+echo "REBUILDING_________________"
+
+cd cmake          
+rm -rf build-osx
+mkdir build-osx   
+cd build-osx     
 cmake \
 -DBUILD_OSX=TRUE \
 -DSDL_HOST=TRUE \
@@ -36,10 +49,15 @@ cmake \
 -DMOAI_SFMT=TRUE \
 -DMOAI_VORBIS=TRUE \
 -DMOAI_UNTZ=TRUE \
--DMOAI_LUAJIT=TRUE \
+-DMOAI_LUAJIT=FALSE \
 -DMOAI_HTTP_CLIENT=TRUE \
 -DCMAKE_BUILD_TYPE=Release \
 ../
+
+
+fi
+
+
 
 make -j8
 if [[ $? -ne 0 ]]; then
