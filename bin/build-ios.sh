@@ -127,18 +127,21 @@ echo "> setting XCODEPATH"
 #get some required variables
 XCODEPATH=$(xcode-select --print-path)
 
-#if [ x"$simulator" == xtrue ]; then
-#echo "RUNNING SIMULATOR $simulator"
-#PLATFORM_PATH=${XCODEPATH}/Platforms/iPhoneSimulator.platform/Developer
-#PLATFORM=SIMULATOR
-#SDK=iphonesimulator
-#ARCH=i386
-#else
-PLATFORM_PATH=${XCODEPATH}/Platforms/iPhoneOS.platform/Developer
-PLATFORM=OS
-SDK=iphoneos
-ARCH=armv7
-#fi
+if [ x"$simulator" == xtrue ]; then
+  echo "RUNNING SIMULATOR $simulator"
+  
+  PLATFORM_PATH=${XCODEPATH}/Platforms/iPhoneSimulator.platform/Developer
+  PLATFORM=SIMULATOR
+  SDK=iphonesimulator
+  ARCH=i386
+  
+else
+
+  PLATFORM_PATH=${XCODEPATH}/Platforms/iPhoneOS.platform/Developer
+  PLATFORM=OS
+  SDK=iphoneos
+  ARCH=armv7
+fi
 
 # echo message about what we are doing
 echo "Building moai.app via CMAKE"
@@ -276,8 +279,20 @@ fi
   #OPTIMIZATION_LEVEL=2                                                                                                          
  #GCC_OPTIMIZATION_LEVEL='3'
  #GCC_OPTIMIZATION_LEVEL='3'
-                                                                                                       
-xcodebuild -target moai -sdk ${SDK} -arch ${ARCH} -configuration Release IPHONEOS_DEPLOYMENT_TARGET='6.1' GCC_FAST_MATH=YES LLVM_VECTORIZE_LOOPS=YES;
+   
+   
+if [ x"$simulator" == xtrue ]; then   
+
+      xcodebuild -target moai -sdk ${SDK} -arch i386 -configuration debug;                                                                                                     
+ 
+else
+     xcodebuild -target moai -sdk ${SDK} -arch ${ARCH} -configuration Release IPHONEOS_DEPLOYMENT_TARGET='6.1' GCC_FAST_MATH=YES LLVM_VECTORIZE_LOOPS=YES;
+
+fi
+
+
+
+
 #xcodebuild -target moai -sdk ${SDK} -arch ${ARCH}
 
 

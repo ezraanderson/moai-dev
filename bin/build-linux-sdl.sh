@@ -11,10 +11,24 @@
 #
 
 cd `dirname $0`/..
+
+if [$1 = "--fast"]; then
+
+echo "FAST_________________"
+
+cd cmake     
+cd build-linux
+
+else
+
+
+echo "REBUILDING_________________"
+
+
 cd cmake
-rm -rf build
-mkdir build
-cd build
+rm -rf build-linux
+mkdir build-linux
+cd build-linux
 cmake \
 -DBUILD_LINUX=TRUE \
 -DSDL_HOST=TRUE \
@@ -41,7 +55,9 @@ cmake \
 -DCMAKE_BUILD_TYPE=Release \
 ../
 
-make -j2
+fi
+
+make -j8
 if [[ $? -ne 0 ]]; then
     exit 1
 fi
