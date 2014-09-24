@@ -43,10 +43,7 @@ void AKUModulesAppFinalize () {
     printf("\n ******** AKUModulesAppFinalize ***********\n");
 
 //FINILIZE MY TASKS
-   // MOAIBox::Finalize();
-
-
-
+    MOAIBox::Finalize();
 
 
 
@@ -365,7 +362,7 @@ void AKUModulesParseArgs ( int argc, char** argv ) {
 
 
 			 AKURunScript ( "main.lua" );
-
+             AKURunScript ( "main.luac" );
 
 
 		}

@@ -11,6 +11,8 @@
 
 #include <SDL.h>
 
+
+
 #define UNUSED(p) (( void )p)
 
 namespace InputDeviceID {
@@ -61,7 +63,7 @@ void _AKUOpenWindowFunc ( const char* title, int width, int height ) {
 		sWindow = SDL_CreateWindow ( title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN |  SDL_WINDOW_RESIZABLE );
 		SDL_GL_CreateContext ( sWindow );
 		SDL_GL_SetSwapInterval ( 1 );
-        SDL_ShowCursor(false);
+        SDL_ShowCursor(true);
 		AKUDetectGfxContext ();
 		AKUSetScreenSize ( width, height );
 	}
@@ -99,6 +101,8 @@ void Init ( int argc, char** argv ) {
 
 
 
+    
+
 
 	AKUAppInitialize ();
 	AKUModulesAppInitialize ();
@@ -121,15 +125,8 @@ void Init ( int argc, char** argv ) {
 
     AKURunString("MOAISim.setTraceback(function() end)");
   
-    //AKURunScript("main.lua");
-    //cc8 myPath[] = "SHIT";
-
-   //std::string str = "string";
-   // const cc8 *cstr = str.c_str();
-
-   // the_path = "SHIT";
-
-    AKUSetdocumentDirectory( "HELLO");
+   
+   // AKUSetdocumentDirectory( "HELLO");
 
 	AKUSetFunc_EnterFullscreenMode ( _AKUEnterFullscreenModeFunc );
 	AKUSetFunc_ExitFullscreenMode ( _AKUExitFullscreenModeFunc );
