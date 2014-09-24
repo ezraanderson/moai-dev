@@ -1,0 +1,62 @@
+sudo ln -s ~/Support/cmake-2.8.10.2-Linux-i386/bin/cmake /usr/local/bin/cmake && \
+sudo ln -s ~/Support/cmake-2.8.10.2-Linux-i386/bin/ccmake /usr/local/bin/ccmake && \
+sudo ln -s ~/Support/cmake-2.8.10.2-Linux-i386/bin/cpack /usr/local/bin/cpack && \
+sudo ln -s ~/Support/cmake-2.8.10.2-Linux-i386/bin/ctest /usr/local/bin/ctest
+
+
+https://wiki.ubuntu.com/MountWindowsSharesPermanently
+
+  //servername/sharename  /media/windowsshare  cifs  guest,uid=1000,iocharset=utf8  0  0
+  
+gksudo gedit  /etc/fstab   
+gksudo nautilus
+
+failed after "linking C static library libcrypto.a"  --> [66%] built traget crypto --> make: ***[all] error 2
+
+https://github.com/moai/moai-dev/wiki/Building-for-Linux-%28ubuntu-13%29
+
+export PATH=$PATH:/home/ezra/cmake/bin
+
+
+
+
+
+$sudo apt-get install freeglut3-dev libglew-dev libglu1-mesa-dev libxmu-dev libxi-dev libsdl-dev
+
+
+# Build
+cd moai-dev
+./bin/build-linux-sdl.sh
+
+
+ https://launchpad.net/~kalakris/+archive/cmake
+ 
+ 
+ $sudo apt-get install git-core cmake build-essential
+ 
+ 
+ sudo apt-get update && sudo apt-get install build-essential
+ 
+  apt-get remove cmake?
+  
+  apt-get install libssl-dev 
+  
+  libpthread-dev".
+  
+  
+  sudo apt-get install freeglut3-dev libglew-dev libglu1-mesa-dev libxmu-dev libxi-dev chipmunk-dev libjpeg8-dev libpng-dev libfreetype6-dev liblua5.1-0-dev libjansson-dev libtinyxml-dev libcurl4-openssl-dev zlib1g-dev libexpat1-dev cmake build-essential freeglut3 libxmu-dev libxi-dev cmake build-essential zlib1g-dev libssl-dev sqlite3 libsqlite3-dev libexpat-dev libcurl4-openssl-dev libasound2-dev libbox2d0 libbox2d-dev libogg-dev libvorbis-dev libpulse-dev libsdl1.2-dev libbox2d-dev
+  
+  
+  apt-get install  libcrypto++-dev 
+  
+  
+  
+  cd ../cmake/build
+<naturally> make moai/fast -j4
+<naturally> gets put into cmake/build/host-****/moai
+<naturally> @ezraanderson
+
+
+prevent the direcotry from being nuked
+
+#rm -rf build

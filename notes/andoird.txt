@@ -1,0 +1,391 @@
+https://github.com/moai/moai-dev/wiki/Building-for-android-on-windows     
+export ANDROID_NDK=c:/Users/David/AppData/Local/moaicli/deps/android-ndk/android-ndk-r8e
+
+
+https://www.dropbox.com/s/s7bb2j9y5b0s4e1/Pyramidos.apk
+
+
+
+
+
+1. install MinGw
+2. add system path to mingW
+3. download cpio                     
+4. download deps -> make-3.81-dep.zip
+
+
+
+1. C:\MinGW\msys\1.0\mysys.bat
+
+2. ./bin/build-android.sh --windows
+
+3. switch to cgywin 
+    
+4. edit --> settings-global.sh
+
+      project_name="com.ezraanderson.test"
+      app_name="Test App"   
+      # If you are using google play services, change this value.
+      app_id="000"
+
+
+4. edit --> settings-local.sh    
+
+        	android_sdk_root=$NDK_HOME
+          
+          
+5. edit --> run-host.sh
+
+          package=com.ezraanderson.test
+ 
+ 
+          echo 'fail'	  
+          #for file in `find $out_dir/ -name "local.properties"` ; do fr $file @SDK_ROOT@ "$android_sdk_root" ; done
+          echo 'fail' 
+       
+ 
+
+
+6. run-host with --> run-host
+          
+          
+
+--FAST BUILD
+
+camke --build . --target moai -- -j4
+"make moai/fast -j4"    
+
+
+--IMPORT INTO ECLIPSE
+import-into eclipse - right-click project -> android tools --> fix project properties
+
+
+
+--ADD OUYA CONTROLER
+
+src\tv\ouya\console\api\util
+
+update api level to 4.2
+
+<uses-sdk android:minSdkVersion="12"/>
+
+
+--LINUX : return the archectures
+file moai
+
+
+ If you exit the app using the BACK button then it will call onDestroy() on the current Activity, If you press HOME it only calls onPause()
+   
+
+eclipse open work space   
+android manfesto                                
+\android\host\host-source\project\src\com    
+
+I have succesfully build moai 1.5 on all platforms win,osx,linux,ios,android,html, had to deal with some small bugs, but the new cmake build system is excellent and a little more refinement, I think it will be stable for all. This was a huge contribution from halfnelson
+
+
+ --ANDROID __ SIGNING
+This will give you a wizard for creating a keystore file and signing the .apk file with a unique key. It's a security thing / to verify the app really comes from you and someone hasn't just copied the package name with their own app (I think. I'm not very up on security stuff).
+
+
+http://developer.android.com/tools/publishing/app-signing.html
+
+
+When "Force Stop" is available for an app it means that the app is still running in the background. The Android OS handles all memory management for you, when the user exits your app, Android will close your app and "hide" a small portion of it in memory to speed up reload times when the user returns to your app.
+
+Calling finish(); is preferred as force closing an app can sometimes be harmful. If android ever needs the memory it will fully close your app and reclaim the small amount of memory that it held.
+
+If you feel it is absolutely necessary to completely kill your app you can call System.exit();, however it is more user friendly to allow Android to take control of your app once you are done with it.
+
+
+
+http://stackoverflow.com/questions/3279578/close-android-application
+
+
+
+
+
+
+
+
+
+--IOS
+To create a release build, you have to edit your current scheme (⌘<) and highlight "Run [name of application]. On the right, select "Build Configuration" and choose "Release". Build as usual.
+
+--change app name
+http://stackoverflow.com/questions/5043066/change-name-of-iphone-app-in-xcode-4
+
+You want to change the Bundle Display Name in your project.plist.
+
+Bundle display name : ${PRODUCT_NAME}   
+should be changed to     
+Bundle display name : MySuperApp
+
+
+
+--OSX BUILD XCODE FOR OSX
+
+OTHER C FLAGS : -DMOAI_OS_OSX
+MOAI_OS_OSX=1
+
+GCC_OPTIMIZATION_LEVEL :03
+
+
+--******PREVENT REBUILDS
+
+ It would seem you have Xcode 4's "Find Implicit Dependencies" enabled. Note that this is enabled by default.
+
+    Product > Edit Scheme…
+    Build (in left column)
+    UNCHECK "Find Implicit Dependencies"
+
+
+
+Build settting --> Product name
+
+
+
+
+
+
+
+In Xcode 5, the Product Name defaults to the variable $(TARGET_NAME) which is linked to your Target Name.
+
+You can change your Target Name by clicking your Project in the Project Navigator, then clicking the target in the list under Targets, and hitting return.
+
+
+
+
+
+
+
+
+        <patrickmeehan> ezraanderson: vungle, adcolony and chartboost (for interstitials)
+<patrickmeehan> vungle video ads are *killing it*
+<patrickmeehan> can’t reccommend it enough
+<patrickmeehan> if I understand it correctly, it’s the incentivised ‘more games’ screen that apple objects to more that incentivized ads in general. that said, glad I got ST 1.8.0 updated *before* they dropped the boom on that stuff
+* DarkGod takes notes :)
+<DarkGod> what is ST btw ?
+<patrickmeehan> Slots Tycoon :)
+<patrickmeehan> saw my video ad revenue triple w/ the last release thanks to the addition of a ‘free spin’ button
+<DarkGod> woh
+<patrickmeehan> I mean, it’s indy game revenue. but still!
+* claudiuc (~claudiuc@2620:0:1cfe:28:426c:8fff:fe10:d1a2) has joined #moai
+* DarkGod (~dg@AToulouse-253-1-50-125.w92-146.abo.wanadoo.fr) Quit (Quit: Leaving)
+* seebs (~seebs@home.seebs.net) Quit (Quit: Computer has gone to sleep.)
+* seebs (~seebs@home.seebs.net) has joined #moai
+
+
+
+
+
+
+
+--
+Entitlements.plist Can be Debugged
+
+fails on release build lower min sdk
+ ./lj_def.h:45:10
+
+
+
+--OSX 
+
+build 32 bit nbindary    
+
+export CFLAGS=-m32
+
+
+
+export PATH=$PATH:/Users/ezra/Desktop/MOAI_UPDATER
+
+export PATH=$PATH:/Volumes/pull/moai-dev/_GAMES/bump/
+
+
+--LINUX
+export PATH=$PATH:/home/ezra/Desktop/updater
+
+--OSX RELEASE BUILD
+
+edit scheme -> run moai -> release
+
+ --OSX
+In file included from /volumes/pull/moai-dev/src/moai-sim/MOAITextBundle.cpp:4:
+In file included from /volumes/pull/moai-dev/src/moai-sim/pch.h:4:
+In file included from /volumes/pull/moai-dev/src/moai-core/headers.h:7:
+/volumes/pull/moai-dev/src/moai-core/pch.h:3:11: fatal error: 'lua.h' file not found
+        #include <lua.h>
+                 ^
+
+
+--OSX
+Valid Architectures = i386
+  curlrules.h:143:6: '__curl_rule_01__' declared as an array with a negative size
+
+/* The size of `long', as computed by sizeof. */
+#ifdef __LP64__
+#define CURL_SIZEOF_LONG 8
+#else
+#define CURL_SIZEOF_LONG 4
+#endif
+
+search --> osx_header --> CURL_SIZEOF_LONG 8 -> CURL_SIZEOF_LONG 4
+
+--USING THIS FIX
+#define CURL_SIZEOF_LONG 4
+#define CURL_SIZEOF_CURL_OFF_T 4
+
+--OSX XCODE BUILD THREADS
+defaults write com.apple.Xcode PBXNumberOfParallelBuildSubtasks 4
+
+
+--OSX 32 bit luajit patch
+
+1. DEFAULT
+make -C /volumes/pull/moai-dev/cmake/projects/moai-osx/third-party/luajit -f /volumes/pull/moai-dev/cmake/projects/moai-osx/third-party/luajit/CMakeScripts/liblua-static_cmakeRulesBuildPhase.make$CONFIGURATION all
+
+2. Release
+
+cd D:\pull\moai-dev\cmake\projects\moai-osx\third-party\luajit\luajit\src
+
+ lipo -info libluajit.a
+ 
+make clean
+make CXXFLAGS=-m32 CFLAGS=-m32 LDFLAGS=-m32 
+STATIC_CC="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -std=gnu99 -D__APPLE__ -D__MACH__ -DMACOSX -DHAVE_MEMMOVE -D_FORTIFY_SOURCE=0 -D__SDL__ 
+-DMOAI_WITH_BOX2D=1 -DAKU_WITH_BOX2D=1 -DMOAI_WITH_CHIPMUNK=1 -DAKU_WITH_CHIPMUNK=1 -DMOAI_WITH_LIBCURL=1 -DMOAI_WITH_UNTZ=1 -DAKU_WITH_UNTZ=1 -DMOAI_WITH_TINYXML=1 -DMOAI_WITH_HTTP_CLIENT=1 -DAKU_WITH_HTTP_CLIENT=1 -DMOAI_WITH_EXPAT=1 -DMOAI_WITH_LIBCRYPTO=1 -DMOAI_WITH_OPENSSL=1 -DMOAI_WITH_FREETYPE=1 -DAKU_WITH_LUAEXT=1 -DMOAI_WITH_LUAEXT=1 -DMOAI_WITH_SQLITE=1 -DMOAI_WITH_JANSSON=1 -DMOAI_WITH_SFMT=1 -DMOAI_WITH_LIBPNG=1 -DMOAI_WITH_LIBJPG=1 -DMOAI_WITH_VORBIS=1 -DMOAI_WITH_OGG=1 -DMOAI_WITH_SDL=0 -DMOAI_WITH_MONGOOSE=1 -DMOAI_WITH_LUAJIT=1 -DAKU_WITH_PLUGINS=0 -DAKU_WITH_TEST=0 -DAKU_WITH_HTTP_SERVER=0" 
+-j12
+
+ 
+--OSX
+ section __mach_header (address=0x100000000, size=30208) would make the output executable exceed available address range for architecture i386
+ 
+
+                 ~
+I can't figure this out, I have tried vim and  few other programs to resolve this, I also tried sed to replace the line ends, I have also tried download lj_ffrecord.c via osx, and replace the file but I always get the same error.
+
+
+[code=text]
+sed 's/^M$//' windows.txt > unix.txt
+sed -e 's/ /\'$'\n/g'
+sed -e 's/\r$//' inputfile > outputfile   
+
+cat -v file-name
+tr -d '\r' < file-name > file-name-unix
+[/code]
+ 
+
+[code=code]
+CC lj_ffrecord.o
+In file included from lj_ffrecord.c:859:
+./lj_recdef.h:224:1: error: use of undeclared identifier 'recff_rawlen'
+recff_rawlen,
+^
+1 error generated.
+make[3]: *** [lj_ffrecord.o] Error 1
+make[2]: *** [third-party/luajit/luajit/src/libluajit.a] Error 2
+make[1]: *** [third-party/luajit/CMakeFiles/liblua-static.dir/all] Error 2
+make[1]: *** Waiting for unfinished jobs....
+[/code]
+
+What is the recommend editor to fix this?
+
+
+
+
+
+
+osx, install command line tools
+http://stackoverflow.com/questions/9329243/xcode-4-4-and-later-install-command-line-tools
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --XCODE BUILD SDL & JIT FOR OSX 32BIT
+ 
+ CompileC /Users/ezra/Library/Developer/Xcode/DerivedData/moai-gvouewnnuxnxbqeyukqeyslvjeyr/ArchiveIntermediates/moai/IntermediateBuildFilesPath/moai.build/Release/curl.build/Objects-normal/i386/base64.o /Volumes/pull/moai-dev/3rdparty/curl-7.19.7/lib/base64.c normal i386 c com.apple.compilers.llvm.clang.1_0.compiler
+    cd /Volumes/pull/moai-dev/cmake
+    setenv LANG en_US.US-ASCII
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -x c -arch i386 -fmessage-length=0 -fdiagnostics-show-note-include-stack -fmacro-backtrace-limit=0 -Wno-trigraphs -fpascal-strings -O3 -Wno-missing-field-initializers -Wno-missing-prototypes -Wno-return-type -Wno-missing-braces -Wparentheses -Wswitch -Wno-unused-function -Wno-unused-label -Wno-unused-parameter -Wno-unused-variable -Wunused-value -Wno-empty-body -Wno-uninitialized -Wno-unknown-pragmas -Wno-shadow -Wno-four-char-constants -Wno-conversion -Wno-constant-conversion -Wno-int-conversion -Wno-bool-conversion -Wno-enum-conversion -Wno-shorten-64-to-32 -Wpointer-sign -Wno-newline-eof -DCMAKE_INTDIR=\"Release\" -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk -fasm-blocks -fstrict-aliasing -Wdeprecated-declarations -mmacosx-version-min=10.8 -Wno-sign-conversion -I/Users/ezra/Library/Developer/Xcode/DerivedData/moai-gvouewnnuxnxbqeyukqeyslvjeyr/ArchiveIntermediates/moai/BuildProductsPath/Release/include -I/volumes/pull/moai-dev/3rdparty/curl-7.19.7/include-osx -I/volumes/pull/moai-dev/3rdparty/zlib-1.2.3 -I/volumes/pull/moai-dev/3rdparty/openssl-1.0.0d/include -I/volumes/pull/moai-dev/3rdparty/openssl-1.0.0d/crypto -I/volumes/pull/moai-dev/3rdparty/openssl-1.0.0d/crypto/asn1 -I/volumes/pull/moai-dev/3rdparty/openssl-1.0.0d/crypto/evp -I/volumes/pull/moai-dev/3rdparty/openssl-1.0.0d -I/volumes/pull/moai-dev/3rdparty/openssl-1.0.0d/include-linux -I/Users/ezra/Library/Developer/Xcode/DerivedData/moai-gvouewnnuxnxbqeyukqeyslvjeyr/ArchiveIntermediates/moai/IntermediateBuildFilesPath/moai.build/Release/curl.build/DerivedSources/i386 -I/Users/ezra/Library/Developer/Xcode/DerivedData/moai-gvouewnnuxnxbqeyukqeyslvjeyr/ArchiveIntermediates/moai/IntermediateBuildFilesPath/moai.build/Release/curl.build/DerivedSources -Wmost -Wno-four-char-constants -Wno-unknown-pragmas -F/Users/ezra/Library/Developer/Xcode/DerivedData/moai-gvouewnnuxnxbqeyukqeyslvjeyr/ArchiveIntermediates/moai/BuildProductsPath/Release -std=gnu99 -D__APPLE__ -D__MACH__ -DMACOSX -DHAVE_MEMMOVE -D_FORTIFY_SOURCE=0 -D__SDL__ -I/volumes/pull/moai-dev/src -include /volumes/pull/moai-dev/src/zl-vfs/zl_replace.h -DMOAI_WITH_BOX2D=1 -DAKU_WITH_BOX2D=1 -DMOAI_WITH_CHIPMUNK=1 -DAKU_WITH_CHIPMUNK=1 -DMOAI_WITH_LIBCURL=1 -DMOAI_WITH_UNTZ=1 -DAKU_WITH_UNTZ=1 -DMOAI_WITH_TINYXML=1 -DMOAI_WITH_HTTP_CLIENT=1 -DAKU_WITH_HTTP_CLIENT=1 -DMOAI_WITH_EXPAT=1 -DMOAI_WITH_LIBCRYPTO=1 -DMOAI_WITH_OPENSSL=1 -DMOAI_WITH_FREETYPE=1 -DAKU_WITH_LUAEXT=1 -DMOAI_WITH_LUAEXT=1 -DMOAI_WITH_SQLITE=1 -DMOAI_WITH_JANSSON=1 -DMOAI_WITH_SFMT=1 -DMOAI_WITH_LIBPNG=1 -DMOAI_WITH_LIBJPG=1 -DMOAI_WITH_VORBIS=1 -DMOAI_WITH_OGG=1 -DMOAI_WITH_SDL=0 -DMOAI_WITH_MONGOOSE=1 -DMOAI_WITH_LUAJIT=1 -DAKU_WITH_PLUGINS=0 -DAKU_WITH_TEST=0 -DAKU_WITH_HTTP_SERVER=0 -DCURL_STATICLIB -DBUILDING_LIBCURL -DCURL_DISABLE_LDAP -DUSE_SSLEAY -DUSE_OPENSSL -DNDEBUG -MMD -MT dependencies -MF /Users/ezra/Library/Developer/Xcode/DerivedData/moai-gvouewnnuxnxbqeyukqeyslvjeyr/ArchiveIntermediates/moai/IntermediateBuildFilesPath/moai.build/Release/curl.build/Objects-normal/i386/base64.d --serialize-diagnostics /Users/ezra/Library/Developer/Xcode/DerivedData/moai-gvouewnnuxnxbqeyukqeyslvjeyr/ArchiveIntermediates/moai/IntermediateBuildFilesPath/moai.build/Release/curl.build/Objects-normal/i386/base64.dia -c /Volumes/pull/moai-dev/3rdparty/curl-7.19.7/lib/base64.c -o /Users/ezra/Library/Developer/Xcode/DerivedData/moai-gvouewnnuxnxbqeyukqeyslvjeyr/ArchiveIntermediates/moai/IntermediateBuildFilesPath/moai.build/Release/curl.build/Objects-normal/i386/base64.o
+
+In file included from /Volumes/pull/moai-dev/3rdparty/curl-7.19.7/lib/base64.c:35:
+In file included from /Volumes/pull/moai-dev/3rdparty/curl-7.19.7/lib/setup.h:82:
+/volumes/pull/moai-dev/3rdparty/curl-7.19.7/include-osx/curl/curlrules.h:144:6: error: '__curl_rule_01__' declared as an array with a negative size
+    [CurlchkszEQ(long, CURL_SIZEOF_LONG)];
+     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/volumes/pull/moai-dev/3rdparty/curl-7.19.7/include-osx/curl/curlrules.h:133:27: note: expanded from macro 'CurlchkszEQ'
+#define CurlchkszEQ(t, s) sizeof(t) == s ? 1 : -1
+                          ^~~~~~~~~~~~~~~~~~~~~~~
+/volumes/pull/moai-dev/3rdparty/curl-7.19.7/include-osx/curl/curlrules.h:154:6: error: '__curl_rule_02__' declared as an array with a negative size
+    [CurlchkszEQ(curl_off_t, CURL_SIZEOF_CURL_OFF_T)];
+     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/volumes/pull/moai-dev/3rdparty/curl-7.19.7/include-osx/curl/curlrules.h:133:27: note: expanded from macro 'CurlchkszEQ'
+#define CurlchkszEQ(t, s) sizeof(t) == s ? 1 : -1
+                          ^~~~~~~~~~~~~~~~~~~~~~~
+2 errors generated.
+
+CompileC /Users/ezra/Library/Developer/Xcode/DerivedData/moai-gvouewnnuxnxbqeyukqeyslvjeyr/ArchiveIntermediates/moai/IntermediateBuildFilesPath/moai.build/Release/curl.build/Objects-normal/i386/connect.o /Volumes/pull/moai-dev/3rdparty/curl-7.19.7/lib/connect.c normal i386 c com.apple.compilers.llvm.clang.1_0.compiler
+    cd /Volumes/pull/moai-dev/cmake
+    setenv LANG en_US.US-ASCII
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -x c -arch i386 -fmessage-length=0 -fdiagnostics-show-note-include-stack -fmacro-backtrace-limit=0 -Wno-trigraphs -fpascal-strings -O3 -Wno-missing-field-initializers -Wno-missing-prototypes -Wno-return-type -Wno-missing-braces -Wparentheses -Wswitch -Wno-unused-function -Wno-unused-label -Wno-unused-parameter -Wno-unused-variable -Wunused-value -Wno-empty-body -Wno-uninitialized -Wno-unknown-pragmas -Wno-shadow -Wno-four-char-constants -Wno-conversion -Wno-constant-conversion -Wno-int-conversion -Wno-bool-conversion -Wno-enum-conversion -Wno-shorten-64-to-32 -Wpointer-sign -Wno-newline-eof -DCMAKE_INTDIR=\"Release\" -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk -fasm-blocks -fstrict-aliasing -Wdeprecated-declarations -mmacosx-version-min=10.8 -Wno-sign-conversion -I/Users/ezra/Library/Developer/Xcode/DerivedData/moai-gvouewnnuxnxbqeyukqeyslvjeyr/ArchiveIntermediates/moai/BuildProductsPath/Release/include -I/volumes/pull/moai-dev/3rdparty/curl-7.19.7/include-osx -I/volumes/pull/moai-dev/3rdparty/zlib-1.2.3 -I/volumes/pull/moai-dev/3rdparty/openssl-1.0.0d/include -I/volumes/pull/moai-dev/3rdparty/openssl-1.0.0d/crypto -I/volumes/pull/moai-dev/3rdparty/openssl-1.0.0d/crypto/asn1 -I/volumes/pull/moai-dev/3rdparty/openssl-1.0.0d/crypto/evp -I/volumes/pull/moai-dev/3rdparty/openssl-1.0.0d -I/volumes/pull/moai-dev/3rdparty/openssl-1.0.0d/include-linux -I/Users/ezra/Library/Developer/Xcode/DerivedData/moai-gvouewnnuxnxbqeyukqeyslvjeyr/ArchiveIntermediates/moai/IntermediateBuildFilesPath/moai.build/Release/curl.build/DerivedSources/i386 -I/Users/ezra/Library/Developer/Xcode/DerivedData/moai-gvouewnnuxnxbqeyukqeyslvjeyr/ArchiveIntermediates/moai/IntermediateBuildFilesPath/moai.build/Release/curl.build/DerivedSources -Wmost -Wno-four-char-constants -Wno-unknown-pragmas -F/Users/ezra/Library/Developer/Xcode/DerivedData/moai-gvouewnnuxnxbqeyukqeyslvjeyr/ArchiveIntermediates/moai/BuildProductsPath/Release -std=gnu99 -D__APPLE__ -D__MACH__ -DMACOSX -DHAVE_MEMMOVE -D_FORTIFY_SOURCE=0 -D__SDL__ -I/volumes/pull/moai-dev/src -include /volumes/pull/moai-dev/src/zl-vfs/zl_replace.h -DMOAI_WITH_BOX2D=1 -DAKU_WITH_BOX2D=1 -DMOAI_WITH_CHIPMUNK=1 -DAKU_WITH_CHIPMUNK=1 -DMOAI_WITH_LIBCURL=1 -DMOAI_WITH_UNTZ=1 -DAKU_WITH_UNTZ=1 -DMOAI_WITH_TINYXML=1 -DMOAI_WITH_HTTP_CLIENT=1 -DAKU_WITH_HTTP_CLIENT=1 -DMOAI_WITH_EXPAT=1 -DMOAI_WITH_LIBCRYPTO=1 -DMOAI_WITH_OPENSSL=1 -DMOAI_WITH_FREETYPE=1 -DAKU_WITH_LUAEXT=1 -DMOAI_WITH_LUAEXT=1 -DMOAI_WITH_SQLITE=1 -DMOAI_WITH_JANSSON=1 -DMOAI_WITH_SFMT=1 -DMOAI_WITH_LIBPNG=1 -DMOAI_WITH_LIBJPG=1 -DMOAI_WITH_VORBIS=1 -DMOAI_WITH_OGG=1 -DMOAI_WITH_SDL=0 -DMOAI_WITH_MONGOOSE=1 -DMOAI_WITH_LUAJIT=1 -DAKU_WITH_PLUGINS=0 -DAKU_WITH_TEST=0 -DAKU_WITH_HTTP_SERVER=0 -DCURL_STATICLIB -DBUILDING_LIBCURL -DCURL_DISABLE_LDAP -DUSE_SSLEAY -DUSE_OPENSSL -DNDEBUG -MMD -MT dependencies -MF /Users/ezra/Library/Developer/Xcode/DerivedData/moai-gvouewnnuxnxbqeyukqeyslvjeyr/ArchiveIntermediates/moai/IntermediateBuildFilesPath/moai.build/Release/curl.build/Objects-normal/i386/connect.d --serialize-diagnostics /Users/ezra/Library/Developer/Xcode/DerivedData/moai-gvouewnnuxnxbqeyukqeyslvjeyr/ArchiveIntermediates/moai/IntermediateBuildFilesPath/moai.build/Release/curl.build/Objects-normal/i386/connect.dia -c /Volumes/pull/moai-dev/3rdparty/curl-7.19.7/lib/connect.c -o /Users/ezra/Library/Developer/Xcode/DerivedData/moai-gvouewnnuxnxbqeyukqeyslvjeyr/ArchiveIntermediates/moai/IntermediateBuildFilesPath/moai.build/Release/curl.build/Objects-normal/i386/connect.o
+
+In file included from /Volumes/pull/moai-dev/3rdparty/curl-7.19.7/lib/connect.c:24:
+In file included from /Volumes/pull/moai-dev/3rdparty/curl-7.19.7/lib/setup.h:82:
+/volumes/pull/moai-dev/3rdparty/curl-7.19.7/include-osx/curl/curlrules.h:144:6: error: '__curl_rule_01__' declared as an array with a negative size
+    [CurlchkszEQ(long, CURL_SIZEOF_LONG)];
+     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/volumes/pull/moai-dev/3rdparty/curl-7.19.7/include-osx/curl/curlrules.h:133:27: note: expanded from macro 'CurlchkszEQ'
+#define CurlchkszEQ(t, s) sizeof(t) == s ? 1 : -1
+                          ^~~~~~~~~~~~~~~~~~~~~~~
+/volumes/pull/moai-dev/3rdparty/curl-7.19.7/include-osx/curl/curlrules.h:154:6: error: '__curl_rule_02__' declared as an array with a negative size
+    [CurlchkszEQ(curl_off_t, CURL_SIZEOF_CURL_OFF_T)];
+     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/volumes/pull/moai-dev/3rdparty/curl-7.19.7/include-osx/curl/curlrules.h:133:27: note: expanded from macro 'CurlchkszEQ'
+#define CurlchkszEQ(t, s) sizeof(t) == s ? 1 : -1
+                          ^~~~~~~~~~~~~~~~~~~~~~~
+2 errors generated.
+
+CompileC /Users/ezra/Library/Developer/Xcode/DerivedData/moai-gvouewnnuxnxbqeyukqeyslvjeyr/ArchiveIntermediates/moai/IntermediateBuildFilesPath/moai.build/Release/curl.build/Objects-normal/i386/content_encoding.o /Volumes/pull/moai-dev/3rdparty/curl-7.19.7/lib/content_encoding.c normal i386 c com.apple.compilers.llvm.clang.1_0.compiler
+    cd /Volumes/pull/moai-dev/cmake
+    setenv LANG en_US.US-ASCII
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -x c -arch i386 -fmessage-length=0 -fdiagnostics-show-note-include-stack -fmacro-backtrace-limit=0 -Wno-trigraphs -fpascal-strings -O3 -Wno-missing-field-initializers -Wno-missing-prototypes -Wno-return-type -Wno-missing-braces -Wparentheses -Wswitch -Wno-unused-function -Wno-unused-label -Wno-unused-parameter -Wno-unused-variable -Wunused-value -Wno-empty-body -Wno-uninitialized -Wno-unknown-pragmas -Wno-shadow -Wno-four-char-constants -Wno-conversion -Wno-constant-conversion -Wno-int-conversion -Wno-bool-conversion -Wno-enum-conversion -Wno-shorten-64-to-32 -Wpointer-sign -Wno-newline-eof -DCMAKE_INTDIR=\"Release\" -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk -fasm-blocks -fstrict-aliasing -Wdeprecated-declarations -mmacosx-version-min=10.8 -Wno-sign-conversion -I/Users/ezra/Library/Developer/Xcode/DerivedData/moai-gvouewnnuxnxbqeyukqeyslvjeyr/ArchiveIntermediates/moai/BuildProductsPath/Release/include -I/volumes/pull/moai-dev/3rdparty/curl-7.19.7/include-osx -I/volumes/pull/moai-dev/3rdparty/zlib-1.2.3 -I/volumes/pull/moai-dev/3rdparty/openssl-1.0.0d/include -I/volumes/pull/moai-dev/3rdparty/openssl-1.0.0d/crypto -I/volumes/pull/moai-dev/3rdparty/openssl-1.0.0d/crypto/asn1 -I/volumes/pull/moai-dev/3rdparty/openssl-1.0.0d/crypto/evp -I/volumes/pull/moai-dev/3rdparty/openssl-1.0.0d -I/volumes/pull/moai-dev/3rdparty/openssl-1.0.0d/include-linux -I/Users/ezra/Library/Developer/Xcode/DerivedData/moai-gvouewnnuxnxbqeyukqeyslvjeyr/ArchiveIntermediates/moai/IntermediateBuildFilesPath/moai.build/Release/curl.build/DerivedSources/i386 -I/Users/ezra/Library/Developer/Xcode/DerivedData/moai-gvouewnnuxnxbqeyukqeyslvjeyr/ArchiveIntermediates/moai/IntermediateBuildFilesPath/moai.build/Release/curl.build/DerivedSources -Wmost -Wno-four-char-constants -Wno-unknown-pragmas -F/Users/ezra/Library/Developer/Xcode/DerivedData/moai-gvouewnnuxnxbqeyukqeyslvjeyr/ArchiveIntermediates/moai/BuildProductsPath/Release -std=gnu99 -D__APPLE__ -D__MACH__ -DMACOSX -DHAVE_MEMMOVE -D_FORTIFY_SOURCE=0 -D__SDL__ -I/volumes/pull/moai-dev/src -include /volumes/pull/moai-dev/src/zl-vfs/zl_replace.h -DMOAI_WITH_BOX2D=1 -DAKU_WITH_BOX2D=1 -DMOAI_WITH_CHIPMUNK=1 -DAKU_WITH_CHIPMUNK=1 -DMOAI_WITH_LIBCURL=1 -DMOAI_WITH_UNTZ=1 -DAKU_WITH_UNTZ=1 -DMOAI_WITH_TINYXML=1 -DMOAI_WITH_HTTP_CLIENT=1 -DAKU_WITH_HTTP_CLIENT=1 -DMOAI_WITH_EXPAT=1 -DMOAI_WITH_LIBCRYPTO=1 -DMOAI_WITH_OPENSSL=1 -DMOAI_WITH_FREETYPE=1 -DAKU_WITH_LUAEXT=1 -DMOAI_WITH_LUAEXT=1 -DMOAI_WITH_SQLITE=1 -DMOAI_WITH_JANSSON=1 -DMOAI_WITH_SFMT=1 -DMOAI_WITH_LIBPNG=1 -DMOAI_WITH_LIBJPG=1 -DMOAI_WITH_VORBIS=1 -DMOAI_WITH_OGG=1 -DMOAI_WITH_SDL=0 -DMOAI_WITH_MONGOOSE=1 -DMOAI_WITH_LUAJIT=1 -DAKU_WITH_PLUGINS=0 -DAKU_WITH_TEST=0 -DAKU_WITH_HTTP_SERVER=0 -DCURL_STATICLIB -DBUILDING_LIBCURL -DCURL_DISABLE_LDAP -DUSE_SSLEAY -DUSE_OPENSSL -DNDEBUG -MMD -MT dependencies -MF /Users/ezra/Library/Developer/Xcode/DerivedData/moai-gvouewnnuxnxbqeyukqeyslvjeyr/ArchiveIntermediates/moai/IntermediateBuildFilesPath/moai.build/Release/curl.build/Objects-normal/i386/content_encoding.d --serialize-diagnostics /Users/ezra/Library/Developer/Xcode/DerivedData/moai-gvouewnnuxnxbqeyukqeyslvjeyr/ArchiveIntermediates/moai/IntermediateBuildFilesPath/moai.build/Release/curl.build/Objects-normal/i386/content_encoding.dia -c /Volumes/pull/moai-dev/3rdparty/curl-7.19.7/lib/content_encoding.c -o /Users/ezra/Library/Developer/Xcode/DerivedData/moai-gvouewnnuxnxbqeyukqeyslvjeyr/ArchiveIntermediates/moai/IntermediateBuildFilesPath/moai.build/Release/curl.build/Objects-normal/i386/content_encoding.o
+
+In file included from /Volumes/pull/moai-dev/3rdparty/curl-7.19.7/lib/content_encoding.c:24:
+In file included from /Volumes/pull/moai-dev/3rdparty/curl-7.19.7/lib/setup.h:82:
+/volumes/pull/moai-dev/3rdparty/curl-7.19.7/include-osx/curl/curlrules.h:144:6: error: '__curl_rule_01__' declared as an array with a negative size
+    [CurlchkszEQ(long, CURL_SIZEOF_LONG)];
+     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/volumes/pull/moai-dev/3rdparty/curl-7.19.7/include-osx/curl/curlrules.h:133:27: note: expanded from macro 'CurlchkszEQ'
+#define CurlchkszEQ(t, s) sizeof(t) == s ? 1 : -1
+                          ^~~~~~~~~~~~~~~~~~~~~~~
+/volumes/pull/moai-dev/3rdparty/curl-7.19.7/include-osx/curl/curlrules.h:154:6: error: '__curl_rule_02__' declared as an array with a negative size
+    [CurlchkszEQ(curl_off_t, CURL_SIZEOF_CURL_OFF_T)];
+     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/volumes/pull/moai-dev/3rdparty/curl-7.19.7/include-osx/curl/curlrules.h:133:27: note: expanded from macro 'CurlchkszEQ'
+#define CurlchkszEQ(t, s) sizeof(t) == s ? 1 : -1
+                          ^~~~~~~~~~~~~~~~~~~~~~~
+2 errors generated.
+

@@ -1,0 +1,13 @@
+http://stackoverflow.com/questions/5256021/send-a-pull-request-on-github-for-only-latest-commit
+
+
+    git branch my-feature-request 9685770
+    git checkout my-feature-request
+    git pull https://github.com/original_project/original_project.git
+    git cherry-pick b67627b
+    git push origin my-feature-request
+
+
+
+--PUSH ONLINE
+    "git push orgine pull-fix"
