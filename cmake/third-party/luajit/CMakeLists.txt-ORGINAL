@@ -14,7 +14,7 @@ cmake_minimum_required(VERSION 2.8)
 # add -DENABLE_BUNDLED_LUAJIT=True to CMake
 # configuration flags.
 # To explicitly request use of LuaJIT at a given
-        message( ">> BUILDING LUA JIT")
+
 
     set (LUAJIT_ROOT "${MOAI_ROOT}/3rdparty/LuaJIT-2.0.3")
     set (LUAJIT_INCLUDE "${LUAJIT_ROOT}/src")
@@ -26,7 +26,7 @@ cmake_minimum_required(VERSION 2.8)
         set (luajit_copt ${luajit_copt} -O1)
         set (luajit_buildoptions ${luajit_buildoptions} XCFLAGS="-DLUA_USE_APICHECK -DLUA_USE_ASSERT")
     else ()
-        set (luajit_copt ${luajit_copt} -O3)
+        set (luajit_copt ${luajit_copt} -O2)
     endif()
     #set (luajit_copt ${luajit_copt} -I${PROJECT_SOURCE_DIR}/libobjc)
 
@@ -54,7 +54,7 @@ cmake_minimum_required(VERSION 2.8)
 
     set(CFLAGS "")
     
-    if (GCC_FORCE_32BIT)    
+    if (GCC_FORCE_32BIT)
         set (CFLAGS "-m32")
         set (luajit_target_ldflags "${luajit_target_ldflags} -m32")
     endif(GCC_FORCE_32BIT)
@@ -73,67 +73,40 @@ cmake_minimum_required(VERSION 2.8)
     endif()
     
 
-#message( "Size of void P = ${CMAKE_SIZEOF_VOID_P} and ${CMAKE_HOST_SYSTEM_PROCESSOR}")
-	
-  
-#EZRA
-#if ((${CMAKE_SIZEOF_VOID_P} EQUAL 4 AND (  ${CMAKE_HOST_SYSTEM_PROCESSOR} MATCHES "64" OR CMAKE_HOST_UNIX))  OR GCC_FORCE_32BIT)	      
-#if ("${CMAKE_HOST_SYSTEM_PROCESSOR}" MATCHES "64" AND ${CMAKE_SIZEOF_VOID_P} EQUAL 4 OR GCC_FORCE_32BIT) 
-#set (luajit_host_cc "${luajit_host_cc} -m32")
-#set (luajit_host_ldflags "${luajit_host_ldflags} -m32")                                                   
-#endif()
+    message( "Size of void P =  ${CMAKE_SIZEOF_VOID_P} and ${CMAKE_HOST_SYSTEM_PROCESSOR}")
+    if ((${CMAKE_SIZEOF_VOID_P} EQUAL 4 AND (  ${CMAKE_HOST_SYSTEM_PROCESSOR} MATCHES "64" OR CMAKE_HOST_UNIX))
+        OR GCC_FORCE_32BIT)
+        
+        # The host compiler must have same pointer size as the target compiler.
 
+        set (luajit_host_cc "${luajit_host_cc} -m32")
+        set (luajit_host_ldflags "${luajit_host_ldflags} -m32")
+      
+    endif()
 
-#EZRA
-if (BUILD_OSX)
-message( ">> LUAJIT : BUILD_OSX : FORCEING : -m32 ")     
-set (luajit_host_cc "${luajit_host_cc} -m32")
-set (luajit_host_ldflags "${luajit_host_ldflags} -m32")    
+    if (BUILD_IOS)
+        set (luajit_buildoptions ${luajit_buildoptions}
+             TARGET_SYS=iOS)
+        #our sysroot
+        EXEC_PROGRAM( xcrun ARGS --show-sdk-path
+                      OUTPUT_VARIABLE HOST_SDK_ROOT)
 
-endif()
-
-if (BUILD_WINDOWS)
- message( ">> LUAJIT : BUILD_WINDOWS : FORCEING : -m32 ")
-set (luajit_host_cc "${luajit_host_cc} -m32")
-set (luajit_host_ldflags "${luajit_host_ldflags} -m32")    
-endif()
-
-
-if (BUILD_LINUX)
-message( ">> LUAJIT : BUILD_LINUX : FORCEING : -m32 ")
-set (luajit_host_cc "${luajit_host_cc} -m32")
-set (luajit_host_ldflags "${luajit_host_ldflags} -m32")    
-endif()
-
-
-
-if (BUILD_IOS)
-    set (luajit_buildoptions ${luajit_buildoptions}
-         TARGET_SYS=iOS)
-    #our sysroot
-    EXEC_PROGRAM( xcrun ARGS --show-sdk-path
-                  OUTPUT_VARIABLE HOST_SDK_ROOT)
-  
-    set ( luajit_host_cc ${HOST_SDK_ROOT}/../../)
+        set ( luajit_host_cc ${HOST_SDK_ROOT}/../../)
+        message("Host SDK ROOT ${HOST_SDK_ROOT}")
+        set (luajit_host_cc "gcc  -arch i386  -I${HOST_SDK_ROOT}/usr/include ")
+        set (luajit_host_ldflags "${luajit_host_ldflags}")
+    endif()
     
-    message("Host SDK ROOT ${HOST_SDK_ROOT}")
-    set (luajit_host_cc "gcc -arch i386 -I${HOST_SDK_ROOT}/usr/include ")
-    #set (luajit_host_cc "gcc -m32 -arch i386 -I${HOST_SDK_ROOT}/usr/include ")
-    set (luajit_host_ldflags "${luajit_host_ldflags}")
-endif()
-    
-    
+    if (BUILD_ANDROID) 
 
-if (BUILD_ANDROID)
-
-      set (luajit_buildoptions ${luajit_buildoptions}
-           TARGET_SYS=Linux)
-      message( "compiler ${CMAKE_C_COMPILER}")
-      set(CROSS "")
-      string( REGEX REPLACE "(.*-)gcc(\\.exe)*" "\\1" CROSS ${CMAKE_C_COMPILER})
-      set (luajit_buildoptions ${luajit_buildoptions} CROSS=${CROSS})
-      set (luajit_target_ldflags "--sysroot=${ANDROID_SYSROOT}")
-endif()
+        set (luajit_buildoptions ${luajit_buildoptions}
+             TARGET_SYS=Linux)
+        message( "compiler ${CMAKE_C_COMPILER}")
+        set(CROSS "")
+        string( REGEX REPLACE "(.*-)gcc(\\.exe)*" "\\1"  CROSS ${CMAKE_C_COMPILER})
+        set (luajit_buildoptions ${luajit_buildoptions} CROSS=${CROSS})
+        set (luajit_target_ldflags  "--sysroot=${ANDROID_SYSROOT}")
+    endif()
 
     separate_arguments(CFLAGS)
     separate_arguments(luajit_copt)
@@ -158,7 +131,7 @@ endif()
     
     add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/luajit
         COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/luajit"
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${LUAJIT_ROOT} "${CMAKE_CURRENT_BINARY_DIR}/luajit"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory  ${LUAJIT_ROOT} "${CMAKE_CURRENT_BINARY_DIR}/luajit"
     )
 
     if (MSVC)
@@ -166,8 +139,8 @@ endif()
         add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/luajit/src/lua51.lib
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/luajit/src
             COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/msvcbuild-moai.bat" $<$<CONFIG:Debug>:debug> static ${VFS_INCLUDE}
-            DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/luajit
-        )
+            DEPENDS  ${CMAKE_CURRENT_BINARY_DIR}/luajit 
+        ) 
 
         add_custom_target(liblua-static
             DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/luajit/src/lua51.lib
@@ -178,8 +151,8 @@ endif()
         add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/luajit/src/libluajit.a
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/luajit/src
             COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/luajit_ios.sh libluajit.a '${CMAKE_CURRENT_BINARY_DIR}/luajit' '${CMAKE_CURRENT_BINARY_DIR}/luajit/src' '${VFS_INCLUDE}'
-            DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/luajit
-        )
+            DEPENDS  ${CMAKE_CURRENT_BINARY_DIR}/luajit 
+        ) 
 
         add_custom_target(liblua-static
             DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/luajit/src/libluajit.a
@@ -191,8 +164,8 @@ endif()
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/luajit/src
             COMMAND $(MAKE) VERBOSE=1 clean ${luajit_buildoptions}
             COMMAND $(MAKE) VERBOSE=1 ${luajit_buildoptions} libluajit.a
-            DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/luajit
-        )
+            DEPENDS  ${CMAKE_CURRENT_BINARY_DIR}/luajit 
+        ) 
 
         add_custom_target(liblua-static
             DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/luajit/src/libluajit.a
@@ -206,4 +179,5 @@ endif()
    # set_property(TARGET liblua-static PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/luajit/src/libluajit.a)
    # add_dependencies(liblua-static libluajit)
 
-   set( LUA_HEADERS ${LUAJIT_INCLUDE} PARENT_SCOPE)
+   set( LUA_HEADERS ${LUAJIT_INCLUDE}  PARENT_SCOPE)
+    

@@ -148,13 +148,17 @@ endif("$ENV{CFLAGS}" STREQUAL "")
 if(NOT ("$ENV{CFLAGS}" STREQUAL "")) # Hackish, but does the trick on Win32
   list(APPEND EXTRA_LDFLAGS "$ENV{LDFLAGS}")
 endif(NOT ("$ENV{CFLAGS}" STREQUAL ""))
-  if (GCC_FORCE_32_BIT)
+  if (GCC_FORCE_32_BIT)         
         list(APPEND EXTRA_CFLAGS "-m32")
   endif (GCC_FORCE_32_BIT)
 # Those are used for pkg-config and friends, so that the SDL2.pc, sdl2-config,
 # etc. are created correctly.
 set(SDL_LIBS "-lSDL2")
-set(SDL_CFLAGS "")
+set(SDL_CFLAGS "")         
+
+
+message( ">> SDL : BUILD_*** : FORCEING : -m32 ")
+list(APPEND EXTRA_CFLAGS "-m32")
 
 if(CYGWIN)
   # We build SDL on cygwin without the UNIX emulation layer

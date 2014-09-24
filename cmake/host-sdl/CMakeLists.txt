@@ -91,7 +91,7 @@ if ( BUILD_OSX )
   ADD_FRAMEWORKS(moai "${FWORKS}")
   
   if (MOAI_LUAJIT)
-     set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pagezero_size 10000 -image_base 100000000 ")
+     #set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pagezero_size 10000 -image_base 100000000 ")
   endif (MOAI_LUAJIT)
   
 endif ( BUILD_OSX )

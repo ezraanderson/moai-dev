@@ -28,6 +28,8 @@ option ( BUILD_HTML        FALSE )
 option ( BUILD_ANDROID     FALSE )
 option ( BUILD_WINDOWS     FALSE )
 
+
+
 # We should be adding these soon
 #set ( BUILD_NACL        FALSE CACHE STRING "Build Moai SDK for Native Client"     FORCE )
 
@@ -37,11 +39,29 @@ option ( BUILD_WINDOWS     FALSE )
 #
 # Platform Definitions
 #
+
+
 if ( BUILD_OSX )
+
+message("CAMKE ******* BUILDING FOR OSX *******")
+message("CAMKE ******* BUILDING FOR OSX *******")
+message("CAMKE ******* BUILDING FOR OSX *******")
+
   find_package ( OpenGL REQUIRED )
-  set ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99 -D__APPLE__ -D__MACH__ -DMACOSX -DHAVE_MEMMOVE -D_FORTIFY_SOURCE=0 " )
-  set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__APPLE__ -D__MACH__ -DMACOSX" )
+  #set ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99 -D__APPLE__ -D__MACH__ -DMACOSX -DHAVE_MEMMOVE -D_FORTIFY_SOURCE=0 " )
+  #set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__APPLE__ -D__MACH__ -DMACOSX" )
+
+  #EZRA
+  set ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32 -std=gnu99 -D__APPLE__ -D__MACH__ -DMACOSX -DHAVE_MEMMOVE -D_FORTIFY_SOURCE=0 " )
+  set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32 -D__APPLE__ -D__MACH__ -DMACOSX" )
+
 endif ( BUILD_OSX )
+
+
+
+
+
+
 
 if ( BUILD_BLACKBERRY )
   # set ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -V4.6.3,gcc_ntoarmv7le -w1 -D__QNX__")
@@ -73,6 +93,7 @@ endif (BUILD_HTML )
 
 if ( BUILD_WINDOWS)
   find_package ( OpenGL REQUIRED )
+
   if (MSVC)
     set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_CRT_SECURE_NO_WARNINGS /MP")
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_CRT_SECURE_NO_WARNINGS /MP")
@@ -87,11 +108,13 @@ if ( BUILD_WINDOWS)
      set ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32 -std=gnu99 -static -Werror-implicit-function-declaration -DHAVE_MEMMOVE" )
      set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32 -static" )
   endif(MSVC)
+
+
   set ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -D_WIN32_IE=0x0500 " )
   SET ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -D_WIN32_IE=0x0500"  )
 endif (BUILD_WINDOWS)
 
-if ( BUILD_LINUX )
+if ( BUILD_LINUX )       
   find_package ( OpenGL REQUIRED )
   set ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DPOSIX -std=gnu99 -DNDEBUG -DHAVE_MEMMOVE" )
   set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPOSIX " )
@@ -103,15 +126,47 @@ if ( BUILD_ANDROID )
 endif ( BUILD_ANDROID )
 
 if ( BUILD_IOS )
+message("******* BUILDING FOR IOS *******A")
+message("******* BUILDING FOR IOS *******A")
+message("******* BUILDING FOR IOS *******A")
+
   set ( CMAKE_OSX_SYSROOT iphoneos )
   set ( CMAKE_OSX_ARCHITECTURES "armv7;i386" )
   set ( CMAKE_XCODE_EFFECTIVE_PLATFORMS "-iphoneos;-iphonesimulator" )
+  
   set ( XCODE_ATTRIBUTE_SDKROOT iphoneos )
 
-  set ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99  -DHAVE_MEMMOVE " )
+ 
+  
   #default in ios7 is libc++ but some of our ad support libs are libstdc++ so force the lot to build as libstdc++
-  set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libstdc++" )
+  
+  #set(CMAKE_ASM_FLAGS  "-isysroot ${SDK_ROOT} -arch armv7 -stdlib=libc++ -mios-version-min=5.1")
+  #set(CMAKE_C_FLAGS    "-isysroot ${SDK_ROOT} -arch armv7 -stdlib=libc++ -mios-version-min=5.1")
+  #set(CMAKE_CXX_FLAGS  "-isysroot ${SDK_ROOT} -arch armv7 -std=c++11 -stdlib=libc++ -mios-version-min=5.1")
+  
+#SET (CMAKE_EXE_LINKER_FLAGS    "-miphoneos-version-min=6.1")
+#SET (CMAKE_SHARED_LINKER_FLAGS "-miphoneos-version-min=6.1")
+#SET (CMAKE_MODULE_LINKER_FLAGS "-miphoneos-version-min=6.1")
+
+#EZRA  : IPHONE
+   #set ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -miphoneos-version-min=6.1 -std=gnu99  -DHAVE_MEMMOVE" )
+   #set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -miphoneos-version-min=6.1 -stdlib=libstdc++" )
+   
+#EZRA : SIM
+ 
+   #set ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -miphoneos-version-min=7.0 -std=gnu99  -DHAVE_MEMMOVE" )
+   #set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -miphoneos-version-min=7.0 -stdlib=libstdc++" )
+   
+    set ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99 -DHAVE_MEMMOVE " )
+    set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libstdc++" )
+  
 endif ( BUILD_IOS )
+
+
+
+
+
+
 
 if ( SDL_HOST )
   set ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__SDL__" )
@@ -122,9 +177,9 @@ endif ( SDL_HOST )
 # this should force all of moai to have this include and then we remove it from flags in zl-vfs
 # easier than adding it to each project!
 if (NOT MSVC)
-	set (VFS_INCLUDE "-I${MOAI_ROOT}/src -include ${MOAI_ROOT}/src/zl-vfs/zl_replace.h")
+  set (VFS_INCLUDE "-I${MOAI_ROOT}/src -include ${MOAI_ROOT}/src/zl-vfs/zl_replace.h")
 else (NOT MSVC)
-	set (VFS_INCLUDE "-I${MOAI_ROOT}/src /FI${MOAI_ROOT}/src/zl-vfs/zl_replace.h")
+  set (VFS_INCLUDE "-I${MOAI_ROOT}/src /FI${MOAI_ROOT}/src/zl-vfs/zl_replace.h")
 endif (NOT MSVC)
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${VFS_INCLUDE}")
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${VFS_INCLUDE}")
