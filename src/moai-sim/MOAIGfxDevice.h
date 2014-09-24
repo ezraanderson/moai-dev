@@ -80,7 +80,9 @@ public:
 private:
 	
 	static const u32 DEFAULT_BUFFER_SIZE	= 0x8000;
-	
+    //EZRA
+	//static const u32 DEFAULT_BUFFER_SIZE	= 20 000 000;
+
 	int				mCullFunc;
 	int				mDepthFunc;
 	bool			mDepthMask;
@@ -166,6 +168,7 @@ private:
 	static int				_setPenColor			( lua_State* L );
 	static int				_setPenWidth			( lua_State* L );
 	static int				_setPointSize			( lua_State* L );
+    static int				_newShader	    		( lua_State* L );
 
 	//----------------------------------------------------------------//
 	void					Clear					();
@@ -211,6 +214,8 @@ public:
 	void					BeginLayer				();
 	void					BeginPrim				();
 	void					BeginPrim				( u32 primType );
+    void                    setPrimeSize            (int pSize);
+
 	void					ClearColorBuffer		( u32 color );
 	
 	void					ClearErrors				();
@@ -329,9 +334,9 @@ public:
 	template < typename TYPE >
 	inline void Write ( const TYPE& type ) {
 		
+
 		size_t top = this->mTop + sizeof ( TYPE );
-		assert ( top < this->mSize );
-		
+        assert ( top < this->mSize );		
 		*( TYPE* )(( size_t )this->mBuffer + this->mTop ) = type;
 		this->mTop = top;
 	}

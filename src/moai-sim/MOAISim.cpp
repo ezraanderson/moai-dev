@@ -955,27 +955,27 @@ void MOAISim::Update () {
 
 
 
-	//MOAIScopedLuaState state = MOAILuaRuntime::Get ().State ();
+	MOAIScopedLuaState state = MOAILuaRuntime::Get ().State ();
 
-	//if ( !this->mLuaGCFunc ) {
-	////
-	//	lua_getglobal ( state, LUA_GC_FUNC_NAME );
-	//	this->mLuaGCFunc.SetRef ( *this, state, -1 );
-	//	lua_pop ( state, 1 );
-	//	
-	//	lua_pushcfunction ( state, _collectgarbage );
-	//	lua_setglobal ( state, LUA_GC_FUNC_NAME );
-	//}
- ////       
+	if ( !this->mLuaGCFunc ) {
+	//
+		lua_getglobal ( state, LUA_GC_FUNC_NAME );
+		this->mLuaGCFunc.SetRef ( *this, state, -1 );
+		lua_pop ( state, 1 );
+		
+		lua_pushcfunction ( state, _collectgarbage );
+		lua_setglobal ( state, LUA_GC_FUNC_NAME );
+	}
+ //       
 
 
-	//if ( this->mForceGC ) {   		
-	//	// force a full cycle
-	//	MOAILuaRuntime::Get ().ForceGarbageCollection ();
-	//	this->mForceGC = false;
-	//}
+	if ( this->mForceGC ) {   		
+		// force a full cycle
+		MOAILuaRuntime::Get ().ForceGarbageCollection ();
+		this->mForceGC = false;
+	}
 
-	//lua_gc ( state, LUA_GCSTOP, 0 );
+	lua_gc ( state, LUA_GCSTOP, 0 );
 
 
 	//********************************************************
@@ -990,18 +990,23 @@ void MOAISim::Update () {
 	//********************************************************
 
 
-	//#if MOAI_WITH_HTTP_CLIENT && MOAI_WITH_LIBCURL
-	//	MOAIUrlMgrCurl::Get ().Process ();
-	//#endif
+	#if MOAI_WITH_HTTP_CLIENT && MOAI_WITH_LIBCURL
+		MOAIUrlMgrCurl::Get ().Process ();
+	#endif
 	
 	//#if MOAI_WITH_HTTP_CLIENT && MOAI_OS_NACL
 	//	MOAIUrlMgrNaCl::Get ().Process ();
 	//#endif
 
 
-                MOAIRenderMgr::Get ().Render ();
-                MOAIMainThreadTaskSubscriber::Get ().Publish ();
 
+            //IF NOT HTML HOST
+                //#ifndef MOAI_OS_HTML
+                            MOAIRenderMgr::Get ().Render ();
+                //#endif
+
+
+                MOAIMainThreadTaskSubscriber::Get ().Publish ();
 
                 MOAIInputMgr::Get ().Update ();
                 MOAIActionMgr::Get ().Update (( float )timerStep );		
@@ -1026,10 +1031,10 @@ void MOAISim::Update () {
 	this->mSimDuration = simEndTime - simStartTime;	
 
 
-	//if ( this->mGCActive ) {
-	//	// crank the garbage collector
-	//	lua_gc ( state, LUA_GCSTEP, this->mGCStep );
-	//}  
+	if ( this->mGCActive ) {
+		// crank the garbage collector
+		lua_gc ( state, LUA_GCSTEP, this->mGCStep );
+	}  
 
 
 

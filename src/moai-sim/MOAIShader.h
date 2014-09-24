@@ -9,18 +9,56 @@
 
 class MOAIColor;
 class MOAITransformBase;
-	
-#define		OPENGL_PREPROC		"#define LOWP\n #define MEDP\n"
-#define		OPENGL_ES_PREPROC	"#define LOWP lowp\n #define MEDP mediump\n"
 
-#define		WEBGL_PREPROC "precision mediump int;\n precision mediump float;\n"
+#ifdef MOAI_OS_OSX
+
+
+    #define		OPENGL_PREPROC		"#version 120\n #define LOWP\n #define MEDP\n"
+    #define		OPENGL_ES_PREPROC	"#version 120\n #define LOWP lowp\n #define MEDP mediump\n"
+    #define		WEBGL_PREPROC       "precision mediump int;\n precision mediump float;\n"
+
+
+#endif
+
+
+//HTML
+#ifdef MOAI_OS_HTML
+
+    #define		OPENGL_PREPROC		"#define LOWP\n #define MEDP\n"
+    #define		OPENGL_ES_PREPROC	"#define LOWP lowp\n #define MEDP mediump\n"
+    #define		WEBGL_PREPROC       "precision mediump int;\n precision mediump float;\n"
+
+
+#else
+
+    #define		OPENGL_PREPROC		"#define LOWP\n #define MEDP\n"
+    #define		OPENGL_ES_PREPROC	"#define LOWP lowp\n #define MEDP mediump\n"
+    #define		WEBGL_PREPROC       "precision mediump int;\n precision mediump float;\n"
+
+
+#endif
+
+
+
+
+
+
+
+
+// Desktop GLSL and ES GLSL are slightly different
+//#if defined ( MOAI_OS_NACL ) || defined ( MOAI_OS_IPHONE ) || defined ( MOAI_OS_ANDROID ) || defined ( EMSCRIPTEN )
+//#define MOAI_SHADER(s) "#version 100\n"#s
+//#else
+//#define MOAI_SHADER(s) "#version 120\n#define lowp\n#define mediump\n#define highp\n"#s
+//#endif
+
 
 //================================================================//
 // MOAIShaderUniform
 //================================================================//
 class MOAIShaderUniform {
 private:
-
+  
 	friend class MOAIShader;
 
 	STLString mName;

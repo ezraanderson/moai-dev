@@ -142,7 +142,7 @@ private:
 	void			GetProjectionMtx		( ZLMatrix4x4& proj );
 	void			GetViewMtx				( ZLMatrix4x4& view );
 
-	bool			Collide(MOAIProp * circleA, MOAIProp * circleB);
+	void			Collide(MOAIProp * circleA, MOAIProp * circleB);
 
 
 public:	

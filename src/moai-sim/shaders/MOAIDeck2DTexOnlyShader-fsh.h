@@ -5,10 +5,14 @@
 #define	MOAIDECK2DTEXONLYSHADER_FSH_H
 
 #define SHADER(str) #str
+//#include <moai-sim/MOAIShader.h>
 
-static cc8* _deck2DTexOnlyShaderFSH =  SHADER (
-    
+   //static cc8* _deck2DTexOnlyShaderFSH =  MOAI_SHADER (    
+   static cc8* _deck2DTexOnlyShaderFSH =  SHADER (    
+
+
 	varying MEDP vec2 uvVarying;
+    //varying mediump vec2 uvVarying;
 	
 	uniform sampler2D sampler;
 

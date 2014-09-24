@@ -14,11 +14,18 @@
 
 #ifdef _WIN32
 	#include <Windows.h>
+    //#pragma comment(linker, "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
 #endif
 
-//----------------------------------------------------------------//
+
+ 
+
 #ifdef _WIN32
+
+
 	int CALLBACK WinMain ( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow ) {
+
+        
 		int argc = __argc;
 		char** argv = __argv;
 
@@ -31,6 +38,7 @@
 			_CrtSetReportFile ( _CRT_ASSERT, _CRTDBG_FILE_STDERR );
 		#endif
 
+
 		SDLHost ( argc, argv );
 	}
 #endif
@@ -38,6 +46,24 @@
 //----------------------------------------------------------------//
 int main ( int argc, char** argv ) {
 
+
+
+ //FreeConsole();
+
+   //ShowWindow( GetConsoleWindow(), SW_HIDE );
+   //ShowWindow( GetConsoleWindow(), SW_SHOW );
+
+    //printf("CALLBACK\n");
+    //FreeConsole();
+
+ //LPSTR* CommandLineToArgv(LPCSTR lpCmdLine, int *pNumArgs);   
+ //   int argc = 0;
+ // char* argv = CommandLineToArgv(lpCmdLine, &argc);
+
 	SDLHost ( argc, argv );
+
+    
+
+
     return 0;
 }

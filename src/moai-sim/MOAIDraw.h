@@ -38,7 +38,19 @@ private:
 	static int				_fillRect			( lua_State* L );
 	static int				_drawTexture		( lua_State* L );
 	static int				_drawText			( lua_State* L );
-	
+
+    //EZRA
+    static int			 _drawRectList			( lua_State* L);
+    static int			 _drawLineList			( lua_State* L);
+    static int			 _drawRingList			( lua_State* L);
+    static int			 _drawCircleList		( lua_State* L);
+
+    static int			 _rectStart		( lua_State* L);
+    static int			 _rectEnd		( lua_State* L);
+    static int			 _rectDraw		( lua_State* L);
+
+	static int			 _setShader			    ( lua_State* L);
+
 	//----------------------------------------------------------------//
 	static void			DrawLuaParams			( lua_State* L, u32 primType );
 	static void			DrawLuaArray			( lua_State* L, u32 primType );
@@ -77,6 +89,11 @@ public:
 	static void			DrawVertexArray			( const ZLVec3D* verts, u32 count, u32 color, u32 primType );
 	static void			DrawVertexArray2D		( const float* verts, u32 count, u32 color, u32 primType );
 	static void			EndDrawString			();
+
+
+
+
+
 						MOAIDraw				();
 						~MOAIDraw				();
 	void				RegisterLuaClass		( MOAILuaState& state );

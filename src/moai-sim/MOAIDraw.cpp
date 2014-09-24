@@ -14,6 +14,12 @@
 
 #define DEFAULT_ELLIPSE_STEPS 64
 
+
+float rect_x =0;
+float rect_y =0;
+float rect_step =-1;
+
+
 //================================================================//
 // text drawing stuff
 //================================================================//
@@ -1007,12 +1013,25 @@ void MOAIDraw::DrawRectEdges ( ZLRect rect, u32 edges ) {
 	}	
 }
 
+
+
 //----------------------------------------------------------------//
 void MOAIDraw::DrawRectFill ( ZLRect rect, bool asTriStrip ) {
 
 	rect.Bless ();
 	MOAIDraw::DrawRectFill ( rect.mXMin, rect.mYMin, rect.mXMax, rect.mYMax, asTriStrip );
 }
+
+
+
+
+
+
+
+
+
+
+
 
 //----------------------------------------------------------------//
 void MOAIDraw::DrawRectFill ( float left, float top, float right, float bottom, bool asTriStrip ) {
@@ -1167,6 +1186,608 @@ void MOAIDraw::DrawVertexArray2D ( const float* verts, u32 count, u32 color, u32
 	gfxDevice.EndPrim ();
 }
 
+
+
+//*************************************************************************************************************
+//*************************************************************************************************************
+//*************************************************************************************************************
+//*************************************************************************************************************
+//*************************************************************************************************************
+//*************************************************************************************************************
+//*************************************************************************************************************
+//*************************************************************************************************************
+//**************************************************************************************************
+//SHADER
+int	MOAIDraw::_setShader ( lua_State* L ) {
+
+    MOAILuaState state ( L );        
+	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
+    MOAIShader  * shader = state.GetLuaObject < MOAIShader >( 1, true );
+    gfxDevice.SetShader(shader);
+
+return 0;
+};
+
+
+//***********************************************************************
+//***********************************************************************
+//***********************************************************************
+int MOAIDraw::_drawRingList ( lua_State* L ) {   
+	MOAILuaState state ( L );
+
+	float x   = 0.0f;
+	float y   = 0.0f;
+    float rad = 0.0f;
+
+    float red    = 0.0f;
+    float green  = 0.0f;
+    float blue   = 0.0f;
+    float alpha  = 0.0f;
+
+    u32 steps = 1;
+
+  
+
+	float angle     = ( float )TWOPI / ( float )steps;
+	float angleStep = ( float )PI;
+
+
+    MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
+    gfxDevice.SetBlendMode ( ZGL_BLEND_FACTOR_SRC_ALPHA, ZGL_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA );
+    
+       //  gfxDevice.setPrimeSize(50000000000);
+
+
+    gfxDevice.SetPrimType (  ZGL_PRIM_LINES );
+ 
+
+
+
+    u32 counter = 0;    
+    u32 total   = 0;
+    lua_pushnil ( L );
+
+
+    	gfxDevice.BeginPrim ();
+
+
+ while ( lua_next ( L, 1 ) != 0 ) {
+
+
+        //CORDINATE
+		if (counter == 0) {x    =state.GetValue < float >( -1, 0.0f );};
+		if (counter == 1) {y    =state.GetValue < float >( -1, 0.0f );};
+        if (counter == 2) {rad  =state.GetValue < float >( -1, 0.0f );};
+        //COLOR    
+		if (counter == 3) {red    =state.GetValue < float >( -1, 0.0f );};
+		if (counter == 4) {green  =state.GetValue < float >( -1, 0.0f );};
+		if (counter == 5) {blue   =state.GetValue < float >( -1, 0.0f );};
+		if (counter == 6) {alpha  =state.GetValue < float >( -1, 0.0f );};
+
+        // printf("\n");
+
+        ///DRAW
+		if (counter == 6) {
+            counter = -1;
+         
+    
+                   //COLOR
+                   // gfxDevice.SetPenColor (red,green,blue,alpha );	
+
+	               for ( u32 j = 0; j < steps; ++j, angleStep += angle ) {
+
+                       //gfxDevice.WriteVtx ( 0,0,0);
+                      // gfxDevice.WriteFinalColor4b ();
+                      //  total++;
+
+                               gfxDevice.WriteVtx (  x + ( Sin ( angleStep )* rad ),y + ( Cos ( angleStep )* rad ), 0.0f);
+		                        gfxDevice.WriteFinalColor4b ();
+                                total++;
+
+
+                                gfxDevice.WriteVtx (  x + ( Sin ( angleStep )* rad ),y + ( Cos ( angleStep )* rad ), 0.0f);
+		                        gfxDevice.WriteFinalColor4b ();
+                                total++; 
+                       
+                           // printf("total %i \n",total);
+
+                               // gfxDevice.WriteVtx ( x + ( Sin ( angleStep+angle )* rad ),y + ( Cos ( angleStep+angle )* rad ), 0.0f);
+		                       // gfxDevice.WriteFinalColor4b ();
+                                //total++; 
+	                };
+
+
+       };
+
+		++counter;
+		lua_pop ( L, 1 );
+ };
+
+
+ //    printf(">>>CARSH total %i \n",total);
+    	gfxDevice.EndPrim ();    
+
+
+   
+  
+
+    return true;
+
+};
+//***********************************************************************
+//***********************************************************************
+//***********************************************************************
+
+
+int MOAIDraw::_drawCircleList ( lua_State* L ) {
+
+    return true;
+
+};
+
+
+
+
+//***********************************************************************
+//***********************************************************************
+//***********************************************************************
+
+int MOAIDraw::_drawRectList ( lua_State* L ) {
+
+	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
+	MOAILuaState state ( L );
+
+	float left   = 0.0f;
+	float top    = 0.0f;
+	float right  = 0.0f;
+	float bottom = 0.0f;
+
+    float red    = 0.0f;
+    float green  = 0.0f;
+    float blue   = 0.0f;
+    float alpha  = 0.0f;
+
+	float cacheA = 0.0f;
+	float cacheB = 0.0f;
+
+	int total    = 0;
+
+    gfxDevice.SetPrimType (  ZGL_PRIM_TRIANGLE_STRIP );
+ 
+    //gfxDevice.SetBlendMode ( ZGL_BLEND_FACTOR_SRC_ALPHA, ZGL_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA );
+	
+
+    //prop[i]:setBlendMode(MOAIProp2D.GL_SRC_ALPHA, MOAIProp2D.GL_ONE_MINUS_SRC_ALPHA)
+
+    //gfxDevice.Flush ();
+   // gfxDevice.ResetState();
+
+
+
+
+//****************************************************************************************
+//****************************************************************************************
+//****************************************************************************************
+//****************************************************************************************
+//****************************************************************************************
+//DRAW LOOP
+//
+//u32 counter = 0;
+//
+//gfxDevice.BeginPrim ();
+//
+//
+//    for(int y=0; y<125; y++) {
+//
+//           for(int x=0; x<125; x++) {
+//
+//
+//              float loc_x =x*5;
+//               float loc_y =y*5;
+//
+//
+//               if (counter > 0) {
+//
+//                      // //CACHE
+//	                 gfxDevice.WriteVtx ( cacheA, cacheB);
+//	                 gfxDevice.WriteFinalColor4b ();
+//
+//	               // //NEW
+//	                 gfxDevice.WriteVtx (loc_x, loc_y);
+//	                 gfxDevice.WriteFinalColor4b ();
+//
+//               };         
+//  
+// 
+//
+//                //COLOR
+//                        gfxDevice.SetPenColor (1,0,0,1 );	
+//
+//                        //TOP LEFT
+//                        gfxDevice.WriteVtx ( loc_x, loc_y);
+//                        gfxDevice.WriteFinalColor4b ();	
+//	
+//                        //TOP RIGHT	
+//                        gfxDevice.WriteVtx ( loc_x, loc_y+4);
+//                        gfxDevice.WriteFinalColor4b ();	
+//
+//                        //BOTTOM LEFT						
+//                        gfxDevice.WriteVtx ( loc_x+4, loc_y);
+//                        gfxDevice.WriteFinalColor4b ();	
+//
+//                        //BOTTOM RIGHT
+//                        gfxDevice.WriteVtx ( loc_x+4, loc_y+4);
+//                        gfxDevice.WriteFinalColor4b ();	
+//
+//                            //******************************
+//                            //CACHE
+//                            cacheA = loc_x+4;
+//                            cacheB = loc_y+4;
+////       
+//
+//               ++counter;
+//           };          
+//    };
+//
+//gfxDevice.EndPrim ();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//********************************************************************************************************
+//********************************************************************************************************
+//********************************************************************************************************
+//********************************************************************************************************
+//FAST GEO
+
+gfxDevice.BeginPrim ();
+
+	u32 counter = 0;
+	lua_pushnil ( L );
+
+    while ( lua_next ( L, 1 ) != 0 ) {
+
+
+        //CORDINATE
+		if (counter == 0)       left    =state.GetValue < float >( -1, 0.0f );
+		else if (counter == 1)  top     =state.GetValue < float >( -1, 0.0f );
+		else if (counter == 2)  right   =state.GetValue < float >( -1, 0.0f );
+		else if (counter == 3)  bottom  =state.GetValue < float >( -1, 0.0f );		
+        //COLOR    
+		else if (counter == 4)  red    =state.GetValue < float >( -1, 0.0f );
+		else if (counter == 5)  green  =state.GetValue < float >( -1, 0.0f );
+		else if (counter == 6)  blue   =state.GetValue < float >( -1, 0.0f );
+		else if (counter == 7) {            
+                                alpha  =state.GetValue < float >( -1, 0.0f );	
+
+		//if (counter == 7) {
+
+            counter = -1;
+            total++; //TOTAL NUMBER
+
+
+            ////JUMP
+            if (total != 1) {
+
+	           // //CACHE
+	             gfxDevice.WriteVtx ( cacheA, cacheB);
+	             gfxDevice.WriteFinalColor4b ();
+
+	           // //NEW
+	             gfxDevice.WriteVtx ( left, top);
+	             gfxDevice.WriteFinalColor4b ();
+
+            };
+
+
+                //COLOR
+                gfxDevice.SetPenColor (red,green,blue,alpha );	
+
+                        //TOP LEFT
+                        gfxDevice.WriteVtx ( left, top);
+                        gfxDevice.WriteFinalColor4b ();	
+	
+                        //TOP RIGHT	
+                        gfxDevice.WriteVtx ( left, bottom);
+                        gfxDevice.WriteFinalColor4b ();	
+
+                        //BOTTOM LEFT						
+                        gfxDevice.WriteVtx ( right, top);
+                        gfxDevice.WriteFinalColor4b ();	
+
+                        //BOTTOM RIGHT
+                        gfxDevice.WriteVtx ( right, bottom);
+                        gfxDevice.WriteFinalColor4b ();	
+
+
+
+                            //******************************
+                            //CACHE
+                            cacheA = right;
+                            cacheB = bottom;
+
+
+
+		};
+
+		++counter;
+		lua_pop ( L, 1 );
+
+	}
+	
+
+
+	gfxDevice.EndPrim ();
+
+
+
+
+
+//********************************************************************************************************
+//********************************************************************************************************
+//********************************************************************************************************
+//********************************************************************************************************
+//BORDER
+//
+//gfxDevice.SetPrimType (  ZGL_PRIM_LINES );
+//gfxDevice.setPrimeSize((total*2)*4);
+//gfxDevice.BeginPrim ( );
+//
+//
+//
+// counter = 0;
+// total   = 0;
+//
+//	lua_pushnil ( L );
+//
+//    while ( lua_next ( L, 1 ) != 0 ) {
+//
+//
+//        //CORDINATE
+//		if (counter == 0) {left    =state.GetValue < float >( -1, 0.0f );};
+//		if (counter == 1) {top     =state.GetValue < float >( -1, 0.0f );};
+//		if (counter == 2) {right   =state.GetValue < float >( -1, 0.0f );};
+//		if (counter == 3) {bottom  =state.GetValue < float >( -1, 0.0f );};		
+//        //COLOR    
+//		if (counter == 4) {red    =state.GetValue < float >( -1, 0.0f );};
+//		if (counter == 5) {green  =state.GetValue < float >( -1, 0.0f );};
+//		if (counter == 6) {blue   =state.GetValue < float >( -1, 0.0f );};
+//		if (counter == 7) {alpha  =state.GetValue < float >( -1, 0.0f );};	
+//
+//		if (counter == 7) {
+//
+//               counter = -1;
+//
+//                //COLOR
+//                gfxDevice.SetPenColor (red,green,blue,1 );
+//  
+//
+//                //TOP
+//                gfxDevice.WriteVtx ( left,top );
+//		        gfxDevice.WriteFinalColor4b ();
+//		
+//		        gfxDevice.WriteVtx ( right, top );
+//		        gfxDevice.WriteFinalColor4b ();
+//
+//                //LEFT
+//                gfxDevice.WriteVtx ( left,top);
+//		        gfxDevice.WriteFinalColor4b ();
+//		
+//		        gfxDevice.WriteVtx ( left, bottom );
+//		        gfxDevice.WriteFinalColor4b ();
+//
+//              //RIGHT
+//                gfxDevice.WriteVtx ( right,top);
+//		        gfxDevice.WriteFinalColor4b ();
+//		
+//		        gfxDevice.WriteVtx ( right, bottom );
+//		        gfxDevice.WriteFinalColor4b ();
+//
+//
+//              //BOTTOM
+//                gfxDevice.WriteVtx ( right,bottom );
+//		        gfxDevice.WriteFinalColor4b ();
+//		
+//		        gfxDevice.WriteVtx ( left, bottom );
+//		        gfxDevice.WriteFinalColor4b ();
+//
+//
+//		};
+//
+//		++counter;
+//		lua_pop ( L, 1 );
+//
+//	}
+//	
+//	
+//	gfxDevice.EndPrim ();
+//
+//
+
+
+    return 1;
+
+}
+
+//*************************************************************************************
+//*************************************************************************************
+//*************************************************************************************
+int MOAIDraw::_drawLineList ( lua_State* L ) {
+
+	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
+	MOAILuaState state ( L );
+
+    //float send_size = state.GetValue < float >( 1, 0.0f );
+
+    //print()
+
+
+  
+
+
+	float x1   = 0.0f;
+	float y1    = 0.0f;
+	float x2  = 0.0f;
+	float y2 = 0.0f;
+
+    float red    = 0.0f;
+    float green  = 0.0f;
+    float blue   = 0.0f;
+    float alpha  = 0.0f;
+
+	int total    = 0;
+
+    ///gfxDevice.SetBlendMode ( ZGL_BLEND_FACTOR_SRC_ALPHA, ZGL_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA );
+    gfxDevice.SetBlendMode ( ZGL_BLEND_FACTOR_ONE, ZGL_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA );
+
+	gfxDevice.SetPrimType (  ZGL_PRIM_LINES );
+
+  
+
+
+    gfxDevice.BeginPrim ();
+
+	u32 counter = 0;
+	lua_pushnil ( L );
+
+    while ( lua_next ( L, 1 ) != 0 ) {
+
+
+        //CORDINATE
+		if (counter == 0) {x1    =state.GetValue < float >( -1, 0.0f );};
+		if (counter == 1) {y1     =state.GetValue < float >( -1, 0.0f );};
+		if (counter == 2) {x2   =state.GetValue < float >( -1, 0.0f );};
+		if (counter == 3) {y2  =state.GetValue < float >( -1, 0.0f );};		
+        //COLOR    
+		if (counter == 4) {red    =state.GetValue < float >( -1, 0.0f );};
+		if (counter == 5) {green  =state.GetValue < float >( -1, 0.0f );};
+		if (counter == 6) {blue   =state.GetValue < float >( -1, 0.0f );};
+		if (counter == 7) {alpha  =state.GetValue < float >( -1, 0.0f );};	
+
+		if (counter == 7) {
+
+            counter = -1;
+            total++; 
+
+                //COLOR
+                gfxDevice.SetPenColor (red,green,blue,alpha );  
+
+                //POINTS
+                gfxDevice.WriteVtx ( x1,y1 );
+		        gfxDevice.WriteFinalColor4b ();
+		
+		        gfxDevice.WriteVtx ( x2, y2 );
+		        gfxDevice.WriteFinalColor4b ();
+
+
+		};
+
+		++counter;
+		lua_pop ( L, 1 );
+
+	};
+	
+
+      //gfxDevice.setPrimeSize(total*2);
+	gfxDevice.EndPrim ();
+
+
+return true;
+
+
+};
+
+
+
+//*******************************************************
+//PRIME
+
+int MOAIDraw::_rectStart ( lua_State* L ) {
+
+     MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
+     gfxDevice.SetPrimType (  ZGL_PRIM_TRIANGLE_STRIP );
+     gfxDevice.BeginPrim ();
+     rect_x = 0;
+     rect_x = 0;
+     rect_step = 0;
+
+    return true;
+}
+
+
+int MOAIDraw::_rectEnd ( lua_State* L ) {
+     MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
+	gfxDevice.EndPrim ();
+      rect_step = -1;
+     return true;
+}
+
+int MOAIDraw::_rectDraw ( lua_State* L ) {
+
+    MOAILuaState state ( L );
+    MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
+
+    float left = state.GetValue < float >( 1, 0.0f );
+	float top   = state.GetValue < float >( 2, 0.0f );
+	float right = state.GetValue < float >( 3, 0.0f );
+	float bottom = state.GetValue < float >( 4, 0.0f );
+
+
+    float red = state.GetValue < float >( 5, 0.0f );
+	float green = state.GetValue < float >( 6, 0.0f );
+	float blue = state.GetValue < float >( 7, 0.0f );
+	float alpha = state.GetValue < float >( 8, 0.0f );
+
+    gfxDevice.SetPenColor (red,green,blue,alpha );  
+
+    ++rect_step;
+
+        if (rect_step > 1) {
+
+                gfxDevice.WriteVtx ( rect_x, rect_y, 0.0f );
+			    gfxDevice.WriteFinalColor4b ();
+
+    		    gfxDevice.WriteVtx ( left, top, 0.0f );
+			    gfxDevice.WriteFinalColor4b ();	
+			
+        };
+
+
+    		gfxDevice.WriteVtx ( left, top, 0.0f );
+			gfxDevice.WriteFinalColor4b ();
+		
+			gfxDevice.WriteVtx ( right, top, 0.0f );
+			gfxDevice.WriteFinalColor4b ();
+		
+			gfxDevice.WriteVtx ( left, bottom, 0.0f );
+			gfxDevice.WriteFinalColor4b ();
+		
+			gfxDevice.WriteVtx ( right, bottom, 0.0f );
+			gfxDevice.WriteFinalColor4b ();
+
+            rect_x = right;
+            rect_y = bottom;
+
+            //WRITE CACHE
+
+
+
+     return true;
+}
+
+
 //----------------------------------------------------------------//
 MOAIDraw::MOAIDraw () {
 
@@ -1198,6 +1819,18 @@ void MOAIDraw::RegisterLuaClass ( MOAILuaState& state ) {
 		{ "fillRect",				_fillRect },
 		{ "drawText",				_drawText },
 		{ "drawTexture",			_drawTexture },
+
+        ///
+        { "drawRectList",		    _drawRectList },
+        { "drawLineList",		    _drawLineList },
+        { "drawRingList",		    _drawRingList },
+        { "drawCircleList",		    _drawCircleList },
+        { "rectStart" ,            _rectStart},
+        { "rectEnd"  ,             _rectEnd},
+        { "rectDraw" ,             _rectDraw},
+
+        { "setShader",		    _setShader },
+
 		{ NULL, NULL }
 	};
 

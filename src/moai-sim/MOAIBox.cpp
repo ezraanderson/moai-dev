@@ -726,7 +726,7 @@ int	MOAIBox::_results ( lua_State* L ) {
 
 //----------------------------------------------------------------//
 //COLLSION
-bool  MOAIBox::Collide(MOAIProp * circleA, MOAIProp * circleB){
+void  MOAIBox::Collide(MOAIProp * circleA, MOAIProp * circleB){
 
 
 float balls_i_x  =  circleA->GetXLoc();
@@ -795,7 +795,7 @@ float ballB = balls_j_y - balls_i_y;
 	
 
 
-        return true;
+        //return true;
 
 //CIRCLES
 		//circleA->mVec.mX  =balls_i_vx - p * nx  * 1;
@@ -817,7 +817,7 @@ float ballB = balls_j_y - balls_i_y;
 }; //END MOVING
 
 
-return false;
+//return false;
 
 
 //};
@@ -953,8 +953,15 @@ if (threadState == 1) {
 
 			if (((x > -1) && x < (_GRID_WIDTH)) && ((y > -1) && y < (_GRID_HEIGHT))) {
 						prop->isBounce	= false;	
-						_grid[x][y].push_back(prop);
-						++total_screen;
+
+                        int cnt = _grid[x][y].size();
+
+                        if (cnt < 2500) {
+						    _grid[x][y].push_back(prop);
+						  
+                        }
+
+                          ++total_screen;
 
 			};
 
@@ -995,9 +1002,11 @@ for ( u32 x = 0; x < _GRID_WIDTH; ++x ) {
 ////CENTER
 				for(std::vector<int>::size_type j = 0; j != _grid[x][y].size(); j++) {
 						++total_loop;
-						if (Collide(sendMe, _grid[x][y][j])) {
+                        Collide(sendMe, _grid[x][y][j]);
+
+						//if (Collide(sendMe, _grid[x][y][j])) {
                             //break;
-                        }
+                        //}
 				}; //J
 
 
@@ -1008,9 +1017,11 @@ for ( u32 x = 0; x < _GRID_WIDTH; ++x ) {
 		
 					for(std::vector<int>::size_type j = 0; j != _grid[x][y-1].size(); j++) {
 							++total_loop;
-							if (Collide(sendMe, _grid[x][y-1][j]) ){
+                            Collide(sendMe, _grid[x][y-1][j]);
+
+							//if (Collide(sendMe, _grid[x][y-1][j]) ){
                                 //break;
-                            }
+                            //}
 					}; //J
 
 
@@ -1020,9 +1031,11 @@ for ( u32 x = 0; x < _GRID_WIDTH; ++x ) {
 
 										for(std::vector<int>::size_type j = 0; j != _grid[x-1][y-1].size(); j++) {
 													++total_loop;
-                                                    if (Collide(sendMe, _grid[x-1][y-1][j])){ 
+                                                    Collide(sendMe, _grid[x-1][y-1][j]);
+
+                                                    //if (Collide(sendMe, _grid[x-1][y-1][j])){ 
                                                     //    break; 
-                                                    };
+                                                    //};
 
 										}; //J
 
@@ -1036,9 +1049,11 @@ for ( u32 x = 0; x < _GRID_WIDTH; ++x ) {
 							if (x < _GRID_WIDTH-1) {
 										for(std::vector<int>::size_type j = 0; j != _grid[x+1][y-1].size(); j++) {
 													++total_loop;
-													if (Collide(sendMe, _grid[x+1][y-1][j])){ 
+                                                    Collide(sendMe, _grid[x+1][y-1][j]);
+
+													//if (Collide(sendMe, _grid[x+1][y-1][j])){ 
                                                     //    break; 
-                                                    };
+                                                    //};
 										}; //J
 							};
 							
@@ -1051,9 +1066,11 @@ for ( u32 x = 0; x < _GRID_WIDTH; ++x ) {
 			
 							for(std::vector<int>::size_type j = 0; j != _grid[x][y+1].size(); j++) {
 									++total_loop;
-									if (Collide(sendMe, _grid[x][y+1][j])){ 
+                                    Collide(sendMe, _grid[x][y+1][j]);
+
+									//if (Collide(sendMe, _grid[x][y+1][j])){ 
                                         //break; 
-                                    };
+                                    //};
 							}; //J
 
 
@@ -1064,9 +1081,11 @@ for ( u32 x = 0; x < _GRID_WIDTH; ++x ) {
 
 										for(std::vector<int>::size_type j = 0; j != _grid[x-1][y+1].size(); j++) {
 													++total_loop;
-													if (Collide(sendMe, _grid[x-1][y+1][j])){ 
+                                                    Collide(sendMe, _grid[x-1][y+1][j]);
+
+													//if (Collide(sendMe, _grid[x-1][y+1][j])){ 
                                                         //break; 
-                                                    };
+                                                    //};
 										}; //J
 
 							};
@@ -1079,9 +1098,11 @@ for ( u32 x = 0; x < _GRID_WIDTH; ++x ) {
 
 										for(std::vector<int>::size_type j = 0; j != _grid[x+1][y+1].size(); j++) {
 													++total_loop;
-													if (Collide(sendMe, _grid[x+1][y+1][j])){ 
+                                                    Collide(sendMe, _grid[x+1][y+1][j]);
+
+													//if (Collide(sendMe, _grid[x+1][y+1][j])){ 
                                                         //break; 
-                                                    };
+                                                    //};
 										}; //J
 							};
 
@@ -1099,9 +1120,11 @@ if (x > 0)  {
 
 		for(std::vector<int>::size_type j = 0; j != _grid[x-1][y].size(); j++) {
 				  	++total_loop;
-					if (Collide(sendMe, _grid[x-1][y][j])){ 
+					Collide(sendMe, _grid[x-1][y][j]);
+
+					//if (Collide(sendMe, _grid[x-1][y][j])){ 
                         //break; 
-                    };
+                    //};
 		}; //J
 
 }
@@ -1112,13 +1135,39 @@ if (x < _GRID_WIDTH-1) {
 
 		for(std::vector<int>::size_type j = 0; j != _grid[x+1][y].size(); j++) {
 					++total_loop;
+                   Collide(sendMe, _grid[x+1][y][j]);
 
-					if (Collide(sendMe, _grid[x+1][y][j])){ 
+					//if (Collide(sendMe, _grid[x+1][y][j])){ 
                         //break; 
-                    };
+                   // };
 		}; //J
 
 }; //IF
+
+
+
+
+
+    //printf("%f \n", (ZLDeviceTime::GetTimeInSeconds ()-simStartTime)*1000);
+
+  float end = ZLDeviceTime::GetTimeInSeconds()-simStartTime;
+
+
+          #ifdef MOAI_OS_HTML
+
+                if ( end > 1) {
+                    printf("******** WTF %f \n", end);       
+                    break;
+                };
+
+          #else
+
+                if ( end > 10) {
+                    printf("******** WTF %f \n", end);       
+                    break;
+                };
+
+          #endif
 
 
 
@@ -1130,12 +1179,7 @@ if (x < _GRID_WIDTH-1) {
 }; //Y
 
 
-        //printf("%f \n", (ZLDeviceTime::GetTimeInSeconds ()-simStartTime)*1000);
-        float end = ZLDeviceTime::GetTimeInSeconds()-simStartTime;
-        if ( end > 5) {
-            printf("WTF %f \n", end);
-            break;
-        };
+    
 
 
 //CEHCK BREAK
@@ -1159,20 +1203,18 @@ this->mTotal	= total_loop;
  //  #ifndef MOAI_OS_WINDOWS
    //   Sleep ( 1);
    //#endif 
-
   //  printf("FINISH \n");
+
+
+
 }; //THREAD RUNNING
 
+
+
 //} //DELETE STEP
-
-
-
 //if  (delete_step == 1) {
 //	delete_step = 2;
 //}
-
-
-
 //this->mMutex.Unlock ();
 
 
@@ -1273,8 +1315,8 @@ drawProp->Draw (  subPrimID);
 
 
 
-//********************************************************************************************
-//********************************************************************************************
+
+
 
 
 //printf("********************\n");
@@ -1730,7 +1772,15 @@ vbo->SetCursor(cursor);
 
                         
 
-	}
+	}; //END LOOP
+
+
+
+
+
+
+
+
 
 
    // vbo->bless_box();
@@ -1822,6 +1872,13 @@ vbo->SetCursor(cursor);
 
 	
 
+//********************************************************************************************
+//********************************************************************************************
+//CEHCK COLLISION
+#ifdef MOAI_OS_HTML
+    MOAIBox::Loop ();
+#endif
+
 
 
 
@@ -1873,6 +1930,12 @@ int	MOAIBox::_insertProp ( lua_State* L ) {
 
 
 
+
+
+//**************************************************************************************************
+//**************************************************************************************************
+//**************************************************************************************************
+//**************************************************************************************************
 //----------------------------------------------------------------//
 /**	@name	removeProp
 	@text	Removes a prop from the layer's partition.
@@ -1914,9 +1977,12 @@ int	MOAIBox::_removeProp ( lua_State* L ) {
 
 
 
-
-//*************************************************************************
+//**************************************************************************************************
+//**************************************************************************************************
+//**************************************************************************************************
+//**************************************************************************************************
 //FORCE
+
 int	MOAIBox::_setforce ( lua_State* L ) {
 
 	MOAI_LUA_SETUP ( MOAIBox, "U" )
@@ -1929,60 +1995,62 @@ int	MOAIBox::_setforce ( lua_State* L ) {
 };
 
 
-
+//**************************************************************************************************
+//**************************************************************************************************
+//**************************************************************************************************
 //**************************************************************************************************
 //THREAD
 int	MOAIBox::_threadMake ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBox, "U" )
 
-    //** 1.4p0 -->	task->Start ( *tThread, MOAISim::Get ().GetTaskSubscriber ());
+#ifndef MOAI_OS_HTML
+        tThread = new	MOAITaskThread();
+        task	= new	MOAIEzraTask ();
+        task->Init ( *self, MOAIEzraTask::SAVE_ACTION ); 
+#endif
+
+ printf("THREAD MAKE : DONE  \n");
 
 
 
-tThread = new	MOAITaskThread();
-task	= new	MOAIEzraTask ();
-task->Init ( *self, MOAIEzraTask::SAVE_ACTION ); 
-
-
-
-//task->threadRunning(true);
-//task->Start ( *tThread, MOAIMainThreadTaskSubscriber::Get ());
-//task->mLoopState = false;
-//tThread->Stop();
-//task->mLoopState = false;
-//task->mLoopState = true;
-//task->Execute();
-//tThread->Stop();
-//task->Start ( *tThread, MOAIMainThreadTaskSubscriber::Get ());
-//task->Start ( *tThread, MOAISim::Get ().GetTaskSubscriber );
-
-
-
-
-
-//*******************************************************************
-//*******************************************************************
-//*******************************************************************
-//BUFFER ARRAY
-
-printf("SET VERTEX BUFFER\n");
-
-// *******MAKE THEM IN LUA **************//
-
-		//MOAIVertexFormat * vertexFormat = new MOAIVertexFormat();	
-		//vertexFormat->DeclareAttribute ( 0, ZGL_TYPE_FLOAT, 0, 3, false );	
-		//vertexFormat->DeclareAttribute ( 1, ZGL_TYPE_FLOAT, 0, 2, false );	
-		//vertexFormat->DeclareAttribute ( 2, ZGL_TYPE_UNSIGNED_BYTE, 5, 0, true );
-		//
-		//MOAIVertexBuffer * vbo = new MOAIVertexBuffer;
-		//vbo->mFormat.Set (*self, vertexFormat ); //IN ACCESIABLE
-		//vbo->Reserve ( 4 * 10000 );
-
-
+////    //** 1.4p0 -->	task->Start ( *tThread, MOAISim::Get ().GetTaskSubscriber ());
+//////task->threadRunning(true);
+//////task->Start ( *tThread, MOAIMainThreadTaskSubscriber::Get ());
+//////task->mLoopState = false;
+//////tThread->Stop();
+//////task->mLoopState = false;
+//////task->mLoopState = true;
+//////task->Execute();
+//////tThread->Stop();
+//////task->Start ( *tThread, MOAIMainThreadTaskSubscriber::Get ());
+//////task->Start ( *tThread, MOAISim::Get ().GetTaskSubscriber );
+////
+////
+////
+////
+////
+//////*******************************************************************
+//////*******************************************************************
+//////*******************************************************************
+//////BUFFER ARRAY
+////
+////
+////// *******MAKE THEM IN LUA **************//
+////
+////		//MOAIVertexFormat * vertexFormat = new MOAIVertexFormat();	
+////		//vertexFormat->DeclareAttribute ( 0, ZGL_TYPE_FLOAT, 0, 3, false );	
+////		//vertexFormat->DeclareAttribute ( 1, ZGL_TYPE_FLOAT, 0, 2, false );	
+////		//vertexFormat->DeclareAttribute ( 2, ZGL_TYPE_UNSIGNED_BYTE, 5, 0, true );
+////		//
+////		//MOAIVertexBuffer * vbo = new MOAIVertexBuffer;
+////		//vbo->mFormat.Set (*self, vertexFormat ); //IN ACCESIABLE
+////		//vbo->Reserve ( 4 * 10000 );
+////
+////
 	
 
 
-    printf("THREAD MAKE : DONE  \n");
+   
 
 	return 0;
 }
@@ -1995,34 +2063,45 @@ printf("SET VERTEX BUFFER\n");
 //**************************************************************************************************
 //**************************************************************************************************
 //**************************************************************************************************
-
-
 //START
 int	MOAIBox::_threadStart ( lua_State* L ) {
 
 MOAI_LUA_SETUP ( MOAIBox, "U" )
 
-    task->threadRunning(true);
-    threadState = 1;
-    task->Start ( *tThread, MOAIMainThreadTaskSubscriber::Get ());
-    //task->IsRunning
-    //task->IsRun
-    //printf("THREAD STARTED \n");
-    //tThread->mThread->IsRunning();
 
-  
+        #ifndef MOAI_OS_HTML
+            task->threadRunning(true);  
+            threadState = 1;
+            task->Start ( *tThread, MOAIMainThreadTaskSubscriber::Get ());
+        #else
+            threadState = 1;
+        #endif
+
+
+     printf("THREAD START \n");
+
     return 0;
 };
 
 
+
+//**************************************************************************************************
+//**************************************************************************************************
+//**************************************************************************************************
 //STOP
 int	MOAIBox::_threadStop ( lua_State* L ) {
 
-	MOAI_LUA_SETUP ( MOAIBox, "U" )       
+   MOAI_LUA_SETUP ( MOAIBox, "U" ) 
 
-   task->threadRunning(false);
-   threadState = 0;
-   tThread->Stop();
+        #ifndef MOAI_OS_HTML
+           task->threadRunning(false);
+           threadState = 0;
+           tThread->Stop();
+        #else
+            threadState = 0;
+        #endif
+
+
 
 
    printf("THREAD STOPPED \n");
@@ -2031,18 +2110,28 @@ int	MOAIBox::_threadStop ( lua_State* L ) {
 };
 
 
+//**************************************************************************************************
+//**************************************************************************************************
+//**************************************************************************************************
 //RELEASE
 int	MOAIBox::_threadRelease ( lua_State* L ) {
 
 	MOAI_LUA_SETUP ( MOAIBox, "U" )       
 
+
+        #ifndef MOAI_OS_HTML
             task->threadRunning(false);
             threadState = 0;
             tThread->Stop();
-            tThread->Release();  
-      
+            tThread->Release();     
+
+        #else
+            threadState = 0;
+        #endif
+
+
         
-             printf("THREAD RELEASE \n");
+       printf("THREAD RELEASE \n");
 
    return 0;
 };
@@ -2611,28 +2700,23 @@ MOAIBox::MOAIBox () :
     tThread = 0;
     task    = 0;
 
-
-       printf(">>>>>>>>> START\n");
-//MAKE THREAD
-     //   tThread = new	MOAITaskThread();
-     //   task	= new	MOAIEzraTask ();
-     //   task->Init ( *this, MOAIEzraTask::SAVE_ACTION ); 
-   //   printf(">>>>>>>>> END\n");
-
-
-
 }
 
 
+
+//*******************************************************************************
+//END
 void MOAIBox::Finalize() {
 
      printf(" \n Finalize Finalize Finalize \n");
      printf(" \n Finalize Finalize Finalize \n");
      printf(" \n Finalize Finalize Finalize \n");
 
-   task->threadRunning(false);
-   threadState = 0;
-   tThread->Stop();
+     #ifndef MOAI_OS_HTML
+           task->threadRunning(false);
+           threadState = 0;
+           tThread->Stop();
+     #endif
 
 
 };
@@ -2641,62 +2725,41 @@ void MOAIBox::Finalize() {
 //----------------------------------------------------------------//
 void MOAIBox::Clear () {
 
-	////this->mMutex.Lock ();
-	////this->mBytes.Clear ();
- //           //tThread->Stop();
- //          // printf("RELEASE DONE");
- //           ////////////////
+};
 
- //           //if (tThread) {
- //           //        //printf(" \n RELEASE \n");
- //           //       //  tThread->Release();
- //           //            printf(" \n TASK RELASE \n");
- //           //            task->LatchRelease();
- //           //            //task->LatchRelease();
-
- //           //            tThread->Stop();
-
- //           //        printf(" \n DELETE THREAD \n");
-	//           //     delete tThread;
-	//	          //  tThread = 0;
- //           //};
-
-
-
- //           //if (task) {
- //           //         printf("\n DELETE TASK \n");
-	//           //     delete task;
-	//	          //  task = 0;
- //           //};
-	////this->mMutex.Unlock ();
-
-}
 
 
 
 //----------------------------------------------------------------//
-//MOAIBox::!MOAIBox () {
-//     printf(">>>>>>>>>C  CRASH box\n");
-//};
+MOAIBox::~MOAIBox () { 
 
-//----------------------------------------------------------------//
-MOAIBox::~MOAIBox () {
-    
+
+ 
+	this->mCamera.Set ( *this, 0 );
+	this->mViewport.Set ( *this, 0 );
+	this->mPartition.Set ( *this, 0 );
+
+
+
+
+
+   //printf(">>>>>>>>>C  CRASH box\n");
+  //  printf(">>>>>>>>>> D CRASH box -DONE\n");
+
+
+
+
+
+
+
+
+       //  this->Clear ();
 	//this->mMutex.Lock ();
 	//this->mBytes.Clear ();
 	//this->mMutex.Unlock ();
 
    // tThread->Join();
      //tThread->Join();
-
-    printf(">>>>>>>>>C  CRASH box\n");
-	this->mCamera.Set ( *this, 0 );
-	this->mViewport.Set ( *this, 0 );
-	this->mPartition.Set ( *this, 0 );
-
-    printf(">>>>>>>>>> D CRASH box -DONE\n");
-
-     this->Clear ();
 
 ////	//printf("\nDESTRUCTION>>>>>>>>>>>>>>>>>>>\n");
 //if (threadState == 1) {
@@ -2729,11 +2792,7 @@ MOAIBox::~MOAIBox () {
 //	//this->mMutex.Unlock ();
 //
 //  printf("\n \n **** 4. MOAIBox --> FIRE DESTRUCTOR  ****  \n\n");
-//
 
-
-	//self->Clear ();
-	//self->Clear ();
 
 }
 
@@ -2813,14 +2872,12 @@ void MOAIBox::RegisterLuaFuncs ( MOAILuaState& state ) {
 	luaL_register ( state, 0, regTable );
 }
 
+
+
 //----------------------------------------------------------------//
 void MOAIBox::Render () {	
 	this->Draw ( MOAIProp::NO_SUBPRIM_ID );
 }
-
-
-
-
 
 //**********************************************************************************
 //----------------------------------------------------------------//

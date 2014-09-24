@@ -21,6 +21,9 @@ private:
 	ZLLeanArray < u8 >	mBuffer;
 	ZLByteStream		mStream;
 	ZLBox				mBounds;
+    int                 mTotal;
+
+  //  static MOAIVertexBuffer * vbo;
 	
 	//----------------------------------------------------------------//
 	static int		_bless					( lua_State* L );
@@ -34,6 +37,14 @@ private:
 	static int		_writeInt8				( lua_State* L );
 	static int		_writeInt16				( lua_State* L );
 	static int		_writeInt32				( lua_State* L );
+
+    static int		_writeRings				( lua_State* L );
+    static int		_writeCircles			( lua_State* L );
+    static int		_writeLines				( lua_State* L );
+    static int		_writeRects				( lua_State* L );
+
+    static int		_setCursorZero			( lua_State* L );
+    static int		_writeGeo   			( lua_State* L );
 
 	//----------------------------------------------------------------//
 	void			Clear					();
@@ -59,6 +70,8 @@ public:
 	void			writeFloat_loc			(float a, float b);
     void			writeColor_rgb			(float r, float g,float b, float a);
     void			writeFloat_size			(float a);
+
+ 
 
     void            SetCursor               (long index );
     void            pCursor                 ();	

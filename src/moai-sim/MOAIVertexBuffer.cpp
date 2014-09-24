@@ -17,9 +17,7 @@ void MOAIVertexBuffer::writeFloat_loc (float a, float b ) {
 
 		this->mStream.Write < float >( a );
 		this->mStream.Write < float >( b );
-
 		this->mStream.Write < float >( 0);
-
        // this->mStream.Write < float >( 0);
 
 }
@@ -68,10 +66,6 @@ void MOAIVertexBuffer::writeFloat_uv (s8 a, s8 b ) {
 
 
 
-
-
-
-
 void MOAIVertexBuffer::reset_box ( ) {
    // printf("buffer size : %d \n",this->mBuffer.Size ());
 	//this->mStream.SetBuffer ( this->mBuffer, this->mBuffer.Size ());
@@ -90,6 +84,620 @@ void MOAIVertexBuffer::bless_box ( ) {
 }
 
 
+
+
+
+//*******************************************************************
+//*******************************************************************
+//*******************************************************************
+//*******************************************************************
+//WRITE GEO
+int MOAIVertexBuffer::_writeGeo (lua_State* L ) {	
+
+MOAI_LUA_SETUP ( MOAIVertexBuffer, "U" )
+
+//LOC
+    //float loc_x = state.GetValue < float >( 5, 1.0f );
+    //float loc_y = state.GetValue < float >( 6, 1.0f );
+    //float loc_z = state.GetValue < float >( 7, 1.0f );
+
+    self->mStream.Write < float   > ( state.GetValue < float >( 2, 1.0f ) );
+    self->mStream.Write < float   > ( state.GetValue < float >( 3, 1.0f ) );
+    self->mStream.Write < float   > ( state.GetValue < float >( 4, 1.0f ) );
+
+
+
+
+//COLOR
+    //float r = state.GetValue < float >( 5, 1.0f );
+    //float g = state.GetValue < float >( 6, 1.0f );
+    //float b = state.GetValue < float >( 7, 1.0f );
+    //float a = state.GetValue < float >( 8, 1.0f );
+
+    u32 color = ZLColor::PackRGBA ( 
+                                    state.GetValue < float >( 5, 1.0f ), 
+                                    state.GetValue < float >( 6, 1.0f ), 
+                                    state.GetValue < float >( 7, 1.0f ), 
+                                    state.GetValue < float >( 8, 1.0f ) 
+                                    );
+
+    self->mStream.Write < u32 >( color );
+
+
+//SIZE
+    //float size = state.GetValue < float >( 9, 1.0f );
+    self->mStream.Write < float   > ( state.GetValue < float >( 9, 1.0f ) );
+
+
+
+//ROTATE
+    //float cos = state.GetValue < float >( 10, 1.0f );
+    //float sin = state.GetValue < float >( 11, 1.0f );
+
+   self->mStream.Write < float   > ( state.GetValue < float >( 10, 1.0f ) );
+   self->mStream.Write < float   > ( state.GetValue < float >( 11, 1.0f ) );
+
+
+
+//UV
+    //float ux = state.GetValue < float >( 12, 1.0f );
+    //float uy = state.GetValue < float >( 13, 1.0f );
+
+   self->mStream.Write < float   > ( state.GetValue < float >( 12, 1.0f ) );
+   self->mStream.Write < float   > ( state.GetValue < float >( 13, 1.0f ) );
+
+return true;
+
+}
+
+
+
+//*******************************************************************
+//*******************************************************************
+//*******************************************************************
+//*******************************************************************
+//RINGS
+int MOAIVertexBuffer::_writeRings (lua_State* L ) {	
+
+MOAI_LUA_SETUP ( MOAIVertexBuffer, "U" )  
+self->SetCursor(0);
+
+float loc_x  = 0.0f;
+float loc_y  = 0.0f;
+float rad    = 0.0f;
+
+float red    = 0.0f;
+float green  = 0.0f;
+float blue   = 0.0f;
+float alpha  = 0.0f;
+
+float cacheA = 0.0f;
+float cacheB = 0.0f;
+ 
+u32 counter      = 0;
+u32 total        = 0;
+
+//int max         = self->mTotal;
+
+int   steps      = 32;
+float angle      = ( float )TWOPI / ( float )steps;
+float angleStep  = 0;
+int   high       = 0;
+
+//GET GLOBAL TABLE
+lua_getglobal (L, "list_rings");
+lua_pushnil(L);
+while (lua_next(L, -2) != 0) {
+
+    //PREVENT WRTIING IN TO MANY VERTIC SHOULD BE OUT SIDE OF A LOOP
+    //if (max == total) {break;};
+
+       //CORDINATE
+		if (counter == 0) {loc_x  =(float)lua_tonumber(L, -1);};
+		if (counter == 1) {loc_y  =(float)lua_tonumber(L, -1);};	
+        if (counter == 2) {rad    =(float)lua_tonumber(L, -1);};	
+        //COLOR    
+		if (counter == 3) {red    =(float)lua_tonumber(L, -1);};
+		if (counter == 4) {green  =(float)lua_tonumber(L, -1);};
+		if (counter == 5) {blue   =(float)lua_tonumber(L, -1);};
+		if (counter == 6) {alpha  =(float)lua_tonumber(L, -1);};	
+
+        float angleStep = 0;
+
+		if (counter == 6) {
+            counter = -1;
+
+                u32 color = ZLColor::PackRGBA ( red, green, blue, alpha );
+
+                for(int i=0; i<steps; i++) {
+
+                            angleStep = angleStep + angle;
+
+                    		float x = loc_x + ( sin ( angleStep )* rad );
+				            float y = loc_y + ( cos ( angleStep )* rad );
+
+                            self->mStream.Write < float   > ( x );
+                            self->mStream.Write < float   > ( y );                        
+                            self->mStream.Write < u32 >( color );
+                            
+				            x = loc_x + ( sin ( angleStep+angle )* rad );
+				            y = loc_y + ( cos ( angleStep+angle )* rad );
+
+                            self->mStream.Write < float   > ( x );
+                            self->mStream.Write < float   > ( y );                           
+                            self->mStream.Write < u32 >( color );
+                     
+                };
+
+        ++total;
+		};
+
+++counter;
+
+lua_pop(L, 1);
+}
+
+return true;
+}
+
+//*******************************************************************
+//*******************************************************************
+//*******************************************************************
+//*******************************************************************
+//*******************************************************************
+//CIRCLES
+
+int MOAIVertexBuffer::_writeCircles (lua_State* L ) {	
+MOAI_LUA_SETUP ( MOAIVertexBuffer, "U" )  
+
+self->SetCursor(0);
+self->reset_box();
+
+float loc_x  = 0.0f;
+float loc_y  = 0.0f;
+float rad    = 0.0f;
+
+float red    = 0.0f;
+float green  = 0.0f;
+float blue   = 0.0f;
+float alpha  = 0.0f;
+
+float cache_x = 0.0f;
+float cache_y = 0.0f;
+ 
+u32 counter      = 0;
+u32 total        = 0;
+
+int max = self->mTotal;
+
+
+
+int     steps       = 32-1;
+float   angle       = ( float )TWOPI / ( float )steps;
+float   angleStep   = 0;
+int     high        = 0;
+
+//GET GLOBAL TABLE
+lua_getglobal (L, "list_circles");
+lua_pushnil(L);
+while (lua_next(L, -2) != 0) {
+
+
+    //PREVENT WRTIING IN TO MANY VERTIC SHOULD BE OUT SIDE OF A LOOP
+   // if (max == total) {break;};
+
+
+       //CORDINATE
+		if (counter == 0) {loc_x  =(float)lua_tonumber(L, -1);};
+		if (counter == 1) {loc_y  =(float)lua_tonumber(L, -1);};	
+        if (counter == 2) {rad    =(float)lua_tonumber(L, -1);};	
+        //COLOR    
+		if (counter == 3) {red    =(float)lua_tonumber(L, -1);};
+		if (counter == 4) {green  =(float)lua_tonumber(L, -1);};
+		if (counter == 5) {blue   =(float)lua_tonumber(L, -1);};
+		if (counter == 6) {alpha  =(float)lua_tonumber(L, -1);};	
+
+  
+
+		if (counter == 6) {
+            counter = -1;
+           
+
+             u32 color = ZLColor::PackRGBA ( red, green, blue, alpha );
+
+   
+             if (total > 0) {
+                
+                        //printf("C++JUMP\n");
+
+				        //CACHE 			
+                        self->mStream.Write < float   > ( cache_x );
+                        self->mStream.Write < float   > ( cache_y );                           
+                        self->mStream.Write < u32 >( color );
+
+                        //LOC
+                        self->mStream.Write < float   > ( loc_x );
+                        self->mStream.Write < float   > ( loc_y );                           
+                        self->mStream.Write < u32 >( color );				
+				
+             };
+
+                 // printf("----\n");
+
+                for(int i=0; i<steps; i++) {
+                
+
+                   // printf("STEPS %i \n",i);
+
+                            //STEP
+                           angleStep = angleStep + angle;
+
+                            //CENTER_POINT
+                            self->mStream.Write < float   > ( loc_x );
+                            self->mStream.Write < float   > ( loc_y );                           
+                            self->mStream.Write < u32 >( color );
+
+                            //NEXT_POINT
+                    		float x = loc_x + ( sin ( angleStep )* rad );
+				            float y = loc_y + ( cos ( angleStep )* rad );
+
+                            self->mStream.Write < float   > ( x );
+                            self->mStream.Write < float   > ( y );                        
+                            self->mStream.Write < u32 >( color );
+
+                       
+                 
+                     
+                };
+
+
+                         //LAST_POINT
+                            angleStep = angleStep + angle;
+                    		float x = loc_x + ( sin ( angleStep )* rad );
+				            float y = loc_y + ( cos ( angleStep )* rad );
+
+                            self->mStream.Write < float   > ( x );
+                            self->mStream.Write < float   > ( y );                        
+                            self->mStream.Write < u32 >( color );
+
+                            //CACHE POINTS
+				            cache_x = x;
+					        cache_y = y;
+
+
+            ++total;
+		};
+
+
+
+++counter;
+lua_pop(L, 1);
+}
+
+ return true;
+}
+
+
+
+
+
+
+
+
+
+//*******************************************************************
+//*******************************************************************
+//*******************************************************************
+//*******************************************************************
+//*******************************************************************
+//LINES
+int MOAIVertexBuffer::_writeLines (lua_State* L ) {	
+
+MOAI_LUA_SETUP ( MOAIVertexBuffer, "U" )  
+self->SetCursor(0);
+
+float x1        = 0.0f;
+float y1        = 0.0f;
+float x2        = 0.0f;
+float y2        = 0.0f;
+
+float red        = 0.0f;
+float green     = 0.0f;
+float blue      = 0.0f;
+float alpha     = 0.0f;
+
+float cacheA    = 0.0f;
+float cacheB    = 0.0f;
+ 
+u32 counter      = 0;
+u32 total        = 0;
+int max         = self->mTotal;
+
+//GET GLOBAL TABLE
+lua_getglobal (L, "list_lines");
+lua_pushnil(L);
+while (lua_next(L, -2) != 0) {
+
+
+    //PREVENT WRTIING IN TO MANY VERTIC SHOULD BE OUT SIDE OF A LOOP
+    //if (max == total) {break;};
+
+       //CORDINATE
+		if (counter == 0) {x1    =(float)lua_tonumber(L, -1);};
+		if (counter == 1) {y1    =(float)lua_tonumber(L, -1);};	
+        if (counter == 2) {x2    =(float)lua_tonumber(L, -1);};	
+        if (counter == 3) {y2    =(float)lua_tonumber(L, -1);};	
+        //COLOR    
+		if (counter == 4) {red    =(float)lua_tonumber(L, -1);};
+		if (counter == 5) {green  =(float)lua_tonumber(L, -1);};
+		if (counter == 6) {blue   =(float)lua_tonumber(L, -1);};
+		if (counter == 7) {alpha  =(float)lua_tonumber(L, -1);};	
+    
+
+		if (counter == 7) {
+            counter = -1;
+
+   
+           // printf("wtf %f %f %f %f \n",x1,y1,x2,y2);
+                u32 color = ZLColor::PackRGBA ( red, green, blue, alpha );
+
+                            self->mStream.Write < float   > ( x1 );
+                            self->mStream.Write < float   > ( y1 );                       
+                            self->mStream.Write < u32 >( color );                            
+				           
+                            self->mStream.Write < float   > ( x2 );
+                            self->mStream.Write < float   > ( y2 );                           
+                            self->mStream.Write < u32 >( color );
+                     
+           
+
+		};
+
+++counter;
+++total;
+lua_pop(L, 1);
+}
+
+ return true;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+//*******************************************************************
+//*******************************************************************
+//*******************************************************************
+//*******************************************************************
+//*******************************************************************
+
+
+int MOAIVertexBuffer::_setCursorZero (lua_State* L ) {	
+    MOAI_LUA_SETUP ( MOAIVertexBuffer, "U" )  
+    self->SetCursor(0);
+    return true;
+};
+//*******************************************************************
+//*******************************************************************
+//*******************************************************************
+//*******************************************************************
+//*******************************************************************
+
+int MOAIVertexBuffer::_writeRects (lua_State* L ) {	
+MOAI_LUA_SETUP ( MOAIVertexBuffer, "U" )  
+
+self->SetCursor(0);
+
+u32 counter     = 0;
+float cache_x   = 0.0f;
+float cache_y   = 0.0f;
+
+
+ for(int y=0; y<125; y++) {
+           for(int x=0; x<125; x++) {
+
+               float loc_x =x*5;
+               float loc_y =y*5;
+
+               u32 color = ZLColor::PackRGBA ( 1.0f, 0.2f, 0.2f, 0.2f );
+
+           
+
+               if (counter > 0) {
+                 //  printf("Jump \n");
+                       //LEFT_BOTTOM
+                            self->mStream.Write < float   > ( cache_x );
+                            self->mStream.Write < float   > ( cache_y );                           
+                            self->mStream.Write < u32 >( color );
+
+
+                         //LEFT_BOTTOM
+                            self->mStream.Write < float   > ( loc_x );
+                            self->mStream.Write < float   > ( loc_y );                           
+                            self->mStream.Write < u32 >( color );
+               };
+          
+                  
+
+                            //LEFT_BOTTOM
+                            self->mStream.Write < float   > ( loc_x );
+                            self->mStream.Write < float   > ( loc_y );                           
+                            self->mStream.Write < u32 >( color );
+
+                            //RIGHT_BOTTOM    
+                            self->mStream.Write < float   > ( loc_x );
+                            self->mStream.Write < float   > ( loc_y+4 );                           
+                            self->mStream.Write < u32 >( color );
+
+                             //RIGHT_TOP
+                            self->mStream.Write < float   > ( loc_x+4 );
+                            self->mStream.Write < float   > ( loc_y );                           
+                            self->mStream.Write < u32 >( color );
+
+
+                            //LEFT_TOP
+                            self->mStream.Write < float   > ( loc_x+4 );
+                            self->mStream.Write < float   > ( loc_y+4 );                       
+                            self->mStream.Write < u32 >( color );     
+
+                                cache_x =loc_x+4 ;
+                                cache_y =loc_y+4; 
+
+                 ++counter;
+           };          
+    };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+//float x1        = 0.0f;
+//float y1        = 0.0f;
+//float x2        = 0.0f;
+//float y2        = 0.0f;
+//
+//float red       = 0.0f;
+//float green     = 0.0f;
+//float blue      = 0.0f;
+//float alpha     = 0.0f;
+//
+//float cache_x   = 0.0f;
+//float cache_y   = 0.0f;
+// 
+//u32 counter     = 0;
+//u32 total       = 0;
+//int max         = self->mTotal;
+
+
+
+
+//
+//
+//
+//lua_getglobal (L, "list_rects");
+//lua_pushnil(L);
+//while (lua_next(L, -2) != 0) {
+//
+//
+//
+//		if (counter == 0) {x1    =(float)lua_tonumber(L, -1);};
+//		if (counter == 1) {y1    =(float)lua_tonumber(L, -1);};	
+//        if (counter == 2) {x2    =(float)lua_tonumber(L, -1);};	
+//        if (counter == 3) {y2    =(float)lua_tonumber(L, -1);};	
+//   
+//		if (counter == 4) {red    =(float)lua_tonumber(L, -1);};
+//		if (counter == 5) {green  =(float)lua_tonumber(L, -1);};
+//		if (counter == 6) {blue   =(float)lua_tonumber(L, -1);};
+//		if (counter == 7) {alpha  =(float)lua_tonumber(L, -1);};	
+//    
+//
+//		if (counter == 7) {
+//            counter = -1;
+//
+//             //u32 color = ZLColor::PackRGBA ( red, green, blue, alpha );
+//
+//
+//            //  if (total > 0) {
+//
+//            //      //LAST
+//
+//            //                self->mStream.Write < float   > ( cache_x );
+//            //                self->mStream.Write < float   > (cache_y );                       
+//            //                self->mStream.Write < u32 >( color ); 
+//
+//            //      //FIRST
+//            //                self->mStream.Write < float   > ( x1 );
+//            //                self->mStream.Write < float   > ( y1 );                       
+//            //                self->mStream.Write < u32 >( color ); 
+//
+//            //   }; 
+//
+//
+//
+//            //                //LEFT_TOP
+//            //                self->mStream.Write < float   > ( x1 );
+//            //                self->mStream.Write < float   > ( y1 );                       
+//            //                self->mStream.Write < u32 >( color );                            
+//				        //   
+//
+//            //                //LEFT_BOTTOM
+//            //                self->mStream.Write < float   > ( x1 );
+//            //                self->mStream.Write < float   > ( y2 );                           
+//            //                self->mStream.Write < u32 >( color );
+//
+//
+//            //                //RIGHT_TOP
+//            //                self->mStream.Write < float   > ( x2 );
+//            //                self->mStream.Write < float   > ( y1 );                           
+//            //                self->mStream.Write < u32 >( color );
+//
+//            //                //RIGHT_BOTTOM    
+//            //                self->mStream.Write < float   > ( x2 );
+//            //                self->mStream.Write < float   > ( y2 );                           
+//            //                self->mStream.Write < u32 >( color );
+//
+//
+//            //                cache_x    = x2;
+//            //                cache_y    = y2;   
+//
+//
+//            //*****************************************************************
+//            //IBO
+//
+//
+//                            u32 color = ZLColor::PackRGBA ( red, green, blue, alpha );
+//
+//                            //LEFT_BOTTOM
+//                            self->mStream.Write < float   > ( x1-2 );
+//                            self->mStream.Write < float   > ( y1+2 );                           
+//                            self->mStream.Write < u32 >( color );
+//
+//                            //RIGHT_BOTTOM    
+//                            self->mStream.Write < float   > ( x1+2 );
+//                            self->mStream.Write < float   > ( y1+2 );                           
+//                            self->mStream.Write < u32 >( color );
+//
+//                             //RIGHT_TOP
+//                            self->mStream.Write < float   > ( x1+2 );
+//                            self->mStream.Write < float   > ( y1-2 );                           
+//                            self->mStream.Write < u32 >( color );
+//
+//
+//                            //LEFT_TOP
+//                            self->mStream.Write < float   > ( x1-2 );
+//                            self->mStream.Write < float   > ( y1-2 );                       
+//                            self->mStream.Write < u32 >( color );                            
+//
+//           
+//            ++total;
+//		};
+//
+//
+//
+//++counter;
+//lua_pop(L, 1);
+//}
+
+ return true;
+}
 
 
 
@@ -158,6 +766,8 @@ int	MOAIVertexBuffer::_reserveVerts ( lua_State* L ) {
 MOAI_LUA_SETUP ( MOAIVertexBuffer, "UN" )
 
 u32 total = state.GetValue < u32 >( 2, 0 );
+
+self->mTotal = total;
 
 if ( self->mFormat ) {
 self->Reserve ( total * self->mFormat->GetVertexSize ());
@@ -371,12 +981,24 @@ luaL_Reg regTable [] = {
 { "reserve",	_reserve },
 { "reserveVerts",	_reserveVerts },
 { "reset",	_reset },
+
 { "setFormat",	_setFormat },
 { "writeColor32",	_writeColor32 },
 { "writeFloat",	_writeFloat },
 { "writeInt8",	_writeInt8 },
 { "writeInt16",	_writeInt16 },
 { "writeInt32",	_writeInt32 },
+
+{ "writeRects",	_writeRects },
+{ "writeCircles",	_writeCircles },
+{ "writeLines",	_writeLines },
+{ "writeRings",	_writeRings },
+
+
+{ "setCursorZero",	_setCursorZero },
+{ "writeGeo",	    _writeGeo },
+
+
 { NULL, NULL }
 };
 

@@ -639,8 +639,18 @@ void zglDrawArrays ( u32 primType, u32 first, u32 count ) {
    // glEnable( GL_POINT_SPRITE_ARB );
   //  glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 #if defined(__SDL__)
+
      glEnable( GL_POINT_SPRITE_ARB );
      glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+
+
+//glEnable(GL_POINT_SMOOTH);
+//glEnable(GL_BLEND);
+//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
+
+
+     //glEnable(GL_POINT_SMOOTH); //THIS IS FOR OUYA VS
+    // glHint(GL_POINT_SMOOTH_HINT,GL_NICEST);
     // printf("WTF \n\n");
      //glEnable( GL_NORMALIZE );
 
@@ -649,6 +659,24 @@ void zglDrawArrays ( u32 primType, u32 first, u32 count ) {
     // glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
     // glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 #endif
+
+
+
+//WEB_GL DRAW POINTNS : DOESN"T WORK
+//#ifdef MOAI_OS_HTML
+//glEnable( GL_POINT_SPRITE_ARB );
+//glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+//#endif
+
+
+
+
+
+
+
+
+
+
 
     glDrawArrays ( _remapEnum ( primType ), ( GLint )first, ( GLsizei )count );
 

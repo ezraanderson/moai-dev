@@ -302,7 +302,9 @@ void ZLFrustum::Init ( const ZLMatrix4x4& mtx ) {
 	
 	for ( u32 i = 0; i < TOTAL_PLANES; ++i ) {
 		if ( ZLDist::VecToPlane ( center, this->mPlanes [ i ]) > 0.0f ) {
+            //EZRA
 			this->mPlanes [ i ].Flip ();
+           // printf("Wtf \n");
 		}
 	}
 	

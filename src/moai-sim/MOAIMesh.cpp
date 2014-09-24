@@ -113,10 +113,8 @@ int MOAIMesh::_setVertexBuffer ( lua_State* L ) {
 	@out	nil
 */
 int MOAIMesh::_setHigh ( lua_State* L ) {
-	MOAI_LUA_SETUP ( MOAIMesh, "U" )
-	
+	MOAI_LUA_SETUP ( MOAIMesh, "U" )	
 	self->mHigh = state.GetValue < u32 >( 2, 0 );
-
 	return 0;
 }
 
@@ -165,21 +163,33 @@ void MOAIMesh::DrawIndex ( u32 idx, float xOff, float yOff, float zOff, float xS
 		
 		// TODO: use gfxDevice to cache buffers
 		//if ( this->mIndexBuffer ) {
-		//	if ( this->mIndexBuffer->LoadGfxState ()) {
 
+  //      this->mVertexBuffer->Bind ();
+  //          zglDrawElements ( this->mPrimType, this->mIndexBuffer->GetIndexCount (), ZGL_TYPE_UNSIGNED_INT, 0 );
 
+  //      }
+
+	
+       
+//******************************************************
+//INDEX BUFFER
+
+ //if ( this->mIndexBuffer ) {       
+ //       if ( this->mIndexBuffer->LoadGfxState ()) {
+
+ //               this->mVertexBuffer->Bind ();
+ //               this->mIndexBuffer->LoadGfxState ();  
+ //               zglDrawElements ( this->mPrimType, this->mIndexBuffer->GetIndexCount (), ZGL_TYPE_UNSIGNED_INT, 0 );
+
+ //       };
+ //};
 
 //********************************************* 
 //*********************************************  
-//printf("DRAW ELEMENTS \n");
-//this->mVertexBuffer->Bind ();
-//this->mIndexBuffer->LoadGfxState ();  
-//zglDrawElements ( this->mPrimType, this->mIndexBuffer->GetIndexCount (), ZGL_TYPE_UNSIGNED_INT, 0 );
-//********************************************* 
-//*********************************************  
 
 
-
+   //this->mVertexBuffer->Bind ();
+   //zglDrawArrays ( this->mPrimType, 0, this->mHigh);
 
 
 
@@ -195,10 +205,11 @@ void MOAIMesh::DrawIndex ( u32 idx, float xOff, float yOff, float zOff, float xS
 
 
 //********************************************* 
-//*********************************************            
-//printf("DRAW ARRAY %d %d \n",this->mVertexBuffer->GetVertexCount (),this->mHigh);
-this->mVertexBuffer->Bind ();
-zglDrawArrays ( this->mPrimType, 0, this->mHigh);
+//*********************************************       
+//PARTICEL SOUP
+  //  printf("DRAW ARRAY %d %d \n",this->mVertexBuffer->GetVertexCount (),this->mHigh);
+    this->mVertexBuffer->Bind ();
+    zglDrawArrays ( this->mPrimType, 0, this->mHigh);
 //********************************************* 
 //*********************************************  
 

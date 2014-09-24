@@ -5,7 +5,9 @@
 #define	MOAIMESHSHADER_VSH_H
 
 #define SHADER(str) #str
+//#include <moai-sim/MOAIShader.h>
 
+//static cc8* _meshShaderVSH = MOAI_SHADER (
 static cc8* _meshShaderVSH = SHADER (
 
 	attribute vec4 position;
@@ -17,6 +19,9 @@ static cc8* _meshShaderVSH = SHADER (
 
 	varying LOWP vec4 colorVarying;
 	varying MEDP vec2 uvVarying;
+
+   	//varying lowp vec4 colorVarying;
+	//varying mediump vec2 uvVarying;
 
 	void main () {
 		gl_Position = position * transform;

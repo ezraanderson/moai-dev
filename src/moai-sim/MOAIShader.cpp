@@ -589,6 +589,8 @@ u32 MOAIShader::CompileShader ( u32 type, cc8* source ) {
 	cc8* sources [ 3 ];
 
 	sources [ 0 ] = gfxDevice.IsOpenGLES () ? OPENGL_ES_PREPROC : OPENGL_PREPROC;
+
+
 	if ((type == ZGL_SHADER_TYPE_FRAGMENT) && gfxDevice.IsOpenGLES() ) {
 		sources [ 1 ] = WEBGL_PREPROC;
 	} else {
@@ -598,6 +600,10 @@ u32 MOAIShader::CompileShader ( u32 type, cc8* source ) {
 	sources [ 2 ] = source;
 
 	zglShaderSource ( shader, 3, sources, NULL );
+
+   //zglShaderSource ( shader, 1, &source, NULL );
+
+   printf("COMPILE SHADER \n");
 	zglCompileShader ( shader );
 
 	s32 status;

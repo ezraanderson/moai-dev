@@ -165,6 +165,30 @@ int MOAIGfxDevice::_setPenColor ( lua_State* L ) {
 	return 0;
 }
 
+
+
+//**************************************************************************************************
+//EZRA: SHADER
+int	MOAIGfxDevice::_newShader ( lua_State* L ) {
+	MOAILuaState state ( L );	 
+
+		MOAIShader  * shader = state.GetLuaObject < MOAIShader >( 2, true );
+      //  printf("SHADER\n");
+
+		MOAIGfxDevice::Get ().Flush ();
+		MOAIGfxDevice::Get ().mShader = shader;
+		
+		if ( shader ) {
+			shader->Bind ();
+		}
+
+	return 0;
+}
+
+
+
+
+
 //----------------------------------------------------------------//
 /**	@name	setPenWidth
 
@@ -203,13 +227,21 @@ int MOAIGfxDevice::_setPointSize ( lua_State* L ) {
 void MOAIGfxDevice::BeginPrim () {
 
 	if ( this->mPrimSize ) {
-
-		u32 primBytes = this->mPrimSize * this->mVertexFormat->GetVertexSize ();
-
+      //  printf("vsize psize %i \n",this->mPrimSize,this->mVertexFormat->GetVertexSize ());
+		u32 primBytes   = this->mPrimSize * this->mVertexFormat->GetVertexSize ();
 		this->mMaxPrims = ( u32 )( this->mSize / primBytes );
-		this->mPrimTop = this->mTop + primBytes;
+		this->mPrimTop  = this->mTop + primBytes;
 	}
 }
+
+
+//----------------------------------------------------------------//
+void MOAIGfxDevice::setPrimeSize (int pSize) {
+    this->mPrimSize = pSize;
+};
+
+
+
 
 //----------------------------------------------------------------//
 void MOAIGfxDevice::BeginPrim ( u32 primType ) {
@@ -338,6 +370,7 @@ void MOAIGfxDevice::DrawPrims () {
 //----------------------------------------------------------------//
 void MOAIGfxDevice::EndPrim () {
 
+
 	if ( this->mPrimSize ) {
 		this->mTop = this->mPrimTop;
 	}
@@ -346,6 +379,9 @@ void MOAIGfxDevice::EndPrim () {
 	if (( this->mPrimSize == 0 ) || ( this->mPrimCount >= this->mMaxPrims )) {
 		this->Flush ();
 	}
+
+
+
 }
 
 //----------------------------------------------------------------//
@@ -578,7 +614,12 @@ MOAIGfxDevice::MOAIGfxDevice () :
 	
 	RTTI_SINGLE ( MOAIGlobalEventSource )
 	
-	this->Reserve ( DEFAULT_BUFFER_SIZE );
+	//this->Reserve ( DEFAULT_BUFFER_SIZE );
+
+    //EZRA
+    //2,147,483,647
+    //4,294,967,295
+        this->Reserve ( 100000000 );
 	
 	for ( u32 i = 0; i < TOTAL_VTX_TRANSFORMS; ++i ) {
 		this->mVertexTransforms [ i ].Ident ();
@@ -627,6 +668,9 @@ void MOAIGfxDevice::PushDeleter ( u32 type, u32 id ) {
 	this->ProcessDeleters ();
 }
 
+
+
+
 //----------------------------------------------------------------//
 void MOAIGfxDevice::RegisterLuaClass ( MOAILuaState& state ) {
 
@@ -643,6 +687,7 @@ void MOAIGfxDevice::RegisterLuaClass ( MOAILuaState& state ) {
 		{ "setPenColor",				_setPenColor },
 		{ "setPenWidth",				_setPenWidth },
 		{ "setPointSize",				_setPointSize },
+        { "newShader",				    _newShader },
 		{ NULL, NULL }
 	};
 
@@ -1084,6 +1129,10 @@ void MOAIGfxDevice::SetScreenSpace ( MOAIViewport& viewport ) {
 	//glMatrixMode ( GL_PROJECTION );
 	//MOAIGfxDevice::LoadMatrix ( wndToNorm );
 }
+
+
+
+
 
 //----------------------------------------------------------------//
 void MOAIGfxDevice::SetShader ( MOAIShader* shader ) {

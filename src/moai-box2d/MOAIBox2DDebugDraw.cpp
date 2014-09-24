@@ -118,8 +118,9 @@ void MOAIBox2DDebugDraw::DrawSolidCircle ( const b2Vec2& center, float32 radius,
 		this->WriteVtx ( gfxDevice, v.x, v.y );
 		theta += k_increment;
 	}
-	gfxDevice.EndPrim ();
 
+
+	gfxDevice.EndPrim ();
 	b2Vec2 p = center + radius * axis;
 	gfxDevice.BeginPrim ( ZGL_PRIM_LINES );
 	this->WriteVtx ( gfxDevice, center.x, center.y );
