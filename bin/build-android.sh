@@ -1,5 +1,10 @@
 #!/bin/bash
 
+export ANDROID_NDK=/home/ezra/Desktop/android-ndk-r9c/
+export PATH=$PATH:/home/ezra/cmake/bin
+
+
+
 source ~/.bash_profile
 
 cd `dirname $0`/..
