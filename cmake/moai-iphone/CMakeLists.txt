@@ -3,6 +3,8 @@ project ( moai-iphone )
 
 set (LINK_LIBS "")
 
+add_subdirectory(chartboost)
+
 
 set ( MOAI_IPHONE_INCLUDES 
   "${MOAI_ROOT}/src/"
@@ -13,7 +15,9 @@ set ( MOAI_IPHONE_INCLUDES
   "${MOAI_ROOT}/3rdparty/playhaven-ios-1.13.1/src"
   "${MOAI_ROOT}/3rdparty/vungle-1.3.3/lib"
   "${MOAI_ROOT}/3rdparty/vungle-1.3.3/lib/vunglepub"
-  "${MOAI_ROOT}/3rdparty/chartboostiOS-3.0.7"
+  ##EZRA
+  ######"${MOAI_ROOT}/3rdparty/chartboostiOS-3.0.7"
+  "${MOAI_ROOT}/3rdparty/chartboostiOS-5.3"
   "${MOAI_ROOT}/3rdparty/adcolonyiOS-1911/Library"
 )
 
@@ -39,12 +43,24 @@ if (NOT DISABLE_VUNGLE)
   set (LINK_LIBS ${LINK_LIBS} libVungle)
 endif (NOT DISABLE_VUNGLE)
 
-add_library(libChartboost STATIC IMPORTED)
-set_property(TARGET libChartboost PROPERTY IMPORTED_LOCATION ${MOAI_ROOT}/3rdparty/chartboostIOS-3.0.7/libChartboost.a)
 
-if (NOT DISABLE_CHARTBOOST)
-  set (LINK_LIBS ${LINK_LIBS} libChartboost)
-endif (NOT DISABLE_CHARTBOOST)
+
+#add_library(Chartboost STATIC IMPORTED)
+##EZRA
+##set_property(TARGET libChartboost PROPERTY IMPORTED_LOCATION ${MOAI_ROOT}/3rdparty/chartboostIOS-3.0.7/libChartboost.a)       
+ 
+#add_library(Chartboost STATIC IMPORTED) 
+#set_property(TARGET Chartboost PROPERTY IMPORTED_LOCATION ${MOAI_ROOT}/3rdparty/chartboostIOS-5.3/Chartboost)   
+#if (NOT DISABLE_CHARTBOOST)
+#  set (LINK_LIBS ${LINK_LIBS} "${MOAI_ROOT}/3rdparty/chartboostiOS-5.3/Chartboost.framework")
+#  set (LINK_LIBS ${LINK_LIBS} Chartboost)
+#endif (NOT DISABLE_CHARTBOOST)
+
+
+
+
+
+
 
 add_library(libAdColony STATIC IMPORTED)
 set_property(TARGET libAdColony PROPERTY IMPORTED_LOCATION ${MOAI_ROOT}/3rdparty/adcolonyiOS-1911/Library/libAdColony.a)
