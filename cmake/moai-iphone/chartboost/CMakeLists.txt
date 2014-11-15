@@ -3,11 +3,9 @@ message("chartboost")
 message("************************************")
 
 cmake_minimum_required ( VERSION 2.8.11 )      
-project ( moai-ios-chartboost )
+project ( moai-ios-chartboost )    
 
-
-
-set(CHARTBOOST_ROOT ${MOAI_ROOT}/3rdparty/chartboost-5.3/Chartboost.framework)
+set(CHARTBOOST_ROOT ${MOAI_ROOT}/3rdparty/chartboostIOS-5.3/Chartboost.framework)
 set(CHARTBOOST_LIB ${CHARTBOOST_ROOT}/Chartboost)
 add_library(Chartboost SHARED IMPORTED)
 
@@ -16,8 +14,7 @@ set_property(TARGET Chartboost PROPERTY FRAMEWORK 1)
 
 add_library(moai-ios-chartboost STATIC
   "${MOAI_ROOT}/src/moai-ios-chartboost/MOAIChartBoostIOS.h"
-  "${MOAI_ROOT}/src/moai-ios-chartboost/MOAIChartBoostIOS.mm"
-  
+  "${MOAI_ROOT}/src/moai-ios-chartboost/MOAIChartBoostIOS.mm"    
 
 )
 
