@@ -10,33 +10,69 @@
 class MOAIColor;
 class MOAITransformBase;
 
-#ifdef MOAI_OS_OSX
+//#ifdef MOAI_OS_OSX
+  //  #define		OPENGL_PREPROC		"#version 120\n #define LOWP\n #define MEDP\n"
+  //  #define		OPENGL_ES_PREPROC	"#version 120\n #define LOWP lowp\n #define MEDP mediump\n"
+  //  #define		WEBGL_PREPROC       "precision mediump int;\n precision mediump float;\n"
+//#endif
+//
 
+//DEFAULT
+    //#define		OPENGL_PREPROC		"#define LOWP\n #define MEDP\n"
+    //#define		OPENGL_ES_PREPROC	"#define LOWP lowp\n #define MEDP mediump\n"
+    //#define		WEBGL_PREPROC       "precision mediump int;\n precision mediump float;\n"
 
+#ifdef MOAI_OS_OSX    
     #define		OPENGL_PREPROC		"#version 120\n #define LOWP\n #define MEDP\n"
     #define		OPENGL_ES_PREPROC	"#version 120\n #define LOWP lowp\n #define MEDP mediump\n"
     #define		WEBGL_PREPROC       "precision mediump int;\n precision mediump float;\n"
+#endif
 
-
+#ifdef MOAI_OS_WINDOWS
+    #define		OPENGL_PREPROC		"#define LOWP\n #define MEDP\n"
+    #define		OPENGL_ES_PREPROC	"#define LOWP lowp\n #define MEDP mediump\n"
+    #define		WEBGL_PREPROC       "precision mediump int;\n precision mediump float;\n"
 #endif
 
 
-//HTML
+
 #ifdef MOAI_OS_HTML
-
     #define		OPENGL_PREPROC		"#define LOWP\n #define MEDP\n"
     #define		OPENGL_ES_PREPROC	"#define LOWP lowp\n #define MEDP mediump\n"
     #define		WEBGL_PREPROC       "precision mediump int;\n precision mediump float;\n"
+#endif
 
-
-#else
-
+#ifdef MOAI_OS_IPHONE
     #define		OPENGL_PREPROC		"#define LOWP\n #define MEDP\n"
     #define		OPENGL_ES_PREPROC	"#define LOWP lowp\n #define MEDP mediump\n"
     #define		WEBGL_PREPROC       "precision mediump int;\n precision mediump float;\n"
+#endif
 
+
+#ifdef MOAI_OS_ANDROID
+    #define		OPENGL_PREPROC		"#version 100\n #define LOWP\n #define MEDP\n"
+    #define		OPENGL_ES_PREPROC	"#version 100\n #define LOWP lowp\n #define MEDP mediump\n"
+    #define		WEBGL_PREPROC       "precision mediump int;\n precision mediump float;\n"
+
+
+   // #define		OPENGL_PREPROC		"#version 100\n"
+   // #define		OPENGL_ES_PREPROC	"#version 100\n"
+   // #define		WEBGL_PREPROC       "#version 100\n"
 
 #endif
+
+
+#ifdef MOAI_OS_LINUX
+    #define		OPENGL_PREPROC		"#define LOWP\n #define MEDP\n"
+    #define		OPENGL_ES_PREPROC	"#define LOWP lowp\n #define MEDP mediump\n"
+    #define		WEBGL_PREPROC       "precision mediump int;\n precision mediump float;\n"
+#endif
+
+
+//#ifdef MOAI_OS_NACL
+//#endif
+
+
 
 
 
