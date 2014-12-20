@@ -12,9 +12,9 @@ goto ERROR
 
 cd %~dp0/..
 cd cmake
-rmdir /s /q build
-mkdir build
-cd build
+rmdir /s /q build-html
+mkdir build-html
+cd build-html
 cmake ^
 -DEMSCRIPTEN_ROOT_PATH=%EMSCRIPTEN_HOME% ^
 -DCMAKE_TOOLCHAIN_FILE=%EMSCRIPTEN_HOME%\cmake\Platform\Emscripten.cmake ^

@@ -55,7 +55,7 @@ echo "> setting flags"
 use_untz="true"
 
 adcolony_flags="false"
-billing_flags="false"
+billing_flags="false"                                                                                                                                                     
 chartboost_flags=
 crittercism_flags="false"
 facebook_flags="false"

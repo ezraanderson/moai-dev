@@ -19,9 +19,9 @@
 
 cd `dirname $0`/..
 cd cmake
-rm -rf build
-mkdir build
-cd build
+rm -rf build-html
+mkdir build-html
+cd build-html
 cmake \
 -DEMSCRIPTEN_ROOT_PATH=${EMSCRIPTEN_HOME} \
 -DCMAKE_TOOLCHAIN_FILE=${EMSCRIPTEN_HOME}/cmake/Platform/Emscripten.cmake \
