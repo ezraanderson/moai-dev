@@ -5,7 +5,11 @@
 #import <moai-iphone/MOAIAppIOS.h>
 #import <moai-iphone/MOAIBillingIOS.h>
 #import <moai-iphone/MOAICrittercismIOS.h>
+
+
+//#import <moai-ios-chartboost/MOAIChartBoostIOS.h>
 #import <moai-iphone/MOAIChartBoostIOS.h>
+
 #import <moai-iphone/MOAIDialogIOS.h>
 #import <moai-iphone/MOAIFacebookIOS.h>
 #import <moai-iphone/MOAIGameCenterIOS.h>

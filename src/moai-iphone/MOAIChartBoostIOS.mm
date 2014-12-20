@@ -8,6 +8,9 @@
 
 #import <moai-iphone/MOAIChartBoostIOS.h>
 
+
+int ads_step = 0;
+
 //================================================================//
 // lua
 //================================================================//
@@ -20,14 +23,48 @@
  @out 	bool	True, if an ad is cached.
  */
 int MOAIChartBoostIOS::_hasCachedInterstitial ( lua_State* L ) {
-	MOAILuaState state ( L );
-	
-	bool isAdAvailable = [[ Chartboost sharedChartboost ] hasCachedInterstitial ];
-	
+
+
+
+
+	MOAILuaState state ( L );   
+  
+
+    ads_step = ads_step + 1;
+    bool isAdAvailable = false;
+  
+    if (ads_step < 3) {
+    
+            isAdAvailable = [ Chartboost  hasInterstitial:CBLocationHomeScreen ];
+            [Chartboost showInterstitial:CBLocationHomeScreen ];
+            [Chartboost cacheInterstitial:CBLocationHomeScreen];
+            
+            if    (isAdAvailable == false) {
+                       NSLog (@"CHARTBOOST isAdAvailable,false, showMoreApps\n");
+                       [Chartboost showMoreApps:CBLocationHomeScreen];
+                       [Chartboost cacheMoreApps:CBLocationHomeScreen];
+            } else {
+                        NSLog (@"CHARTBOOST showInterstitial\n");
+            };
+            
+    } else {
+    
+             NSLog (@"CHARTBOOST showMoreApps on 3\n");
+             ads_step = 0;
+             isAdAvailable = true;
+             [Chartboost showMoreApps:CBLocationHomeScreen];
+             [Chartboost cacheMoreApps:CBLocationHomeScreen];
+    };
+
+ 
+  
 	lua_pushboolean ( state, isAdAvailable );
 	
 	return 1;
 }
+
+
+
 
 //----------------------------------------------------------------//
 /**	@name	init
@@ -38,17 +75,20 @@ int MOAIChartBoostIOS::_hasCachedInterstitial ( lua_State* L ) {
 	@out 	nil
 */
 int MOAIChartBoostIOS::_init ( lua_State* L ) {
-	
+
+	   NSLog (@"START _init ChartBoost\n");
+     
+     
 	MOAILuaState state ( L );
 
 	cc8* identifier = lua_tostring ( state, 1 );
 	cc8* signature = lua_tostring ( state, 2 );
-	
-	[[ Chartboost sharedChartboost ] setAppId:[ NSString stringWithUTF8String:identifier ]];
-	[[ Chartboost sharedChartboost ] setAppSignature:[ NSString stringWithUTF8String:signature ]];
-	[[ Chartboost sharedChartboost ] setDelegate:MOAIChartBoostIOS::Get ().mDelegate ];
-	[[ Chartboost sharedChartboost ] startSession ];
-	
+
+  [Chartboost startWithAppId:[ NSString stringWithUTF8String:identifier ]  appSignature:[NSString stringWithUTF8String:signature ]  delegate:MOAIChartBoostIOS::Get ().mDelegate];    
+  [Chartboost cacheInterstitial:CBLocationHomeScreen];
+  [Chartboost cacheMoreApps:CBLocationHomeScreen];
+          
+          
 	return 0;
 }
 
@@ -71,7 +111,7 @@ int MOAIChartBoostIOS::_loadInterstitial ( lua_State* L ) {
 	// 	[[ ChartBoost sharedChartboost ] cacheInterstitial:[ NSString stringWithUTF8String:location ]];
 	// } else {
 	// 	
-		[[ Chartboost sharedChartboost ] cacheInterstitial ];
+   // 		[ Chartboost cacheInterstitial:CBLocationHomeScreen ];
 	// }
 			
 	return 0;
@@ -118,14 +158,15 @@ int MOAIChartBoostIOS::_showInterstitial ( lua_State* L ) {
 	// 	}
 	// } else {
 		
-		if ( [[ Chartboost sharedChartboost ] hasCachedInterstitial ]) {
+    
+	//	if ( [ Chartboost  hasCachedInterstitial ]) {
 			
-			[[ Chartboost sharedChartboost ] showInterstitial ];
+	//		[[ Chartboost sharedChartboost ] showInterstitial ];
 
-			lua_pushboolean ( state, true );
+	//		lua_pushboolean ( state, true );
 			
-			return 1;
-		}
+	//		return 1;
+	//	}
 	// }
 			
 	lua_pushboolean ( state, false );
@@ -204,30 +245,72 @@ void MOAIChartBoostIOS::NotifyInterstitialLoadFailed () {
 	#pragma mark Protocol MoaiChartBoostDelegate
 	//================================================================//
 
-	- ( BOOL ) shouldRequestInterstitial {
-		
-		return YES;
+	- ( BOOL ) shouldRequestInterstitial {    		
+		return YES;        
+    
+	}
+  
+
+//- (void)didClickInterstitial:(CBLocation)location; 
+//- (void)didCloseMoreApps:(CBLocation)location;  
+//- (void)didClickMoreApps:(CBLocation)location;  
+//- (void)didFailToLoadMoreApps:(CBLocation)locationwithError:(CBLoadError)error;
+
+
+//*** INTER ***//        
+    
+
+	- ( BOOL ) shouldDisplayInterstitial:( UIView * )interstitialView {     		
+	 	     return YES;     
+    }
+
+	- ( void ) didFailToLoadInterstitial {    		
+		    MOAIChartBoostIOS::Get ().NotifyInterstitialLoadFailed ();
+	}
+  
+  - ( void ) didCloseInterstitial:( UIView * )interstitialView {     		
+		    MOAIChartBoostIOS::Get ().NotifyInterstitialDismissed ();    	
+  } 
+
+	- ( void ) didDismissInterstitial:( UIView * )interstitialView {     		
+		    MOAIChartBoostIOS::Get ().NotifyInterstitialDismissed ();    	
+  }
+
+
+	- ( void ) didClickInterstitial:( UIView * )interstitialView {     		
+		    MOAIChartBoostIOS::Get ().NotifyInterstitialDismissed ();
+	}
+  
+  
+
+
+
+  //*** MORE APPS ***//      
+  
+ 	- ( BOOL ) shouldDisplayMoreApps:( UIView * )moreAppsView {		
+		  return YES;                                            
+  } 
+  
+  - ( void ) didFailToLoadMoreApps {    		
+		    MOAIChartBoostIOS::Get ().NotifyInterstitialLoadFailed ();
+	}    
+            
+	- ( void ) didCloseMoreApps:( UIView * )interstitialView {     		
+		    MOAIChartBoostIOS::Get ().NotifyInterstitialDismissed ();
+	}
+  
+ 	- ( void ) didDismissMoreApps:( UIView * )interstitialView {     		
+		    MOAIChartBoostIOS::Get ().NotifyInterstitialDismissed ();
+	}
+  
+
+ 	- ( void ) didClickMoreApps:( UIView * )interstitialView {     		
+		    MOAIChartBoostIOS::Get ().NotifyInterstitialDismissed ();
 	}
 
-	- ( void ) didFailToLoadInterstitial {
-		
-		MOAIChartBoostIOS::Get ().NotifyInterstitialLoadFailed ();
-	}
 
-	- ( BOOL ) shouldDisplayInterstitial:( UIView * )interstitialView {
-		
-		return YES;
-	}
 
-	- ( void ) didDismissInterstitial:( UIView * )interstitialView {
-		
-		MOAIChartBoostIOS::Get ().NotifyInterstitialDismissed ();
-	}
 
-	- ( BOOL ) shouldDisplayMoreApps:( UIView * )moreAppsView {
-		
-		return NO;
-	}
 	
 @end
 

@@ -9,8 +9,16 @@
 
 #ifndef DISABLE_CHARTBOOST
 
-#include <moai-core/headers.h>
+#include <moai-core/headers.h>    
+    
+#import <Foundation/Foundation.h> 
+#import <UIKit/UIKit.h>   
 #import <Chartboost.h>
+
+
+
+
+
 
 @class MoaiChartBoostDelegate;
 

@@ -7,9 +7,7 @@
 #ifndef AKU_CHARTBOOST_H
 #define AKU_CHARTBOOST_H
 
-#include <moai-core/host.h>
-
-
-AKU_API void	AKUChartBoostInit	();
+#include <moai-core/host.h> 
+AKU_API void	AKUChartBoostInit();
 
 #endif
