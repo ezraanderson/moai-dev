@@ -236,8 +236,8 @@ void MOAIGfxDevice::BeginPrim () {
 
 
 //----------------------------------------------------------------//
-void MOAIGfxDevice::setPrimeSize (int pSize) {
-    this->mPrimSize = pSize;
+void MOAIGfxDevice::setPrimeSize (long pSize) {
+		 this->mPrimSize = pSize;
 };
 
 
@@ -745,6 +745,10 @@ void MOAIGfxDevice::Reserve ( u32 size ) {
 //----------------------------------------------------------------//
 void MOAIGfxDevice::ResetDrawCount () {
 	this->mDrawCount = 0;
+}
+//----------------------------------------------------------------//
+void MOAIGfxDevice::addDrawCount () {
+	++this->mDrawCount;
 }
 
 //----------------------------------------------------------------//

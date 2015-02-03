@@ -81,7 +81,7 @@ private:
 	
 	static const u32 DEFAULT_BUFFER_SIZE	= 0x8000;
     //EZRA
-	//static const u32 DEFAULT_BUFFER_SIZE	= 20 000 000;
+	//static const u32 DEFAULT_BUFFER_SIZE	= 2000000000;
 
 	int				mCullFunc;
 	int				mDepthFunc;
@@ -214,7 +214,7 @@ public:
 	void					BeginLayer				();
 	void					BeginPrim				();
 	void					BeginPrim				( u32 primType );
-    void                    setPrimeSize            (int pSize);
+    void                    setPrimeSize            (long pSize);
 
 	void					ClearColorBuffer		( u32 color );
 	
@@ -226,8 +226,11 @@ public:
 	const ZLMatrix4x4&		GetBillboardMtx			() const;
 	
 	float					GetDeviceScale			();
+
 	u32						GetDrawCount			() const { return mDrawCount; }
-	
+
+
+
 	u32						GetHeight				() const;
 	
 	ZLMatrix4x4				GetNormToWndMtx			() const;
@@ -264,6 +267,8 @@ public:
 	
 	void					Reserve					( u32 size );
 	void					ResetDrawCount			();
+	void					addDrawCount			();
+
 	void					ResetResources			();
 	void					ResetState				();
 	
@@ -333,8 +338,6 @@ public:
 	//----------------------------------------------------------------//
 	template < typename TYPE >
 	inline void Write ( const TYPE& type ) {
-		
-
 		size_t top = this->mTop + sizeof ( TYPE );
         assert ( top < this->mSize );		
 		*( TYPE* )(( size_t )this->mBuffer + this->mTop ) = type;
@@ -384,8 +387,7 @@ public:
 	}
 	
 	//----------------------------------------------------------------//
-	inline void WriteVtx ( float x, float y ) {
-		
+	inline void WriteVtx ( float x, float y ) {		
 		this->WriteVtx ( x, y, 0.0f );
 	}
 	
