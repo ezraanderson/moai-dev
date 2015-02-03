@@ -22,6 +22,11 @@
   #include <moai-chipmunk/MOAICpSpace.h>
 #endif
 
+#if MOAI_WITH_BULLET
+  #include <moai-bullet/MOAIBulletWorld.h>
+#endif
+
+
 //================================================================//
 // local
 //================================================================//
@@ -198,6 +203,29 @@ int MOAILayer::_setBox2DWorld ( lua_State* L ) {
 	#endif
 	return 0;
 }
+
+
+//----------------------------------------------------------------//
+/**	@name	setBulletDWorld
+	@text	Sets a Box2D world for debug drawing.
+	
+	@in		MOAILayer self
+	@in		setBulletDWorld world
+	@out	nil
+*/
+int MOAILayer::_setBulletWorld ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAILayer, "UU" )
+	
+	#if MOAI_WITH_BOX2D
+		self->mBulletWorld.Set ( *self, state.GetLuaObject < MOAIBulletWorld >( 2, true ));
+	#endif
+	return 0;
+}
+
+
+
+
+
 
 //----------------------------------------------------------------//
 /**	@name	setCamera
@@ -530,6 +558,17 @@ void MOAILayer::Draw ( int subPrimID ) {
 				gfxDevice.Flush ();
 			}
 		#endif
+
+		#if MOAI_WITH_BULLET
+			if ( this->mBulletWorld ) {
+
+
+				this->mBulletWorld->DrawDebug ();
+
+				gfxDevice.Flush ();
+			}
+		#endif
+
 	}
 	
 	gfxDevice.SetVertexTransform ( MOAIGfxDevice::VTX_WORLD_TRANSFORM );
@@ -715,6 +754,12 @@ MOAILayer::~MOAILayer () {
 	#if MOAI_WITH_BOX2D
 		this->mBox2DWorld.Set ( *this, 0 );
 	#endif
+
+
+	#if MOAI_WITH_BULLET
+		this->mBulletWorld.Set ( *this, 0 );
+	#endif
+
 }
 
 //----------------------------------------------------------------//
@@ -752,6 +797,7 @@ void MOAILayer::RegisterLuaFuncs ( MOAILuaState& state ) {
 		{ "insertProp",				_insertProp },
 		{ "removeProp",				_removeProp },
 		{ "setBox2DWorld",			_setBox2DWorld },
+		{ "setBulletWorld",		_setBulletWorld },
 		{ "setCamera",				_setCamera },
 		{ "setCpSpace",				_setCpSpace },
 		{ "setParallax",			_setParallax },

@@ -10,6 +10,7 @@
 #include <moai-sim/MOAIViewport.h>
 
 class MOAIBox2DWorld;
+class MOAIBulletWorld;
 class MOAICamera;
 class MOAICpSpace;
 
@@ -49,6 +50,10 @@ private:
 		MOAILuaSharedPtr < MOAIBox2DWorld >	mBox2DWorld;
 	#endif
 
+	#if MOAI_WITH_BULLET
+		MOAILuaSharedPtr < MOAIBulletWorld >	mBulletWorld;
+	#endif
+
 	ZLVec3D		mParallax;
 	bool		mShowDebugLines;
 	u32			mSortMode;
@@ -66,6 +71,7 @@ private:
 	static int	_insertProp			( lua_State* L );
 	static int	_removeProp			( lua_State* L );
 	static int	_setBox2DWorld		( lua_State* L );
+	static int	_setBulletWorld		( lua_State* L );
 	static int	_setCamera			( lua_State* L );
 	static int	_setCpSpace			( lua_State* L );
 	static int	_setParallax		( lua_State* L );
