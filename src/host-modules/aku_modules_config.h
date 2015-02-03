@@ -7,6 +7,10 @@
 	#ifndef AKU_WITH_BOX2D
 		#define AKU_WITH_BOX2D 1
 	#endif
+
+	#ifndef AKU_WITH_BULLET
+		#define AKU_WITH_BULLET 1
+	#endif
 	
 	#ifndef AKU_WITH_CHIPMUNK
 		#define AKU_WITH_CHIPMUNK 1

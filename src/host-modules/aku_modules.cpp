@@ -43,10 +43,14 @@ void AKUModulesAppFinalize () {
     printf("\n ******** AKUModulesAppFinalize ***********\n");
 
 //FINILIZE MY TASKS
-    MOAIBox::Finalize();
+   //PARTICLE_SOUP
+   // MOAIBox::Finalize();
 
 
+	#if AKU_WITH_BULLET
 
+		AKUBulletAppFinalize ();
+	#endif
 
 
 	#if AKU_WITH_BOX2D
@@ -105,6 +109,11 @@ void AKUModulesAppFinalize () {
 //----------------------------------------------------------------//
 void AKUModulesAppInitialize () {
 
+
+	#if AKU_WITH_BULLET
+		AKUBulletAppInitialize ();
+	#endif
+
 	#if AKU_WITH_BOX2D
 		AKUBox2DAppInitialize ();
 	#endif
@@ -160,6 +169,11 @@ void AKUModulesAppInitialize () {
 
 //----------------------------------------------------------------//
 void AKUModulesContextInitialize () {
+
+
+	#if AKU_WITH_BULLET		
+		AKUBulletContextInitialize ();
+	#endif
 
 	#if AKU_WITH_BOX2D
 		AKUBox2DContextInitialize ();
