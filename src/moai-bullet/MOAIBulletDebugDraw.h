@@ -2,7 +2,7 @@
 #ifndef MOAIBULLETDEBUGDRAW_H
 #define MOAIBULLETDEBUGDRAW_H
 
-#include <src/LinearMath/BtIdebugDraw.h>
+#include <LinearMath/BtIdebugDraw.h>
 
 
 
