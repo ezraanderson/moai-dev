@@ -7,10 +7,10 @@ project ( moai-bullet )
 
   set ( MOAI_BULLET_INCLUDES 
       "${MOAI_ROOT}/src/"
-      "${MOAI_ROOT}/BulletCollision/"
-      "${MOAI_ROOT}/BulletDynamics/"  
-      "${MOAI_ROOT}/BulletSoftBody/"
-      "${MOAI_ROOT}/LinearMath/"       
+      "${MOAI_ROOT}/src/BulletCollision/"
+      "${MOAI_ROOT}/src/BulletDynamics/"  
+      "${MOAI_ROOT}/src/BulletSoftBody/"
+      "${MOAI_ROOT}/src/LinearMath/"       
         
     )
 
