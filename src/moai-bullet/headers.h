@@ -7,7 +7,7 @@
 #include <moai-bullet/pch.h>
 #include <moai-bullet/MOAIBulletWorld.h>
 #include <moai-bullet/MOAIBulletShape.h>
-
+#include <moai-bullet/MOAIBulletTransform.h>
 #include <moai-bullet/MOAIBulletDebugDraw.h>
 
 #endif

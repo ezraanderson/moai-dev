@@ -192,8 +192,8 @@ MOAI_LUA_SETUP ( MOAIBulletShape, "U" )
 int MOAIBulletShape::_setMass ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletShape, "UNN" );	
 
-	float mass	  = state.GetValue < float >( 3, 0.0f );
-	float Inertia = state.GetValue < float >( 4, 0.0f );
+	float mass	  = state.GetValue < float >( 2, 0.0f );
+	float Inertia = state.GetValue < float >( 3, 0.0f );
 
 	//MASS
 		btScalar mMass = mass;
@@ -211,10 +211,13 @@ int MOAIBulletShape::_setMass ( lua_State* L ) {
 int MOAIBulletShape::_addToBody ( lua_State* L ) {
 MOAI_LUA_SETUP ( MOAIBulletShape, "U" )
 btTransform t; 
+
+//PASS TRASNFORM
 t.setIdentity();
 t.setRotation ( btQuaternion ( self->mRot_x, self->mRot_y,self->mRot_z)); 
 t.setOrigin(btVector3 ( self->mLoc_x, self->mLoc_y,self->mLoc_z));
-self->mCompound->addChildShape(self->mBody->getWorldTransform(),self->mShape); //MAKE FRIEND CLASS
+self->mCompound->addChildShape(t,self->mShape); //MAKE FRIEND CLASS
+
 
 return 1;
 };
@@ -235,7 +238,16 @@ void MOAIBulletShape::Destroy () {
 MOAIBulletShape::MOAIBulletShape () :
 mRot(0),
 mLoc(0),
-mShape(0)
+mShape(0),
+
+mLoc_x(0),
+mLoc_y(0),
+mLoc_z(0),
+
+mRot_x(0),
+mRot_y(0),
+mRot_z(0)
+
 {	
 	RTTI_BEGIN
 		//RTTI_EXTEND ( MOAITransformBase )	

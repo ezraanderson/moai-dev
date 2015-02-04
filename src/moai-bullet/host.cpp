@@ -21,5 +21,7 @@ void AKUBulletAppInitialize () {
 void AKUBulletContextInitialize () {
 	REGISTER_LUA_CLASS ( MOAIBulletWorld )
 	REGISTER_LUA_CLASS ( MOAIBulletShape )
+	REGISTER_LUA_CLASS ( MOAIBulletTransform )
+	//REGISTER_LUA_CLASS ( MOAIBulletConstraint )
 };
 //----------------------------------------------------------------//

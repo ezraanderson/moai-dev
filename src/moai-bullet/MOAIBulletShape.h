@@ -9,6 +9,7 @@
 
 
 class MOAIBulletShape :
+	public MOAIBulletPrim,
 	public virtual MOAILuaObject 
 {
 private:	

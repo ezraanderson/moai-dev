@@ -1,7 +1,7 @@
 
 #include "pch.h"
 
-#include <moai-Bullet/MOAIBulletDebugDraw.h>
+#include <moai-bullet/MOAIBulletDebugDraw.h>
 
 #include <cstdio>
 #include <cstdarg>

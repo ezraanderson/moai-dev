@@ -9,8 +9,11 @@
 #include <bullet/src/btBulletDynamicsCommon.h>
 
 
+class btRigidBody;
+
 class MOAIBulletBody :
 	//public MOAITransformBase	
+	public MOAIBulletPrim,
 	public virtual MOAILuaObject 
 {
 private:	
@@ -45,7 +48,7 @@ private:
 	//static int		_addChild				( lua_State* L );
 	static int		_newShape				( lua_State* L );
 	static int		_addToBody				( lua_State* L );
-
+	static int		_addRag				( lua_State* L );
 	//static int		_addPlane				( lua_State* L );
 	//static int		_addSphere				( lua_State* L );
 	//static int		_addBox					( lua_State* L );
@@ -88,6 +91,14 @@ private:
 //RESET
 	static int		_ResetForces		( lua_State* L );	
 
+//SET GARVITY
+	static int		_SetGravity		( lua_State* L );
+//DAMPING
+	static int		_SetDamping		( lua_State* L );
+
+	static int		_SetDeactivationTime	( lua_State* L );
+	static int		_SetSleepingThresholds	( lua_State* L );	
+	
 
 //MASS	: ON SHAPE
 	//static int		_SetMass		( lua_State* L );
@@ -134,7 +145,8 @@ private:
 public:
 	
 	friend class MOAIBulletShape;
-
+	friend class MOAIBulletWorld;
+	//friend class MOAIBulletConstraint;
 
 	DECL_LUA_FACTORY ( MOAIBulletBody )
 

@@ -14,7 +14,7 @@
 #include <moai-bullet/MOAIBulletBody.h>
 #include <moai-bullet/MOAIBulletShape.h>
 
-//#include <moai-bullet/MOAIBulletDebugDraw.h>
+
 
 #include <bullet/src/btBulletDynamicsCommon.h>
 
@@ -69,232 +69,228 @@
 //**************************************************************************************************************
 //**************************************************************************************************************
 //**************************************************************************************************************
-////**************************************************************************************************************
-//btRigidBody* localCreateRigidBody (btScalar mass, const btTransform& startTransform, btCollisionShape* shape)
-//{
-//	bool isDynamic = (mass != 0.f);
-//	btVector3 localInertia(0,0,0);
-//
-//	if (isDynamic)
-//		shape->calculateLocalInertia(mass,localInertia);
-//		btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
-//		btRigidBody::btRigidBodyConstructionInfo rbInfo(mass,myMotionState,shape,localInertia);
-//		btRigidBody* body = new btRigidBody(rbInfo);
-//
-//		//Kinematic Bodies 
-//
-//			//body->setCollisionFlags( body->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
-//			body->setActivationState(DISABLE_DEACTIVATION);
-//
-//
-//	return body;
-//}
-//		
+//**************************************************************************************************************
+btRigidBody* localCreateRigidBody (btScalar mass, const btTransform& startTransform, btCollisionShape* shape)
+{
+
+
+		btVector3 localInertia(0,0,0);
+		shape->calculateLocalInertia(0,localInertia);
+
+		btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
+		btRigidBody::btRigidBodyConstructionInfo rbInfo(0,myMotionState,shape,localInertia);
+		btRigidBody* body = new btRigidBody(rbInfo);
+
+		//Kinematic Bodies 
+
+			//body->setCollisionFlags( body->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
+			//body->setActivationState(DISABLE_DEACTIVATION);
+
+
+	return body;
+}
+		
 
 
 
 
-//int MOAIBulletBody::_addRag ( lua_State* L ) {
-//MOAI_LUA_SETUP ( MOAIBulletBody, "U" )
+int MOAIBulletBody::_addRag ( lua_State* L ) {
+MOAI_LUA_SETUP ( MOAIBulletBody, "U" )
+
+	enum
+{
+BODYPART_PELVIS = 0,
+BODYPART_SPINE,
+BODYPART_HEAD,
+BODYPART_LEFT_UPPER_LEG,
+BODYPART_LEFT_LOWER_LEG,
+BODYPART_RIGHT_UPPER_LEG,
+BODYPART_RIGHT_LOWER_LEG,
+BODYPART_LEFT_UPPER_ARM,
+BODYPART_LEFT_LOWER_ARM,
+BODYPART_RIGHT_UPPER_ARM,
+BODYPART_RIGHT_LOWER_ARM,
+BODYPART_COUNT
+};
+enum
+{
+JOINT_PELVIS_SPINE = 0,
+JOINT_SPINE_HEAD,
+JOINT_LEFT_HIP,
+JOINT_LEFT_KNEE,
+JOINT_RIGHT_HIP,
+JOINT_RIGHT_KNEE,
+JOINT_LEFT_SHOULDER,
+JOINT_LEFT_ELBOW,
+JOINT_RIGHT_SHOULDER,
+JOINT_RIGHT_ELBOW,
+JOINT_COUNT
+};
 
 
-//
-//
-//
-//	enum
-//{
-//BODYPART_PELVIS = 0,
-//BODYPART_SPINE,
-//BODYPART_HEAD,
-//BODYPART_LEFT_UPPER_LEG,
-//BODYPART_LEFT_LOWER_LEG,
-//BODYPART_RIGHT_UPPER_LEG,
-//BODYPART_RIGHT_LOWER_LEG,
-//BODYPART_LEFT_UPPER_ARM,
-//BODYPART_LEFT_LOWER_ARM,
-//BODYPART_RIGHT_UPPER_ARM,
-//BODYPART_RIGHT_LOWER_ARM,
-//BODYPART_COUNT
-//};
-//enum
-//{
-//JOINT_PELVIS_SPINE = 0,
-//JOINT_SPINE_HEAD,
-//JOINT_LEFT_HIP,
-//JOINT_LEFT_KNEE,
-//JOINT_RIGHT_HIP,
-//JOINT_RIGHT_KNEE,
-//JOINT_LEFT_SHOULDER,
-//JOINT_LEFT_ELBOW,
-//JOINT_RIGHT_SHOULDER,
-//JOINT_RIGHT_ELBOW,
-//JOINT_COUNT
-//};
-//
-//
-//float offsetX = state.GetValue < float >( 2, 0.0f );
-//float offsetY = state.GetValue < float >( 3, 0.0f );
-//float offsetZ = state.GetValue < float >( 4, 0.0f );
-//
-//float CONSTRAINT_DEBUG_SIZE = 50.0f;
-//
-//btCollisionShape*	m_shapes[BODYPART_COUNT];
-//btRigidBody*		m_bodies[BODYPART_COUNT];
-//btTypedConstraint*	m_joints[JOINT_COUNT];
-//
-//
-//// Setup the geometry
-//	m_shapes[BODYPART_PELVIS]			= new btCapsuleShape(btScalar(0.15), btScalar(0.20));
-//	m_shapes[BODYPART_SPINE]			= new btCapsuleShape(btScalar(0.15), btScalar(0.28));
-//	m_shapes[BODYPART_HEAD]				= new btCapsuleShape(btScalar(0.10), btScalar(0.05));
-//	m_shapes[BODYPART_LEFT_UPPER_LEG]	= new btCapsuleShape(btScalar(0.07), btScalar(0.45));
-//	m_shapes[BODYPART_LEFT_LOWER_LEG]	= new btCapsuleShape(btScalar(0.05), btScalar(0.37));
-//	m_shapes[BODYPART_RIGHT_UPPER_LEG]	= new btCapsuleShape(btScalar(0.07), btScalar(0.45));
-//	m_shapes[BODYPART_RIGHT_LOWER_LEG]	= new btCapsuleShape(btScalar(0.05), btScalar(0.37));
-//	m_shapes[BODYPART_LEFT_UPPER_ARM]	= new btCapsuleShape(btScalar(0.05), btScalar(0.33));
-//	m_shapes[BODYPART_LEFT_LOWER_ARM]	= new btCapsuleShape(btScalar(0.04), btScalar(0.25));
-//	m_shapes[BODYPART_RIGHT_UPPER_ARM]	= new btCapsuleShape(btScalar(0.05), btScalar(0.33));
-//	m_shapes[BODYPART_RIGHT_LOWER_ARM]	= new btCapsuleShape(btScalar(0.04), btScalar(0.25));
-//
-//
-////**********************************************************************************
-//// Setup all the rigid bodies
-//btTransform offset; 
-//offset.setIdentity();
-//offset.setOrigin(btVector3 ( offsetX,offsetY,offsetZ));
-//
-////TRANSFORM
-//btTransform transform;
-//
-////**********************************************************************************
-//transform.setIdentity();
-//transform.setOrigin(btVector3(btScalar(0.), btScalar(1.), btScalar(0.)));
-//m_bodies[BODYPART_PELVIS] = localCreateRigidBody(btScalar(1.), offset*transform, m_shapes[BODYPART_PELVIS]);
-//self->mWorld->addRigidBody(m_bodies[BODYPART_PELVIS]);
-////**********************************************************************************
-//transform.setIdentity();
-//transform.setOrigin(btVector3(btScalar(0.), btScalar(1.2), btScalar(0.)));
-//m_bodies[BODYPART_SPINE] = localCreateRigidBody(btScalar(1.), offset*transform, m_shapes[BODYPART_SPINE]);
-//self->mWorld->addRigidBody(m_bodies[BODYPART_SPINE]);
-//transform.setIdentity();
-////**********************************************************************************
-//transform.setIdentity();
-//transform.setOrigin(btVector3(btScalar(0.), btScalar(1.6), btScalar(0.)));
-//m_bodies[BODYPART_HEAD] = localCreateRigidBody(btScalar(1.), offset*transform, m_shapes[BODYPART_HEAD]);
+float offsetX = state.GetValue < float >( 2, 0.0f );
+float offsetY = state.GetValue < float >( 3, 0.0f );
+float offsetZ = state.GetValue < float >( 4, 0.0f );
+
+
+btCollisionShape*	m_shapes[BODYPART_COUNT];
+btRigidBody*		m_bodies[BODYPART_COUNT];
+btTypedConstraint*	m_joints[JOINT_COUNT];
+
+
+// Setup the geometry
+	m_shapes[BODYPART_PELVIS]			= new btCapsuleShape(btScalar(0.15), btScalar(0.20));
+	m_shapes[BODYPART_SPINE]			= new btCapsuleShape(btScalar(0.15), btScalar(0.28));
+	m_shapes[BODYPART_HEAD]				= new btCapsuleShape(btScalar(0.10), btScalar(0.05));
+	m_shapes[BODYPART_LEFT_UPPER_LEG]	= new btCapsuleShape(btScalar(0.07), btScalar(0.45));
+	m_shapes[BODYPART_LEFT_LOWER_LEG]	= new btCapsuleShape(btScalar(0.05), btScalar(0.37));
+	m_shapes[BODYPART_RIGHT_UPPER_LEG]	= new btCapsuleShape(btScalar(0.07), btScalar(0.45));
+	m_shapes[BODYPART_RIGHT_LOWER_LEG]	= new btCapsuleShape(btScalar(0.05), btScalar(0.37));
+	m_shapes[BODYPART_LEFT_UPPER_ARM]	= new btCapsuleShape(btScalar(0.05), btScalar(0.33));
+	m_shapes[BODYPART_LEFT_LOWER_ARM]	= new btCapsuleShape(btScalar(0.04), btScalar(0.25));
+	m_shapes[BODYPART_RIGHT_UPPER_ARM]	= new btCapsuleShape(btScalar(0.05), btScalar(0.33));
+	m_shapes[BODYPART_RIGHT_LOWER_ARM]	= new btCapsuleShape(btScalar(0.04), btScalar(0.25));
+
+
+//**********************************************************************************
+// Setup all the rigid bodies
+btTransform offset; 
+offset.setIdentity();
+offset.setOrigin(btVector3 ( offsetX,offsetY,offsetZ));
+
+//TRANSFORM
+btTransform transform;
+transform.setIdentity();
+//**********************************************************************************
+
+transform.setOrigin(btVector3(btScalar(0.), btScalar(1), btScalar(0.)));
+m_bodies[BODYPART_PELVIS] = localCreateRigidBody(btScalar(1.), offset*transform, m_shapes[BODYPART_PELVIS]);
+self->mWorld->addRigidBody(m_bodies[BODYPART_PELVIS]);
+//**********************************************************************************
+transform.setIdentity();
+transform.setOrigin(btVector3(btScalar(0.), btScalar(1.2), btScalar(0.)));
+m_bodies[BODYPART_SPINE] = localCreateRigidBody(btScalar(1.), offset*transform, m_shapes[BODYPART_SPINE]);
+self->mWorld->addRigidBody(m_bodies[BODYPART_SPINE]);
+
+//**********************************************************************************
+transform.setIdentity();
+transform.setOrigin(btVector3(btScalar(0.), btScalar(0), btScalar(0.)));
+m_bodies[BODYPART_HEAD] = localCreateRigidBody(btScalar(1.), offset*transform, m_shapes[BODYPART_HEAD]);
 //self->mWorld->addRigidBody(m_bodies[BODYPART_HEAD]);
-//
-////**********************************************************************************
-//transform.setIdentity();
-//transform.setOrigin(btVector3(btScalar(-0.18), btScalar(0.65), btScalar(0.)));
-//m_bodies[BODYPART_LEFT_UPPER_LEG] = localCreateRigidBody(btScalar(1.), offset*transform, m_shapes[BODYPART_LEFT_UPPER_LEG]);
+
+//**********************************************************************************
+transform.setIdentity();
+transform.setOrigin(btVector3(btScalar(0), btScalar(0), btScalar(0.)));
+m_bodies[BODYPART_LEFT_UPPER_LEG] = localCreateRigidBody(btScalar(1.), offset*transform, m_shapes[BODYPART_LEFT_UPPER_LEG]);
 //self->mWorld->addRigidBody(m_bodies[BODYPART_LEFT_UPPER_LEG]);
-//
-////**********************************************************************************
-//transform.setIdentity();
-//transform.setOrigin(btVector3(btScalar(-0.18), btScalar(0.2), btScalar(0.)));
-//m_bodies[BODYPART_LEFT_LOWER_LEG] = localCreateRigidBody(btScalar(1.), offset*transform, m_shapes[BODYPART_LEFT_LOWER_LEG]);
+
+//**********************************************************************************
+transform.setIdentity();
+transform.setOrigin(btVector3(btScalar(-0.18), btScalar(0.2), btScalar(0.)));
+m_bodies[BODYPART_LEFT_LOWER_LEG] = localCreateRigidBody(btScalar(1.), offset*transform, m_shapes[BODYPART_LEFT_LOWER_LEG]);
 //self->mWorld->addRigidBody(m_bodies[BODYPART_LEFT_LOWER_LEG]);
-//
-////**********************************************************************************
-//transform.setIdentity();
-//transform.setOrigin(btVector3(btScalar(0.18), btScalar(0.65), btScalar(0.)));
-//m_bodies[BODYPART_RIGHT_UPPER_LEG] = localCreateRigidBody(btScalar(1.), offset*transform, m_shapes[BODYPART_RIGHT_UPPER_LEG]);
+
+//**********************************************************************************
+transform.setIdentity();
+transform.setOrigin(btVector3(btScalar(0.18), btScalar(0.65), btScalar(0.)));
+m_bodies[BODYPART_RIGHT_UPPER_LEG] = localCreateRigidBody(btScalar(1.), offset*transform, m_shapes[BODYPART_RIGHT_UPPER_LEG]);
 //self->mWorld->addRigidBody(m_bodies[BODYPART_RIGHT_UPPER_LEG]);
-//
-////**********************************************************************************
-//transform.setIdentity();
-//transform.setOrigin(btVector3(btScalar(0.18), btScalar(0.2), btScalar(0.)));
-//m_bodies[BODYPART_RIGHT_LOWER_LEG] = localCreateRigidBody(btScalar(1.), offset*transform, m_shapes[BODYPART_RIGHT_LOWER_LEG]);
+
+//**********************************************************************************
+transform.setIdentity();
+transform.setOrigin(btVector3(btScalar(0.18), btScalar(0.2), btScalar(0.)));
+m_bodies[BODYPART_RIGHT_LOWER_LEG] = localCreateRigidBody(btScalar(1.), offset*transform, m_shapes[BODYPART_RIGHT_LOWER_LEG]);
 //self->mWorld->addRigidBody(m_bodies[BODYPART_RIGHT_LOWER_LEG]);
-//
-////**********************************************************************************
-//transform.setIdentity();
-//transform.setOrigin(btVector3(btScalar(-0.35), btScalar(1.45), btScalar(0.)));
-//transform.getBasis().setEulerZYX(0,0,M_PI_2);
-//m_bodies[BODYPART_LEFT_UPPER_ARM] = localCreateRigidBody(btScalar(1.), offset*transform, m_shapes[BODYPART_LEFT_UPPER_ARM]);
+
+//**********************************************************************************
+transform.setIdentity();
+transform.setOrigin(btVector3(btScalar(-0.35), btScalar(1.45), btScalar(0.)));
+transform.getBasis().setEulerZYX(0,0,M_PI_2);
+m_bodies[BODYPART_LEFT_UPPER_ARM] = localCreateRigidBody(btScalar(1.), offset*transform, m_shapes[BODYPART_LEFT_UPPER_ARM]);
 //self->mWorld->addRigidBody(m_bodies[BODYPART_LEFT_UPPER_ARM]);
-//
-////**********************************************************************************
-//transform.setIdentity();
-//transform.setOrigin(btVector3(btScalar(-0.7), btScalar(1.45), btScalar(0.)));
-//transform.getBasis().setEulerZYX(0,0,M_PI_2);
-//m_bodies[BODYPART_LEFT_LOWER_ARM] = localCreateRigidBody(btScalar(1.), offset*transform, m_shapes[BODYPART_LEFT_LOWER_ARM]);
+
+//**********************************************************************************
+transform.setIdentity();
+transform.setOrigin(btVector3(btScalar(-0.7), btScalar(1.45), btScalar(0.)));
+transform.getBasis().setEulerZYX(0,0,M_PI_2);
+m_bodies[BODYPART_LEFT_LOWER_ARM] = localCreateRigidBody(btScalar(1.), offset*transform, m_shapes[BODYPART_LEFT_LOWER_ARM]);
 //self->mWorld->addRigidBody(m_bodies[BODYPART_LEFT_LOWER_ARM]);
-//
-////**********************************************************************************
-//transform.setIdentity();
-//transform.setOrigin(btVector3(btScalar(0.35), btScalar(1.45), btScalar(0.)));
-//transform.getBasis().setEulerZYX(0,0,-M_PI_2);
-//m_bodies[BODYPART_RIGHT_UPPER_ARM] = localCreateRigidBody(btScalar(1.), offset*transform, m_shapes[BODYPART_RIGHT_UPPER_ARM]);
+
+//**********************************************************************************
+transform.setIdentity();
+transform.setOrigin(btVector3(btScalar(0.35), btScalar(1.45), btScalar(0.)));
+transform.getBasis().setEulerZYX(0,0,-M_PI_2);
+m_bodies[BODYPART_RIGHT_UPPER_ARM] = localCreateRigidBody(btScalar(1.), offset*transform, m_shapes[BODYPART_RIGHT_UPPER_ARM]);
 //self->mWorld->addRigidBody(m_bodies[BODYPART_RIGHT_UPPER_ARM]);
-//
-////**********************************************************************************
-//transform.setIdentity();
-//transform.setOrigin(btVector3(btScalar(0.7), btScalar(1.45), btScalar(0.)));
-//transform.getBasis().setEulerZYX(0,0,-M_PI_2);
-//m_bodies[BODYPART_RIGHT_LOWER_ARM] = localCreateRigidBody(btScalar(1.), offset*transform, m_shapes[BODYPART_RIGHT_LOWER_ARM]);
+
+//**********************************************************************************
+transform.setIdentity();
+transform.setOrigin(btVector3(btScalar(0.7), btScalar(1.45), btScalar(0.)));
+transform.getBasis().setEulerZYX(0,0,-M_PI_2);
+m_bodies[BODYPART_RIGHT_LOWER_ARM] = localCreateRigidBody(btScalar(1.), offset*transform, m_shapes[BODYPART_RIGHT_LOWER_ARM]);
 //self->mWorld->addRigidBody(m_bodies[BODYPART_RIGHT_LOWER_ARM]);
-//
-//
-////*******************************************************************************************
-//// Setup some damping on the m_bodies
-//		for (int i = 0; i < BODYPART_COUNT; ++i)
-//		{
-//				m_bodies[i]->setDamping(0.05, 0.85);
-//				m_bodies[i]->setDeactivationTime(0.8);
-//				m_bodies[i]->setSleepingThresholds(1.6, 2.5);
-//		}
-//
-//
-////****************************************************************************************
-////****************************************************************************************
-//
-//btHingeConstraint*		hingeC;
-//btConeTwistConstraint*	coneC;
-//
-//btTransform localA, localB;
-//
-//
-////****************************************************************************************
-////****************************************************************************************
-//localA.setIdentity(); 
-//localB.setIdentity();
-//localA.getBasis().setEulerZYX(0,M_PI_2,0); localA.setOrigin(btVector3(btScalar(0.), btScalar(0.15), btScalar(0.)));
-//localB.getBasis().setEulerZYX(0,M_PI_2,0); localB.setOrigin(btVector3(btScalar(0.), btScalar(-0.15), btScalar(0.)));
-//
-//hingeC = new btHingeConstraint(*m_bodies[BODYPART_PELVIS], *m_bodies[BODYPART_SPINE], localA, localB);
+
+
+//*******************************************************************************************
+// Setup some damping on the m_bodies
+		//for (int i = 0; i < BODYPART_COUNT; ++i)
+		//{
+		//		m_bodies[i]->setDamping(0.05, 0.85);
+		//		m_bodies[i]->setDeactivationTime(0.8);
+		//		m_bodies[i]->setSleepingThresholds(1.6, 2.5);
+		//}
+
+
+//****************************************************************************************
+//****************************************************************************************
+
+btHingeConstraint*		hingeC;
+btConeTwistConstraint*	coneC;
+
+btTransform localA; 
+btTransform	localB;
+
+
+//****************************************************************************************
+//****************************************************************************************
+localA.setIdentity(); 
+localB.setIdentity();
+
+		localA.getBasis().setEulerZYX(0,0,0); 
+		localA.setOrigin(btVector3(btScalar(0.), btScalar(0.15), btScalar(0.)));
+
+		localB.getBasis().setEulerZYX(0,0,0); 
+		localB.setOrigin(btVector3(btScalar(0.), btScalar(-0.15), btScalar(0.)));
+
+hingeC = new btHingeConstraint(*m_bodies[BODYPART_PELVIS], *m_bodies[BODYPART_SPINE], localA, localB);
 //hingeC->setLimit(btScalar(-M_PI_4), btScalar(M_PI_2));
-//hingeC->setDbgDrawSize(0);
-//m_joints[JOINT_PELVIS_SPINE] = hingeC;	
-//
-//self->mWorld->addConstraint(m_joints[JOINT_PELVIS_SPINE], true);
-//
-////****************************************************************************************
-////****************************************************************************************
+hingeC->setDbgDrawSize(1);
+m_joints[JOINT_PELVIS_SPINE] = hingeC;	
+
+self->mWorld->addConstraint(m_joints[JOINT_PELVIS_SPINE], true);
+////
+//////****************************************************************************************
+//////****************************************************************************************
 //localA.setIdentity(); 
 //localB.setIdentity();
-//localA.getBasis().setEulerZYX(0,0,M_PI_2); 
-//localA.setOrigin(btVector3(btScalar(0.), btScalar(0.30), btScalar(0.)));
-//localB.getBasis().setEulerZYX(0,0,M_PI_2); 
-//localB.setOrigin(btVector3(btScalar(0.), btScalar(-0.14), btScalar(0.)));
+//localA.getBasis().setEulerZYX(0,0,M_PI_2); localA.setOrigin(btVector3(btScalar(0.), btScalar(0.30), btScalar(0.)));
+//localB.getBasis().setEulerZYX(0,0,M_PI_2); localB.setOrigin(btVector3(btScalar(0.), btScalar(-0.14), btScalar(0.)));
 //
 //coneC = new btConeTwistConstraint(*m_bodies[BODYPART_SPINE], *m_bodies[BODYPART_HEAD], localA, localB);
 //coneC->setLimit(M_PI_4, M_PI_4, M_PI_2);
-//coneC->setDbgDrawSize(0);
+//coneC->setDbgDrawSize(1);
 //m_joints[JOINT_SPINE_HEAD] = coneC;
 //
 //self->mWorld->addConstraint(m_joints[JOINT_SPINE_HEAD], true);
-//
-////****************************************************************************************
-////****************************************************************************************
-//
+////
+//////****************************************************************************************
+//////****************************************************************************************
+////
 //localA.setIdentity(); 
-//localA.getBasis().setEulerZYX(0,0,-M_PI_4*5); 
-//localA.setOrigin(btVector3(btScalar(-0.18), btScalar(-0.10), btScalar(0.)));
+//localA.getBasis().setEulerZYX(0,0,-M_PI_4*5); localA.setOrigin(btVector3(btScalar(-0.18), btScalar(-0.10), btScalar(0.)));
 //
 //localB.setIdentity();
-//localB.getBasis().setEulerZYX(0,0,-M_PI_4*5); 
-//localB.setOrigin(btVector3(btScalar(0.), btScalar(0.225), btScalar(0.)));
+//localB.getBasis().setEulerZYX(0,0,-M_PI_4*5); localB.setOrigin(btVector3(btScalar(0.), btScalar(0.225), btScalar(0.)));
 //
 //coneC = new btConeTwistConstraint(*m_bodies[BODYPART_PELVIS], *m_bodies[BODYPART_LEFT_UPPER_LEG], localA, localB);
 //coneC->setLimit(M_PI_4, M_PI_4, 0);
@@ -307,12 +303,10 @@
 ////****************************************************************************************
 //
 //localA.setIdentity(); 
-//localA.getBasis().setEulerZYX(0,M_PI_2,0); 
-//localA.setOrigin(btVector3(btScalar(0.), btScalar(-0.225), btScalar(0.)));
+//localA.getBasis().setEulerZYX(0,M_PI_2,0); localA.setOrigin(btVector3(btScalar(0.), btScalar(-0.225), btScalar(0.)));
 //
 //localB.setIdentity();
-//localB.getBasis().setEulerZYX(0,M_PI_2,0); 
-//localB.setOrigin(btVector3(btScalar(0.), btScalar(0.185), btScalar(0.)));
+//localB.getBasis().setEulerZYX(0,M_PI_2,0); localB.setOrigin(btVector3(btScalar(0.), btScalar(0.185), btScalar(0.)));
 //
 //hingeC = new btHingeConstraint(*m_bodies[BODYPART_LEFT_UPPER_LEG], *m_bodies[BODYPART_LEFT_LOWER_LEG], localA, localB);
 //hingeC->setLimit(btScalar(0), btScalar(M_PI_2));
@@ -324,11 +318,9 @@
 ////****************************************************************************************
 ////****************************************************************************************
 //localA.setIdentity(); 
-//localA.getBasis().setEulerZYX(0,0,M_PI_4); 
-//localA.setOrigin(btVector3(btScalar(0.18), btScalar(-0.10), btScalar(0.)));
+//localA.getBasis().setEulerZYX(0,0,M_PI_4); localA.setOrigin(btVector3(btScalar(0.18), btScalar(-0.10), btScalar(0.)));
 //localB.setIdentity();
-//localB.getBasis().setEulerZYX(0,0,M_PI_4); 
-//localB.setOrigin(btVector3(btScalar(0.), btScalar(0.225), btScalar(0.)));
+//localB.getBasis().setEulerZYX(0,0,M_PI_4); localB.setOrigin(btVector3(btScalar(0.), btScalar(0.225), btScalar(0.)));
 //
 //coneC = new btConeTwistConstraint(*m_bodies[BODYPART_PELVIS], *m_bodies[BODYPART_RIGHT_UPPER_LEG], localA, localB);
 //coneC->setLimit(M_PI_4, M_PI_4, 0);
@@ -340,12 +332,10 @@
 ////****************************************************************************************
 ////****************************************************************************************
 //localA.setIdentity(); 
-//localA.getBasis().setEulerZYX(0,M_PI_2,0); 
-//localA.setOrigin(btVector3(btScalar(0.), btScalar(-0.225), btScalar(0.)));
+//localA.getBasis().setEulerZYX(0,M_PI_2,0); localA.setOrigin(btVector3(btScalar(0.), btScalar(-0.225), btScalar(0.)));
 //
 //localB.setIdentity();
-//localB.getBasis().setEulerZYX(0,M_PI_2,0);
-//localB.setOrigin(btVector3(btScalar(0.), btScalar(0.185), btScalar(0.)));
+//localB.getBasis().setEulerZYX(0,M_PI_2,0);localB.setOrigin(btVector3(btScalar(0.), btScalar(0.185), btScalar(0.)));
 //
 //hingeC = new btHingeConstraint(*m_bodies[BODYPART_RIGHT_UPPER_LEG], *m_bodies[BODYPART_RIGHT_LOWER_LEG], localA, localB);
 //hingeC->setLimit(btScalar(0), btScalar(M_PI_2));
@@ -355,15 +345,22 @@
 //
 //self->mWorld->addConstraint(m_joints[JOINT_RIGHT_KNEE], true);
 //
+
+
+
+
+
+
+
+
+
 ////****************************************************************************************
 ////****************************************************************************************
 //localA.setIdentity();
-//localA.getBasis().setEulerZYX(0,0,M_PI); 
-//localA.setOrigin(btVector3(btScalar(-0.2), btScalar(0.15), btScalar(0.)));
+//localA.getBasis().setEulerZYX(0,0,M_PI); localA.setOrigin(btVector3(btScalar(-0.2), btScalar(0.15), btScalar(0.)));
 //
 //localB.setIdentity();
-//localB.getBasis().setEulerZYX(0,0,M_PI_2); 
-//localB.setOrigin(btVector3(btScalar(0.), btScalar(-0.18), btScalar(0.)));
+//localB.getBasis().setEulerZYX(0,0,M_PI_2); localB.setOrigin(btVector3(btScalar(0.), btScalar(-0.18), btScalar(0.)));
 //
 //coneC = new btConeTwistConstraint(*m_bodies[BODYPART_SPINE], *m_bodies[BODYPART_LEFT_UPPER_ARM], localA, localB);
 //coneC->setLimit(M_PI_2, M_PI_2, 0);
@@ -372,15 +369,21 @@
 //
 //self->mWorld->addConstraint(m_joints[JOINT_LEFT_SHOULDER], true);
 //
+
+
+
+
+
+
+
+
 ////****************************************************************************************
 ////****************************************************************************************
 //localA.setIdentity(); 
-//localA.getBasis().setEulerZYX(0,M_PI_2,0); 
-//localA.setOrigin(btVector3(btScalar(0.), btScalar(0.18), btScalar(0.)));
+//localA.getBasis().setEulerZYX(0,M_PI_2,0); localA.setOrigin(btVector3(btScalar(0.), btScalar(0.18), btScalar(0.)));
 //
 //localB.setIdentity();
-//localB.getBasis().setEulerZYX(0,M_PI_2,0);
-//localB.setOrigin(btVector3(btScalar(0.), btScalar(-0.14), btScalar(0.)));
+//localB.getBasis().setEulerZYX(0,M_PI_2,0);localB.setOrigin(btVector3(btScalar(0.), btScalar(-0.14), btScalar(0.)));
 //
 //hingeC = new btHingeConstraint(*m_bodies[BODYPART_LEFT_UPPER_ARM], *m_bodies[BODYPART_LEFT_LOWER_ARM], localA, localB);
 //hingeC->setLimit(btScalar(0), btScalar(M_PI_2));
@@ -424,9 +427,9 @@
 //self->mWorld->addConstraint(m_joints[JOINT_RIGHT_ELBOW], true);
 
 
-//return 1;
+return 1;
 
-//};
+};
 
 //***************************************************************************
 //***************************************************************************
@@ -493,6 +496,38 @@ int MOAIBulletBody::_SetLinearDamping ( lua_State* L ) {
     }
 	return 1;
 }
+
+//----------------------------------------------------------------//
+int MOAIBulletBody::_SetDamping ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIBulletBody, "UNN" )	
+	
+	float dampingX = state.GetValue < float >( 2, 0.0f );
+	float dampingY = state.GetValue < float >( 3, 0.0f );
+
+    if (self->mBody)
+	{   		
+		self->mBody->setDamping(dampingX, dampingY);
+		//self->mBody->setDamping(0.05, 0.85);
+    }
+	return 1;
+}
+
+
+//----------------------------------------------------------------//
+int MOAIBulletBody::_SetSleepingThresholds ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIBulletBody, "UNN" )	
+	float sleepX = state.GetValue < float >( 2, 0.0f );
+	float sleepY = state.GetValue < float >( 3, 0.0f );
+    if (self->mBody)
+	{   		
+		self->mBody->setDamping(sleepX, sleepY);
+	
+    }
+	return 1;
+}
+
+
+
 
 
 
@@ -986,7 +1021,8 @@ int MOAIBulletBody::_SetPosition ( lua_State* L ) {
 	float loc_z = state.GetValue < float >( 4, 0.0f );
 
 	btTransform& worldTrans = self->mBody->getWorldTransform();
-	worldTrans.setOrigin ( btVector3 ( loc_x,loc_y,loc_z) );
+	worldTrans.setIdentity();
+	worldTrans.setOrigin ( btVector3 ( btScalar(loc_x),btScalar(loc_y),btScalar(loc_z)) );
 
 	return 1;
 };
@@ -999,33 +1035,50 @@ int MOAIBulletBody::_SetRotation ( lua_State* L ) {
 	float rot_z = state.GetValue < float >( 4, 0.0f );
 
 	btTransform& worldTrans = self->mBody->getWorldTransform();
+	worldTrans.setIdentity();
 	worldTrans.setRotation ( btQuaternion ( rot_x,rot_y,rot_z,1 ) ); 
 	return 1;
 };
-
 //**********************************************************
-int MOAIBulletBody::_AddToWorld ( lua_State* L ) {
-	MOAI_LUA_SETUP ( MOAIBulletBody, "U" );	
-	self->mWorld->addRigidBody(self->mBody);
+int MOAIBulletBody::_SetGravity ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIBulletBody, "UN" )	;
+	float gravity_x = state.GetValue < float >( 2, 0.0f );
+	float gravity_y = state.GetValue < float >( 3, 0.0f );
+	float gravity_z = state.GetValue < float >( 4, 0.0f );
+	self->mBody->setGravity(btVector3(gravity_x, gravity_y, gravity_z));
+	
+	return 1;
+};
+//**********************************************************
+int MOAIBulletBody::_SetDeactivationTime ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIBulletBody, "UN" )	;
+	float time = state.GetValue < float >( 2, 0.0f );	
+	self->mBody->setDeactivationTime(time);
+	
 	return 1;
 };
 
-
 //***************************************************************************
 //***************************************************************************
 //***************************************************************************
 //***************************************************************************
 //***************************************************************************
 //***************************************************************************
-
-
 
 
 
 
 //----------------------------------------------------------------//
 void MOAIBulletBody::Destroy () {
+	printf("\n ~Destroy \n");
+	if ( this->mBody ) {
+			//this->mWorld->removeRigidBody(this->mBody); 		
+			//this->mBody = 0;
+	}
 
+	delete (this->mBody);
+	delete (this->mCompound);
+	delete (this->mMotion);
 }
 
 
@@ -1034,8 +1087,6 @@ void MOAIBulletBody::Destroy () {
 MOAIBulletBody::MOAIBulletBody () :
 	mBody ( 0 ),
 	mMotion( 0 ),
-	//mMass( 0.1 ),
-	//mInertia ( 0.1,0.1,0.1 ),
 	mCompound( 0 )
 {
 	
@@ -1044,54 +1095,79 @@ RTTI_BEGIN
 	RTTI_EXTEND ( MOAILuaObject )
 RTTI_END
 
-this->mMotion	= new btDefaultMotionState();	
-this->mCompound = new btCompoundShape();   
 
-	btScalar mMass = 1.0;
-//inertia
-	btVector3 mInertia(1.0, 1.0, 1.0);
-
-btRigidBody::btRigidBodyConstructionInfo info(mMass,this->mMotion,this->mCompound,mInertia);  //create the constructioninfo, you can create multiple bodies with the same info
-this->mBody = new btRigidBody(info);    //let's create the body itself
+//btTransform offset; 
+//offset.setIdentity();
+//offset.setOrigin(btVector3 ( 0,0,0));
+//
+//this->mMotion	= new btDefaultMotionState();	
+//this->mCompound = new btCompoundShape();   
+//
+////MASS
+//	btScalar mMass = 1.0;
+////INERTIA
+//	btVector3 mInertia(0.0, 0.0, 0.0);
+////BODY
+//	btRigidBody::btRigidBodyConstructionInfo info(mMass,this->mMotion,this->mCompound,mInertia);  //create the constructioninfo, you can create multiple bodies with the same info
+//	this->mBody = new btRigidBody(info);    //let's create the body itself
 	
 }
 
 
+
+//----------------------------------------------------------------//
+MOAIBulletBody::~MOAIBulletBody () {
+
+	printf("\n ~MOAIBulletBody \n");
+	this->Destroy ();
+
+	
+}
+
+
+
+//----------------------------------------------------------------//
+int MOAIBulletBody::_AddToWorld ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIBulletBody, "U" );	
+	self->mWorld->addRigidBody(self->mBody);
+	return 1;
+};
+
+
+
+
+//*********************************************************************************
 //----------------------------------------------------------------//
 int MOAIBulletBody::_addToBody ( lua_State* L ) {
 
 MOAI_LUA_SETUP ( MOAIBulletBody, "UU" )
 MOAIBulletShape* shapeA = state.GetLuaObject < MOAIBulletShape >( 2, true );
 
-btTransform t; 
-t.setIdentity();
-t.setRotation ( btQuaternion ( 0,0,0)); 
-t.setOrigin(btVector3 ( 0,0,0));
-self->mCompound->addChildShape(self->mBody->getWorldTransform(),shapeA->mShape); //MAKE FRIEND CLASS
+
+	//AT ZERO ZERO
+	btTransform t; 
+	t.setIdentity();
+	t.setRotation ( btQuaternion ( 0,0,0)); 
+	t.setOrigin(btVector3 ( 0,0,0));
+
+	self->mCompound->addChildShape(self->mBody->getWorldTransform(),shapeA->mShape); //MAKE FRIEND CLASS
+
 return 1;
 };
 
 
 
-//----------------------------------------------------------------//
-MOAIBulletBody::~MOAIBulletBody () {
-	printf("\n ~MOAIBulletBody \n");
-
-
-	//delete this->mMotion;
-	//delete this->mCompound;
-	//delete this->mBody;
-
-	this->Destroy ();
-}
 
 
 //////----------------------------------------------------------------//
 int MOAIBulletBody::_newShape ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletBody, "U" )	
+
 	MOAIBulletShape* shape = new MOAIBulletShape ();
+
 	shape->setCompound(self->mCompound);	
 	shape->setBody(self->mBody);
+
 	self->LuaRetain ( shape );
 	shape->PushLuaUserdata ( state );
 	return 1;
@@ -1138,11 +1214,15 @@ void MOAIBulletBody::RegisterLuaFuncs ( MOAILuaState& state ) {
 { "setAngularDamping",			_SetAngularDamping },
 
 //DAMPING
+{ "setDamping",				 _SetDamping },
 
+
+//GRAVAITY
+{ "setGravity",				 _SetGravity },
 
 //FRICTION
 { "setFriction",				 _SetFriction },	
-{ "setAnisotropicFriction",			    _SetAnisotropicFriction },	
+{ "setAnisotropicFriction",		_SetAnisotropicFriction },	
 { "setRollingFriction",			    _SetRollingFriction },	
 //RESTITUTION
 { "setRestitution",			    _SetRestitution },
@@ -1165,6 +1245,12 @@ void MOAIBulletBody::RegisterLuaFuncs ( MOAILuaState& state ) {
 { "setRotation",				_SetRotation },	
 
 { "addToWorld",					_AddToWorld},	
+
+//DEACTION
+
+{ "setDeactivationTime",			_SetDeactivationTime},	
+{ "setSleepingThresholds",			_SetSleepingThresholds},
+
 
 //REMOVE
 { "removeBodyFromWorld",				_RemoveBodyFromWorld },	
@@ -1191,7 +1277,7 @@ void MOAIBulletBody::RegisterLuaFuncs ( MOAILuaState& state ) {
 { "getCcdRadius",					_GetCcdMotionThreshold },	
 { "isActive",					_IsActive },	
 { "getCollidingBodies",					_GetCollidingBodies },	
-
+{ "addRag",					_addRag },	
 
 
 
