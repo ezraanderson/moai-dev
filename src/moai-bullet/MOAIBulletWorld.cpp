@@ -17,12 +17,8 @@
 #include <moai-bullet/MOAIBulletJointPoint.h>
 #include <moai-bullet/MOAIBulletJointSlide.h>
 
-
-
-
 #include <moai-bullet/MOAIBulletTransform.h>
 
-//********************************************************************************
 //----------------------------------------------------------------//
 float MOAIBulletPrim::GetUnitsToMeters () {
 	if ( this->mWorld ) {
@@ -38,18 +34,35 @@ MOAIBulletPrim::MOAIBulletPrim () :
 	mDestroyNext ( 0 ) {
 }
 //----------------------------------------------------------------//
-//CALLS TO CHECK TO ACTION IS DONE
 bool MOAIBulletWorld::IsDone () {
 	return false;
 }
-
 //----------------------------------------------------------------//
-//RUNS STEP
+
 void MOAIBulletWorld::OnUpdate ( float step ) {			
      mWorld->stepSimulation(1 / mStep, 10);	
+
+	for (int j=mWorld->getNumCollisionObjects()-1; j>=0 ;j--){	
+		btCollisionObject* obj = mWorld->getCollisionObjectArray()[j];
+		btRigidBody* body = btRigidBody::upcast(obj);
+
+		//ACTIVE AND AWAKE THE SAME THING?
+			if ( body->isActive()) {
+				if (body && body->getMotionState())
+				{
+					//btTransform trans;
+					//body->getMotionState()->getWorldTransform(trans);
+					//printf("world pos = %f,%f,%f\n",float(trans.getOrigin().getX()),float(trans.getOrigin().getY()),float(trans.getOrigin().getZ()));
+
+					MOAIBulletBody* moaiBody = ( MOAIBulletBody* )body->GetUserData (); //HAD TO ADD TO BULLET
+					moaiBody->ScheduleUpdate ();
+				};
+			
+			};	
+	}
+
 };
 //----------------------------------------------------------------//
-//DEBUG DRAW
 void MOAIBulletWorld::DrawDebug () {
 	if ( this->mDebugDraw ) {	
 		MOAIDraw::Bind ();	
@@ -68,32 +81,27 @@ void MOAIBulletWorld::DrawDebug () {
 		gfxDevice.EndPrim ();
 	}
 }
-
-
-//**************************************************************************************************
-//**************************************************************************************************
-//**************************************************************************************************
-//**************************************************************************************************
-//**************************************************************************************************
-
-
 //----------------------------------------------------------------//
 void MOAIBulletWorld::SayGoodbye ( btCompoundShape* shape) {
 
-//NO USER DATA CONTAINER
+//***********************************************************
+//NO USER DATA CONTAINER MUST ADDED IT TO BULLET SOURCE CODE??
+//***********************************************************
 
-	//MOAIBulletShape* moaiFixture = ( MOAIBulletShape* )fixture->GetUserData ();
-	//if ( moaiFixture->mFixture ) {
-	//	moaiFixture->mFixture = 0;
-	//	moaiFixture->SetWorld ( 0 );
-	//	this->LuaRelease ( moaiFixture );
-	//}
+		//MOAIBulletShape* moaiFixture = ( MOAIBulletShape* )fixture->GetUserData ();
+		//if ( moaiFixture->mFixture ) {
+		//	moaiFixture->mFixture = 0;
+		//	moaiFixture->SetWorld ( 0 );
+		//	this->LuaRelease ( moaiFixture );
+		//}
 }
 
 //----------------------------------------------------------------//
 void MOAIBulletWorld::SayGoodbye ( btTypedConstraint* joint ) {
 
-//NO USER DATA CONTAINER
+//***********************************************************
+//NO USER DATA CONTAINER MUST ADDED IT TO BULLET SOURCE CODE??
+//***********************************************************
 
 	//MOAIBulletJoint* moaiJoint = ( MOAIBulletJoint* )joint->GetUserData ();
 	//if ( moaiJoint->mJoint ) {
@@ -103,7 +111,6 @@ void MOAIBulletWorld::SayGoodbye ( btTypedConstraint* joint ) {
 	//}
 
 }
-
 //----------------------------------------------------------------//
 void MOAIBulletWorld::ScheduleDestruction (MOAIBulletBody& body) {
 
@@ -114,7 +121,6 @@ void MOAIBulletWorld::ScheduleDestruction (MOAIBulletBody& body) {
 	}
 	this->Destroy ();
 }
-
 //----------------------------------------------------------------//
 void MOAIBulletWorld::ScheduleDestruction ( MOAIBulletShape& shape ) {
 
@@ -125,7 +131,6 @@ void MOAIBulletWorld::ScheduleDestruction ( MOAIBulletShape& shape ) {
 	}
 	this->Destroy ();
 }
-
 //----------------------------------------------------------------//
 void MOAIBulletWorld::ScheduleDestruction (  MOAIBulletJoint& joint ) {
 
@@ -136,8 +141,8 @@ void MOAIBulletWorld::ScheduleDestruction (  MOAIBulletJoint& joint ) {
 	}
 	this->Destroy ();
 }
-
 //----------------------------------------------------------------//
+//I DON'T UNDERSTAND HOW THIS WORKS ???
 void MOAIBulletWorld::Destroy () {
 
 	if ( this->mLock ) return;
@@ -171,11 +176,7 @@ void MOAIBulletWorld::Destroy () {
 	}	
 	this->mLock = false;
 }
-//**************************************************************************************************
-//**************************************************************************************************
-//**************************************************************************************************
-//**************************************************************************************************
-//**************************************************************************************************
+//----------------------------------------------------------------//
 MOAIBulletWorld::MOAIBulletWorld () :
     mCollisionConfiguration(0),
     mCollisionDispatcher(0),
@@ -193,13 +194,12 @@ RTTI_BEGIN
 RTTI_END
 
 	mBroadphase				= new btDbvtBroadphase();	
-	//LOWER MEMORY
+	//LOWER MEMORY FOOT PRINT
 	btDefaultCollisionConstructionInfo constructionInfo = btDefaultCollisionConstructionInfo();
 	constructionInfo.m_defaultMaxCollisionAlgorithmPoolSize = 1023;
 	constructionInfo.m_defaultMaxPersistentManifoldPoolSize = 1023;
 	mCollisionConfiguration = new btDefaultCollisionConfiguration(constructionInfo);
-	//collisionConfiguration_	= new btDefaultCollisionConfiguration();
-	
+	//collisionConfiguration_	= new btDefaultCollisionConfiguration();	
 
 	mCollisionDispatcher	= new btCollisionDispatcher(mCollisionConfiguration);
 	mSolver					= new btSequentialImpulseConstraintSolver;
@@ -223,14 +223,6 @@ MOAIBulletWorld::~MOAIBulletWorld () {
 	delete mDebugDraw;
 
 };
-
-//----------------------------------------------------------------//
-//ADD SHAPE ??
-
-
-
-
-
 //----------------------------------------------------------------//
 int MOAIBulletWorld::_addBody ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletWorld, "UU" )	
@@ -238,52 +230,28 @@ int MOAIBulletWorld::_addBody ( lua_State* L ) {
 //NEW CLASS
 	MOAIBulletBody* body = new MOAIBulletBody ();	
 
-
-
-//DOES SETTING THE MOATION WORK?
 	MOAIBulletTransform* transA = state.GetLuaObject < MOAIBulletTransform >(2, true );
 	if ( !( transA )) return 0;
 	btTransform ta = *transA->mTransform;
 
+	//MASS
+		btScalar mMass = 1.0;
+	//INERTIA
+		btVector3 mInertia(0.0, 0.0, 0.0);
 
-//MASS
-	btScalar mMass = 1.0;
-//INERTIA
-	btVector3 mInertia(0.0, 0.0, 0.0);
-
-
-	//**************************************************************
-	//**************************************************************
-			btTransform transform;
-			transform.setIdentity();
-			transform.setOrigin(btVector3(btScalar(0.), btScalar(1.2), btScalar(0.)));
-			btCollisionShape* shape = new btCapsuleShape(btScalar(0.15), btScalar(0.20));
-
-			//btRigidBody::btRigidBodyConstructionInfo info(mMass,body->mMotion,shape,mInertia);  //create the constructioninfo, you can create multiple bodies with the same info
-			//body->mBody = new btRigidBody(info);    //let's create the body itself
-
-	//**************************************************************
-	//**************************************************************
-
-//COMMPOUD SHAPE SOESN:T WORK
-
-	body->mMotion	= new btDefaultMotionState(transform);	
+	body->mMotion	= new btDefaultMotionState(ta);	
 	body->mCompound = new btCompoundShape();   
 	
 
 	btRigidBody::btRigidBodyConstructionInfo info(mMass,body->mMotion,body->mCompound,mInertia);  
 	body->mBody = new btRigidBody(info);  
-	
-
-
-
 	body->setWorld(self->mWorld);	
+	body->SetBody(body->mBody);	//WTF
+
 	self->LuaRetain ( body );
 	body->PushLuaUserdata ( state );
 	return 1;
 }
-
-
 //----------------------------------------------------------------//
 int MOAIBulletWorld::_addJointHinge ( lua_State* L ) {
 
@@ -301,27 +269,8 @@ int MOAIBulletWorld::_addJointHinge ( lua_State* L ) {
 			btTransform ta = *transA->mTransform;
 			btTransform tb = *transB->mTransform;
 
-
-				//float a_x = state.GetValue < float >( 4, 0.0f );
-				//float a_y = state.GetValue < float >( 5, 0.0f );
-				//float a_z = state.GetValue < float >( 6, 0.0f );
-				//float b_x = state.GetValue < float >( 7, 0.0f );
-				//float b_y = state.GetValue < float >( 8, 0.0f );
-				//float b_z = state.GetValue < float >( 9, 0.0f );
-				//btTransform localA, localB;
-				//localA.setIdentity(); 
-				//localB.setIdentity();
-				//localA.getBasis().setEulerZYX(0,M_PI_2,0); 
-				//localA.setOrigin(btVector3(btScalar(a_x), btScalar(a_y), btScalar(a_z)));
-				//localB.getBasis().setEulerZYX(0,M_PI_2,0); 
-				//localB.setOrigin(btVector3(btScalar(b_x), btScalar(a_y), btScalar(a_z)));	
-	
-
-
 	btHingeConstraint*		hingeC;
 	hingeC = new btHingeConstraint(*bodyA->mBody, *bodyB->mBody, ta, tb); //IS THIS A LEAK?
-
-	//hingeC->setLimit(-M_PI_4, M_PI_2);
 
 	hingeC->setDbgDrawSize(self->mDrawJointSize);
 	self->mWorld->addConstraint(hingeC, true);	
@@ -330,7 +279,7 @@ int MOAIBulletWorld::_addJointHinge ( lua_State* L ) {
 	mJoint->SetJoint(hingeC);
 	mJoint->SetBodyA(bodyA);
 	mJoint->SetBodyB(bodyB);
-	//mJoint->setuserdata ?
+		//mJoint->setuserdata // NEED TO ADD TO BULLET SOURCE CODE
 	mJoint->SetWorld ( self );
 	mJoint->LuaRetain ( bodyA );
 	mJoint->LuaRetain ( bodyB );
@@ -340,7 +289,6 @@ int MOAIBulletWorld::_addJointHinge ( lua_State* L ) {
 }
 
 //----------------------------------------------------------------//
-//SHOULD USE CONTRAINT CLASS NOT INDUVUAL CLASSES
 int MOAIBulletWorld::_addJointCone ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletWorld, "UUUUU" )	
 
@@ -358,42 +306,16 @@ int MOAIBulletWorld::_addJointCone ( lua_State* L ) {
 			btTransform ta = *transA->mTransform;
 			btTransform tb = *transB->mTransform;
 
-	//float a_x = state.GetValue < float >( 4, 0.0f );
-	//float a_y = state.GetValue < float >( 5, 0.0f );
-	//float a_z = state.GetValue < float >( 6, 0.0f );
-
-	//float b_x = state.GetValue < float >( 7, 0.0f );
-	//float b_y = state.GetValue < float >( 8, 0.0f );
-	//float b_z = state.GetValue < float >( 9, 0.0f );
-
-	//btTransform localA, localB;
-	//localA.setIdentity(); 
-	//localB.setIdentity();
-
-	//localA.getBasis().setEulerZYX(0,M_PI_2,0); 
-	//localA.setOrigin(btVector3(btScalar(a_x), btScalar(a_y), btScalar(a_z)));
-
-	//localB.getBasis().setEulerZYX(0,M_PI_2,0); 
-	//localB.setOrigin(btVector3(btScalar(b_x), btScalar(a_y), btScalar(a_z)));
-
-
-
 	btConeTwistConstraint*	coneC;	
 	coneC = new btConeTwistConstraint(*bodyA->mBody, *bodyB->mBody, ta, tb); //NEED TO MAKE JOINT SIZE
 	coneC->setDbgDrawSize(self->mDrawJointSize);
-	self->mWorld->addConstraint(coneC, true);
-
-	//SET LIMIT
-	//coneC->setLimit(M_PI_4, M_PI_4, M_PI_2);
-	//coneC->setDbgDrawSize(self->mDrawJointSize);
-	//coneC->setBreakingImpulseThreshold(100.0f);
-	
+	self->mWorld->addConstraint(coneC, true);	
 
 	MOAIBulletJointCone* mJoint = new MOAIBulletJointCone (); //POINTER TO POINTER?
 	mJoint->SetJoint(coneC);
 	mJoint->SetBodyA(bodyA);
 	mJoint->SetBodyB(bodyB);
-	//mJoint->setuserdata ?
+	//mJoint->setuserdata  // NEED TO ADD TO BULLET SOURCE CODE
 	mJoint->SetWorld ( self );
 	mJoint->LuaRetain ( bodyA );
 	mJoint->LuaRetain ( bodyB );
@@ -404,7 +326,6 @@ int MOAIBulletWorld::_addJointCone ( lua_State* L ) {
 	return 1;
 };
 //----------------------------------------------------------------//
-//SHOULD USE CONTRAINT CLASS NOT INDUVUAL CLASSES
 int MOAIBulletWorld::_addJointSlider ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletWorld, "UUUUUN" )	
 
@@ -420,27 +341,6 @@ int MOAIBulletWorld::_addJointSlider ( lua_State* L ) {
 
 			btTransform ta = *transA->mTransform;
 			btTransform tb = *transB->mTransform;
-
-
-	//float a_x = state.GetValue < float >( 4, 0.0f );
-	//float a_y = state.GetValue < float >( 5, 0.0f );
-	//float a_z = state.GetValue < float >( 6, 0.0f );
-
-	//float b_x = state.GetValue < float >( 7, 0.0f );
-	//float b_y = state.GetValue < float >( 8, 0.0f );
-	//float b_z = state.GetValue < float >( 9, 0.0f );
-
-
-	//btTransform localA, localB;
-	//localA.setIdentity(); 
-	//localB.setIdentity();
-
-	//localA.getBasis().setEulerZYX(0,M_PI_2,0); 
-	//localA.setOrigin(btVector3(btScalar(a_x), btScalar(a_y), btScalar(a_z)));
-
-	//localB.getBasis().setEulerZYX(0,M_PI_2,0); 
-	//localB.setOrigin(btVector3(btScalar(b_x), btScalar(a_y), btScalar(a_z)));
-
 
 	bool joint_bool = state.GetValue < bool >( 6, false );
 
@@ -461,7 +361,7 @@ int MOAIBulletWorld::_addJointSlider ( lua_State* L ) {
 	mJoint->SetJoint(sliderC);
 	mJoint->SetBodyA(bodyA);
 	mJoint->SetBodyB(bodyB);
-	//mJoint->setuserdata ?
+	//mJoint->setuserdata ? // NEED TO ADD TO BULLET SOURCE CODE
 	mJoint->SetWorld ( self );
 	mJoint->LuaRetain ( bodyA );
 	mJoint->LuaRetain ( bodyB );
@@ -472,7 +372,6 @@ int MOAIBulletWorld::_addJointSlider ( lua_State* L ) {
 	return 1;
 };
 //----------------------------------------------------------------//
-//SHOULD USE CONTRAINT CLASS NOT INDUVUAL CLASSES
 int MOAIBulletWorld::_addJointFreedom ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletWorld, "UUUUUN" )	
 
@@ -490,33 +389,7 @@ int MOAIBulletWorld::_addJointFreedom ( lua_State* L ) {
 			btTransform tb = *transB->mTransform;
 
 
-
-	//float a_x = state.GetValue < float >( 4, 0.0f );
-	//float a_y = state.GetValue < float >( 5, 0.0f );
-	//float a_z = state.GetValue < float >( 6, 0.0f );
-
-	//float b_x = state.GetValue < float >( 7, 0.0f );
-	//float b_y = state.GetValue < float >( 8, 0.0f );
-	//float b_z = state.GetValue < float >( 9, 0.0f );
-
-	//
-
-	//btTransform localA, localB;
-	//localA.setIdentity(); 
-	//localB.setIdentity();
-	//
-	//localA.getBasis().setEulerZYX(0,M_PI_2,0); 
-	//localA.setOrigin(btVector3(btScalar(a_x), btScalar(a_y), btScalar(a_z)));
-
-	//localB.getBasis().setEulerZYX(0,M_PI_2,0); 
-	//localB.setOrigin(btVector3(btScalar(b_x), btScalar(a_y), btScalar(a_z)));
-
-
-
-
-
-	bool joint_bool = state.GetValue < bool >( 5, false );
-
+			bool joint_bool = state.GetValue < bool >( 5, false );
 
 	btGeneric6DofConstraint*	freeDomeC;	
 	freeDomeC = new btGeneric6DofConstraint(*bodyA->mBody, *bodyB->mBody, ta, tb,joint_bool); //ANOTHER ARGGUMENT
@@ -524,8 +397,8 @@ int MOAIBulletWorld::_addJointFreedom ( lua_State* L ) {
 	self->mWorld->addConstraint(freeDomeC, true);
 
 
+//TODO: NEED TO ADD LUA CALL
 	freeDomeC->setBreakingImpulseThreshold(100.0f);
-
 	btTransform sliderTransform;
 	btVector3 lowerSliderLimit = btVector3(-10,0,0);
 	btVector3 hiSliderLimit = btVector3(10,0,0);
@@ -538,14 +411,12 @@ int MOAIBulletWorld::_addJointFreedom ( lua_State* L ) {
 	freeDomeC->getTranslationalLimitMotor()->m_enableMotor[0] = true;
 	freeDomeC->getTranslationalLimitMotor()->m_targetVelocity[0] = -5.0f;
 	freeDomeC->getTranslationalLimitMotor()->m_maxMotorForce[0] = 0.1f;
-	
-
 
 	MOAIBulletJointFreedom* mJoint = new MOAIBulletJointFreedom (); //POINTER TO POINTER?
 	mJoint->SetJoint(freeDomeC);
 	mJoint->SetBodyA(bodyA);
 	mJoint->SetBodyB(bodyB);
-	//mJoint->setuserdata ?
+	//mJoint->setuserdata ? // NEED TO ADD TO BULLET SOURCE CODE
 	mJoint->SetWorld ( self );
 	mJoint->LuaRetain ( bodyA );
 	mJoint->LuaRetain ( bodyB );
@@ -553,8 +424,8 @@ int MOAIBulletWorld::_addJointFreedom ( lua_State* L ) {
 	mJoint->PushLuaUserdata ( state );
 
 
-
-
+//***********************************************************************
+//***********************************************************************
 
 //btGeneric6DofSpringConstraint* pGen6DOFSpring = new btGeneric6DofSpringConstraint(*pBodyA, *pBodyB, frameInA, frameInB, true);
 //pGen6DOFSpring->setLinearUpperLimit(btVector3(5., 0., 0.));
@@ -575,7 +446,6 @@ int MOAIBulletWorld::_addJointFreedom ( lua_State* L ) {
 	return 1;
 };
 //----------------------------------------------------------------//
-//SHOULD USE CONTRAINT CLASS NOT INDUVUAL CLASSES
 int MOAIBulletWorld::_addJointFixed ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletWorld, "UUUUUN" )	
 
@@ -592,63 +462,24 @@ int MOAIBulletWorld::_addJointFixed ( lua_State* L ) {
 			btTransform ta = *transA->mTransform;
 			btTransform tb = *transB->mTransform;
 
-
-
-	//float a_x = state.GetValue < float >( 4, 0.0f );
-	//float a_y = state.GetValue < float >( 5, 0.0f );
-	//float a_z = state.GetValue < float >( 6, 0.0f );
-
-	//float b_x = state.GetValue < float >( 7, 0.0f );
-	//float b_y = state.GetValue < float >( 8, 0.0f );
-	//float b_z = state.GetValue < float >( 9, 0.0f );
-
-	//btTransform localA, localB;
-	//localA.setIdentity(); 
-	//localB.setIdentity();
-	
-	//localA.getBasis().setEulerZYX(0,M_PI_2,0); 
-	//localA.setOrigin(btVector3(btScalar(a_x), btScalar(a_y), btScalar(a_z)));
-
-	//localB.getBasis().setEulerZYX(0,M_PI_2,0); 
-	//localB.setOrigin(btVector3(btScalar(b_x), btScalar(a_y), btScalar(a_z)));
-
-
-
-
-
-
-
 	btFixedConstraint*	fixedC;	
 	fixedC = new btFixedConstraint(*bodyA->mBody, *bodyB->mBody, ta, tb); //ANOTHER ARGGUMENT
 	fixedC->setDbgDrawSize(self->mDrawJointSize);
 	self->mWorld->addConstraint(fixedC, true);
 
-	//fixedC->setBreakingImpulseThreshold(100.0f);
-	//self->mWorld->addConstraint(fixedC, true);
-
 	MOAIBulletJointFixed* mJoint = new MOAIBulletJointFixed (); //POINTER TO POINTER?
 	mJoint->SetJoint(fixedC);
 	mJoint->SetBodyA(bodyA);
 	mJoint->SetBodyB(bodyB);
-	//mJoint->setuserdata ?
+	//mJoint->setuserdata ? // NEED TO ADD TO BULLET SOURCE CODE
 	mJoint->SetWorld ( self );
 	mJoint->LuaRetain ( bodyA );
 	mJoint->LuaRetain ( bodyB );
 	self->LuaRetain ( mJoint );
 	mJoint->PushLuaUserdata ( state );
-
-
-
-
-
-
 	return 1;
 };
-
-
 //----------------------------------------------------------------//
-//NEEDS PIVOT OBJECT
-//SHOULD USE CONTRAINT CLASS NOT INDUVUAL CLASSES
 int MOAIBulletWorld::_addJointPoint ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletWorld, "UUUNNNNNN" )	
 
@@ -670,16 +501,14 @@ int MOAIBulletWorld::_addJointPoint ( lua_State* L ) {
 
 	btPoint2PointConstraint*	PointC;	
 	PointC = new btPoint2PointConstraint(*bodyA->mBody, *bodyB->mBody, pivotInA, pivotInB); //ANOTHER ARGGUMENT
-	PointC->setDbgDrawSize(self->mDrawJointSize); //DOESN'T DRAW? 
+	PointC->setDbgDrawSize(self->mDrawJointSize);
 	self->mWorld->addConstraint(PointC, true);
-
-	//PointC->setBreakingImpulseThreshold(100.0f);
 
 	MOAIBulletJointPoint* mJoint = new MOAIBulletJointPoint (); //POINTER TO POINTER?
 	mJoint->SetJoint(PointC);
 	mJoint->SetBodyA(bodyA);
 	mJoint->SetBodyB(bodyB);
-	//mJoint->setuserdata ?
+	//mJoint->setuserdata ? // NEED TO ADD TO BULLET SOURCE CODE
 	mJoint->SetWorld ( self );
 	mJoint->LuaRetain ( bodyA );
 	mJoint->LuaRetain ( bodyB );
@@ -693,18 +522,6 @@ int MOAIBulletWorld::_addJointPoint ( lua_State* L ) {
 	return 1;
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
 //----------------------------------------------------------------//
 int MOAIBulletWorld::_setStep ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletWorld, "UN" )
@@ -713,7 +530,6 @@ int MOAIBulletWorld::_setStep ( lua_State* L ) {
 	return 1;
 }
 //----------------------------------------------------------------//
-
 int MOAIBulletWorld::_setGravity ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletWorld, "UN" )	
 	float gravity_x = state.GetValue < float >( 2, 0.0f );
@@ -723,7 +539,6 @@ int MOAIBulletWorld::_setGravity ( lua_State* L ) {
 	return 1;
 };
 //----------------------------------------------------------------//
-
 int MOAIBulletWorld::_useContinuous ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletWorld, "U" )
 	bool continous = state.GetValue < bool >( 2, true );
@@ -731,7 +546,6 @@ int MOAIBulletWorld::_useContinuous ( lua_State* L ) {
 	return 0;
 }
 //----------------------------------------------------------------//
-
 int MOAIBulletWorld::_splitImpulse ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletWorld, "U" )
 	bool impluse = state.GetValue < bool >( 2, true );
@@ -740,7 +554,6 @@ int MOAIBulletWorld::_splitImpulse ( lua_State* L ) {
 	return 0;
 }
 //----------------------------------------------------------------//
-
 int MOAIBulletWorld::_Iterations ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletWorld, "UN" )	
 	int iterations = state.GetValue < int >( 2, 4 );
@@ -773,16 +586,17 @@ void MOAIBulletWorld::RegisterLuaFuncs ( MOAILuaState& state ) {
 	luaL_Reg regTable [] = {
 //BODY
 		{ "addBody",					_addBody }, 
+//SHOULD MAKE SHAPES LIKE THIS
 
-//JOINTS : NO REENTION : GOING TO TRY TO USE CHIPMUNKS LAYOUT
-		{ "addJointHinge",				_addJointHinge }, //isCLass
-		{ "addJointCone",				_addJointCone }, //isCLass
-		{ "addJointFixed",				_addJointFixed }, //isCLass
-		{ "addJointPoint",				_addJointPoint }, //isCLass
-		{ "addJointSlider",				_addJointSlider }, //isCLass
-		{ "addJointFreedom",			_addJointFreedom }, //isCLass
+//JOINTS
+		{ "addJointHinge",				_addJointHinge },
+		{ "addJointCone",				_addJointCone }, 
+		{ "addJointFixed",				_addJointFixed },
+		{ "addJointPoint",				_addJointPoint },
+		{ "addJointSlider",				_addJointSlider },
+		{ "addJointFreedom",			_addJointFreedom },
 
-//HINGE
+//WORLD
 		{ "setDrawScale",				_setDrawScale },
 		{ "setDrawJointSize",			_setDrawJointSize },
 		{ "setStep",					_setStep },

@@ -14,22 +14,15 @@
 int MOAIBulletJointHinge::_setLimit ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletJoint, "UNN" )
 	float unitsToMeters = self->GetUnitsToMeters ();
-
 	if ( !self->mJoint ) {
 		MOAILog ( state, MOAILogMessages::MOAIBox2DJoint_MissingInstance );
 		return 0;
 	}
-	
-	printf("HINGE LIMITS \n");
-
 	float lower = state.GetValue < float >( 2, 0.0f );	
 	float upper = state.GetValue < float >( 3, 0.0f );	
-
 	btHingeConstraint* joint = ( btHingeConstraint* )self->mJoint;
-	joint->setLimit(btScalar(lower),(upper));
-
-	//state.Push ( 1 );
-	
+	joint->setLimit(btScalar(lower),btScalar(upper));
+	//state.Push ( 1 );	
 	return 1;
 }
 
@@ -37,17 +30,13 @@ int MOAIBulletJointHinge::_setLimit ( lua_State* L ) {
 int MOAIBulletJointHinge::_setLinLimit ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletJoint, "UNN" )
 	float unitsToMeters = self->GetUnitsToMeters ();
-
 	if ( !self->mJoint ) {
 		MOAILog ( state, MOAILogMessages::MOAIBox2DJoint_MissingInstance );
 		return 0;
-	}
-	
+	}	
 	float lower = state.GetValue < float >( 2, 0.0f );	
 	float upper = state.GetValue < float >( 3, 0.0f );	
-
 	btHingeConstraint* joint = ( btHingeConstraint* )self->mJoint;
-
 	//state.Push ( 1 );
 	
 	return 1;
@@ -57,12 +46,10 @@ int MOAIBulletJointHinge::_setLinLimit ( lua_State* L ) {
 int MOAIBulletJointHinge::_setAngLimit ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletJoint, "UNN" )
 	float unitsToMeters = self->GetUnitsToMeters ();
-
 	if ( !self->mJoint ) {
 		MOAILog ( state, MOAILogMessages::MOAIBox2DJoint_MissingInstance );
 		return 0;
-	}
-	
+	}	
 	float lower = state.GetValue < float >( 2, 0.0f );	
 	float upper = state.GetValue < float >( 3, 0.0f );	
 	btHingeConstraint* joint = ( btHingeConstraint* )self->mJoint;	

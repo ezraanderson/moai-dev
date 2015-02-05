@@ -13,32 +13,21 @@
 //----------------------------------------------------------------//
 int MOAIBulletJointCone::_setLimit ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletJoint, "UNNN" )
-	
-
 	if ( !self->mJoint ) {
 		MOAILog ( state, MOAILogMessages::MOAIBox2DJoint_MissingInstance );
 		return 0;
 	}
-
-
 	//btScalar _swingSpan1,
 	//btScalar _swingSpan2,
 	//btScalar _twistSpan,
 	//btScalar _softness = 1.f, 
 	//btScalar _biasFactor = 0.3f, 
 	//btScalar _relaxationFactor = 1.0f
-
-	printf("\n set cone \n");
-
 	float a = state.GetValue < float >( 2, 0.0f );	
 	float b = state.GetValue < float >( 3, 0.0f );	
 	float c = state.GetValue < float >( 4, 0.0f );	
-
 	btConeTwistConstraint* joint = ( btConeTwistConstraint* )self->mJoint;
-	joint->setLimit(btScalar(a),btScalar(b),btScalar(c));
-
-	//state.Push ( 1 );
-	
+	joint->setLimit(btScalar(a),btScalar(b),btScalar(c));	
 	return 1;
 }
 
@@ -46,7 +35,6 @@ int MOAIBulletJointCone::_setLimit ( lua_State* L ) {
 int MOAIBulletJointCone::_setLinLimit ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletJoint, "UNN" )
 	float unitsToMeters = self->GetUnitsToMeters ();
-
 	if ( !self->mJoint ) {
 		MOAILog ( state, MOAILogMessages::MOAIBox2DJoint_MissingInstance );
 		return 0;
@@ -54,7 +42,6 @@ int MOAIBulletJointCone::_setLinLimit ( lua_State* L ) {
 	
 	float lower = state.GetValue < float >( 2, 0.0f );	
 	float upper = state.GetValue < float >( 3, 0.0f );	
-
 	btConeTwistConstraint* joint = ( btConeTwistConstraint* )self->mJoint;
 	//joint->setLowerLinLimit(lower);
 	//joint->setUpperLinLimit(upper);	
@@ -71,11 +58,9 @@ int MOAIBulletJointCone::_setAngLimit ( lua_State* L ) {
 	if ( !self->mJoint ) {
 		MOAILog ( state, MOAILogMessages::MOAIBox2DJoint_MissingInstance );
 		return 0;
-	}
-	
+	}	
 	float lower = state.GetValue < float >( 2, 0.0f );	
-	float upper = state.GetValue < float >( 3, 0.0f );	
-
+	float upper = state.GetValue < float >( 3, 0.0f );
 	btConeTwistConstraint* joint = ( btConeTwistConstraint* )self->mJoint;	
 	//joint->setLowerAngLimit(-SIMD_PI / lower);
 	//joint->setUpperAngLimit( SIMD_PI / upper);	

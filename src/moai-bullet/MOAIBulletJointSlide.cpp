@@ -15,20 +15,16 @@
 int MOAIBulletJointSlide::_setLinLimit ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletJoint, "UNN" )
 	float unitsToMeters = self->GetUnitsToMeters ();
-
 	if ( !self->mJoint ) {
 		MOAILog ( state, MOAILogMessages::MOAIBox2DJoint_MissingInstance );
 		return 0;
-	}
-	
+	}	
 	float lower = state.GetValue < float >( 2, 0.0f );	
 	float upper = state.GetValue < float >( 3, 0.0f );	
-
 	btSliderConstraint* joint = ( btSliderConstraint* )self->mJoint;
 	joint->setLowerLinLimit(lower);
 	joint->setUpperLinLimit(upper);	
-	//state.Push ( 1 );
-	
+	//state.Push ( 1 );	
 	return 1;
 }
 
@@ -36,15 +32,12 @@ int MOAIBulletJointSlide::_setLinLimit ( lua_State* L ) {
 int MOAIBulletJointSlide::_setAngLimit ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletJoint, "UNN" )
 	float unitsToMeters = self->GetUnitsToMeters ();
-
 	if ( !self->mJoint ) {
 		MOAILog ( state, MOAILogMessages::MOAIBox2DJoint_MissingInstance );
 		return 0;
-	}
-	
+	}	
 	float lower = state.GetValue < float >( 2, 0.0f );	
 	float upper = state.GetValue < float >( 3, 0.0f );	
-
 	btSliderConstraint* joint = ( btSliderConstraint* )self->mJoint;	
 	joint->setLowerAngLimit(-SIMD_PI / lower);
 	joint->setUpperAngLimit( SIMD_PI / upper);	

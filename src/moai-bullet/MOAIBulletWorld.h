@@ -46,9 +46,8 @@ class MOAIBulletWorld :
 	public virtual MOAILuaObject {		
 private:
 
-//DRAW
+//Bullet collision debug-draw
 MOAIBulletDebugDraw* mDebugDraw;
-
 /// Bullet collision configuration.
 btCollisionConfiguration* mCollisionConfiguration;
 /// Bullet collision dispatcher.
@@ -62,14 +61,13 @@ btConstraintSolver* mSolver;
 btDiscreteDynamicsWorld* mWorld;
 
 MOAIBulletPrim*		mDestroyBodies;
-MOAIBulletPrim*		mDestroyShapes;
+MOAIBulletPrim*		mDestroyShapes; //SHAPES LIKE THIS, MAYBE NOT BECAUSE MANY SHAPES ON ONE BODY?
 MOAIBulletPrim*		mDestroyJoints;
 
 float mStep;
 float mDrawScale;
 float mDrawJointSize;
-bool mLock;
-
+bool  mLock;
 
 //----------------------------------------------------------------//
 static int		_setStep 				( lua_State* L );
@@ -91,7 +89,6 @@ static int		_addJointFreedom		( lua_State* L );
 static int		_addJointPoint			( lua_State* L );
 static int		_addJointSlider			( lua_State* L );
 
-
 void			Destroy					();
 void			SayGoodbye				(btCompoundShape* shape ); 
 void			SayGoodbye				(btTypedConstraint* joint );
@@ -100,16 +97,13 @@ void			ScheduleDestruction		( MOAIBulletBody& body );
 void			ScheduleDestruction		( MOAIBulletShape& shape );
 void			ScheduleDestruction		( MOAIBulletJoint& joint );
 
-
 public:
 	
 	friend class MOAIBulletBody; 
 	friend class MOAIBulletShapes;
 	friend class MOAIBulletJoint;
 
-	DECL_LUA_FACTORY ( MOAIBulletWorld )
-
-	
+	DECL_LUA_FACTORY ( MOAIBulletWorld )	
 	//----------------------------------------------------------------//
 	MOAIBulletWorld				();
 	~MOAIBulletWorld			();

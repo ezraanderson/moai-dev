@@ -6,8 +6,6 @@
 #include <moai-bullet/MOAIBulletBody.h>
 #include <moai-bullet/MOAIBulletJoint.h>
 #include <moai-bullet/MOAIBulletWorld.h>
-
-
 //----------------------------------------------------------------//
 int MOAIBulletJoint::_getBreakingImpulse ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletJoint, "U" )
@@ -43,15 +41,7 @@ int MOAIBulletJoint::_setBreakingImpulse ( lua_State* L ) {
 
 	return 0;
 }
-
-
 //----------------------------------------------------------------//
-/**	@name	getBodyA
-	@text	See bullet documentation.
-	
-	@in		MOAIBulletJoint self
-	@out	MOAIBulletBody body
-*/
 int MOAIBulletJoint::_getBodyA ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletJoint, "U" )
 	
@@ -62,15 +52,7 @@ int MOAIBulletJoint::_getBodyA ( lua_State* L ) {
 	self->mBodyA->PushLuaUserdata ( state);	
 	return 1;
 }
-
-
 //----------------------------------------------------------------//
-/**	@name	getBodyB
-	@text	See bullet documentation.
-	
-	@in		MOAIBulletJoint self
-	@out	MOAIBulletBody body
-*/
 int MOAIBulletJoint::_getBodyB ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletJoint, "U" )
 	
@@ -81,21 +63,7 @@ int MOAIBulletJoint::_getBodyB ( lua_State* L ) {
 	self->mBodyB->PushLuaUserdata ( state);		
 	return 1;
 }
-
-
-
-
-//================================================================//
-// local
-//================================================================//
-
 //----------------------------------------------------------------//
-/**	@name	destroy
-	@text	Schedule joint for destruction.
-	
-	@in		MOAIBulletJoint self
-	@out	nil
-*/
 int MOAIBulletJoint::_destroy ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletJoint, "U" )	
 	if ( self->mWorld ) {

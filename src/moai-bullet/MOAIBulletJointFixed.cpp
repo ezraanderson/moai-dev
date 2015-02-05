@@ -9,26 +9,20 @@
 #include <moai-bullet/MOAIBulletJoint.h>
 #include <moai-bullet/MOAIBulletWorld.h>
 #include <moai-bullet/MOAIBulletJointFixed.h>
-
-
 //----------------------------------------------------------------//
 int MOAIBulletJointFixed::_setLinLimit ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletJoint, "UNN" )
 	float unitsToMeters = self->GetUnitsToMeters ();
-
 	if ( !self->mJoint ) {
 		MOAILog ( state, MOAILogMessages::MOAIBox2DJoint_MissingInstance );
 		return 0;
-	}
-	
+	}	
 	float lower = state.GetValue < float >( 2, 0.0f );	
 	float upper = state.GetValue < float >( 3, 0.0f );	
-
 	btFixedConstraint* joint = ( btFixedConstraint* )self->mJoint;
 	//joint->setLowerLinLimit(lower);
 	//joint->setUpperLinLimit(upper);	
-	//state.Push ( 1 );
-	
+	//state.Push ( 1 );	
 	return 1;
 }
 
@@ -36,15 +30,12 @@ int MOAIBulletJointFixed::_setLinLimit ( lua_State* L ) {
 int MOAIBulletJointFixed::_setAngLimit ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletJoint, "UNN" )
 	float unitsToMeters = self->GetUnitsToMeters ();
-
 	if ( !self->mJoint ) {
 		MOAILog ( state, MOAILogMessages::MOAIBox2DJoint_MissingInstance );
 		return 0;
-	}
-	
+	}	
 	float lower = state.GetValue < float >( 2, 0.0f );	
 	float upper = state.GetValue < float >( 3, 0.0f );	
-
 	btFixedConstraint* joint = ( btFixedConstraint* )self->mJoint;	
 	//joint->setLowerAngLimit(-SIMD_PI / lower);
 	//joint->setUpperAngLimit( SIMD_PI / upper);	
@@ -67,7 +58,6 @@ void MOAIBulletJointFixed::RegisterLuaClass ( MOAILuaState& state ) {
 //----------------------------------------------------------------//
 void MOAIBulletJointFixed::RegisterLuaFuncs ( MOAILuaState& state ) {
 	MOAIBulletJoint::RegisterLuaFuncs ( state );
-
 	luaL_Reg regTable [] = {		
 		{ "setLinLimit",					_setLinLimit}, 
 		{ "setAngLimit",					_setAngLimit}, 

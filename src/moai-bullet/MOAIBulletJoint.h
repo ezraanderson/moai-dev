@@ -23,10 +23,9 @@ protected:
 	MOAIBulletBody*		mBodyB;
 
 	//----------------------------------------------------------------//
-	static int			_destroy				( lua_State* L );
-	static int			_getBodyA				( lua_State* L );
-	static int			_getBodyB				( lua_State* L );
-
+	static int			_destroy							( lua_State* L );
+	static int			_getBodyA							( lua_State* L );
+	static int			_getBodyB							( lua_State* L );
 	static int			_setBreakingImpulse					( lua_State* L );
 	static int			_getBreakingImpulse					( lua_State* L );
 

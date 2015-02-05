@@ -12,15 +12,10 @@
 class btRigidBody;
 
 class MOAIBulletBody :
-	//public MOAITransformBase	
-	public MOAIBulletPrim,
-	public virtual MOAILuaObject 
+	public MOAITransformBase,	
+	public MOAIBulletPrim
 {
 private:	
-
-	//btScalar mMass;
-	//btVector3 mInertia;
-
 //WORLD
 	btDiscreteDynamicsWorld* mWorld; //<--REALLY FUCKING DUMB
 //BODY
@@ -30,36 +25,14 @@ private:
 	btDefaultMotionState*	mMotion;
 
 //SHAPE : SHOULD HAVE OWN SHAPES MAYBE?
-//	btCollisionShape*		mShape;
-
+	//btCollisionShape*		mShape;
 	btCompoundShape*		mCompound;
 
 
-//	bool					isCompound;
-
-    /// Bullet compound collision shape.
-    //btCompoundShape* mCompoundShape;
-    /// Compound collision shape with center of mass offset applied.
-    //btCompoundShape* mShiftedCompoundShape;
-
-	//----------------------------------------------------------------//
-	
-	//static int		_addCompoundShape		( lua_State* L );
-	//static int		_addChild				( lua_State* L );
-	static int		_newShape				( lua_State* L );
-	static int		_addToBody				( lua_State* L );
-	static int		_addRag				( lua_State* L );
-	//static int		_addPlane				( lua_State* L );
-	//static int		_addSphere				( lua_State* L );
-	//static int		_addBox					( lua_State* L );
-	//static int		_addCylinder			( lua_State* L );
-	//static int		_addCapsule				( lua_State* L );
-	//static int		_addCone				( lua_State* L );
-	//static int		_addRag					( lua_State* L );
-
-
-
-
+//----------------------------------------------------------------//
+	static int		_NewShape				( lua_State* L );
+	static int		_AddToBody				( lua_State* L );
+	static int		_AddRag				( lua_State* L );
 //LINEAR
 	static int		_SetLinearVelocity			( lua_State* L );
 	static int		_SetLinearFactor			( lua_State* L );
@@ -76,9 +49,6 @@ private:
 	static int		_SetRollingFriction			( lua_State* L );
 //RESITUTION	
 	static int		_SetRestitution			( lua_State* L );
-//GRAVITY
-	//static int		_SetUseGravity			( lua_State* L );
-	//static int		_SetGravityOverride		( lua_State* L );
 //FORCE
 	static int		_ApplyForce				( lua_State* L );
 	static int		_ApplyForceOffset		( lua_State* L );
@@ -89,16 +59,13 @@ private:
 	static int		_ApplyImpulseOffset		( lua_State* L );
 	static int		_ApplyTorqueImpulse		( lua_State* L );	
 //RESET
-	static int		_ResetForces		( lua_State* L );	
-
+	static int		_ResetForces			( lua_State* L );	
 //SET GARVITY
-	static int		_SetGravity		( lua_State* L );
+	static int		_SetGravity				( lua_State* L );
 //DAMPING
-	static int		_SetDamping		( lua_State* L );
-
+	static int		_SetDamping				( lua_State* L );
 	static int		_SetDeactivationTime	( lua_State* L );
 	static int		_SetSleepingThresholds	( lua_State* L );	
-	
 
 //MASS	: ON SHAPE
 	//static int		_SetMass		( lua_State* L );
@@ -108,7 +75,8 @@ private:
 	static int		_AddToWorld			( lua_State* L );
 
 	static int		_SetKinematic		( lua_State* L );
-
+	static int		_SetActivationState	( lua_State* L );
+	
 //GET
 	static int		_GetPosition				( lua_State* L );
 	static int		_GetRotation				( lua_State* L );
@@ -130,26 +98,19 @@ private:
 	static int		_GetCcdMotionThreshold		( lua_State* L );
 	static int		_IsActive					( lua_State* L );
 	static int		_GetCollidingBodies			( lua_State* L );
-
-
-//
+//REMOVE
 	static int		_RemoveBodyFromWorld			( lua_State* L );
-
-	
 
 	//----------------------------------------------------------------//
 	bool			ApplyAttrOp				( u32 attrID, MOAIAttrOp& attrOp, u32 op );
 	void			SetBody					( btRigidBody* body );
 	void			OnDepNodeUpdate			();
 
-public:
-	
+public:	
 	friend class MOAIBulletShape;
 	friend class MOAIBulletWorld;
-	//friend class MOAIBulletConstraint;
-
+	friend class MOAIBulletJoint;
 	DECL_LUA_FACTORY ( MOAIBulletBody )
-
 	//----------------------------------------------------------------//
 	void			setWorld				(btDiscreteDynamicsWorld* world_);
 	void			Destroy					();

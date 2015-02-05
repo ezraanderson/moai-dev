@@ -9,26 +9,20 @@
 #include <moai-bullet/MOAIBulletJoint.h>
 #include <moai-bullet/MOAIBulletWorld.h>
 #include <moai-bullet/MOAIBulletJointFreedom.h>
-
-
 //----------------------------------------------------------------//
 int MOAIBulletJointFreedom::_setLinLimit ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletJoint, "UNN" )
 	float unitsToMeters = self->GetUnitsToMeters ();
-
 	if ( !self->mJoint ) {
 		MOAILog ( state, MOAILogMessages::MOAIBox2DJoint_MissingInstance );
 		return 0;
-	}
-	
+	}	
 	float lower = state.GetValue < float >( 2, 0.0f );	
 	float upper = state.GetValue < float >( 3, 0.0f );	
-
 	btGeneric6DofConstraint* joint = ( btGeneric6DofConstraint* )self->mJoint;
 	//joint->setLowerLinLimit(lower);
 	//joint->setUpperLinLimit(upper);	
-	//state.Push ( 1 );
-	
+	//state.Push ( 1 );	
 	return 1;
 }
 
@@ -36,15 +30,12 @@ int MOAIBulletJointFreedom::_setLinLimit ( lua_State* L ) {
 int MOAIBulletJointFreedom::_setAngLimit ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletJoint, "UNN" )
 	float unitsToMeters = self->GetUnitsToMeters ();
-
 	if ( !self->mJoint ) {
 		MOAILog ( state, MOAILogMessages::MOAIBox2DJoint_MissingInstance );
 		return 0;
-	}
-	
+	}	
 	float lower = state.GetValue < float >( 2, 0.0f );	
 	float upper = state.GetValue < float >( 3, 0.0f );	
-
 	btGeneric6DofConstraint* joint = ( btGeneric6DofConstraint* )self->mJoint;	
 	//joint->setLowerAngLimit(-SIMD_PI / lower);
 	//joint->setUpperAngLimit( SIMD_PI / upper);	

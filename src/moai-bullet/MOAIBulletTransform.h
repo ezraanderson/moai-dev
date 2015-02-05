@@ -26,9 +26,8 @@ protected:
 public:
 	
 	friend class MOAIBulletWorld;
-	
-	DECL_LUA_FACTORY ( MOAIBulletTransform )
 
+	DECL_LUA_FACTORY ( MOAIBulletTransform )
 	//----------------------------------------------------------------//
 	void				Destroy					();
 						MOAIBulletTransform		();

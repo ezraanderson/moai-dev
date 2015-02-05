@@ -10,160 +10,87 @@
 #include <moai-bullet/MOAIBulletShape.h>
 #include <bullet/src/btBulletDynamicsCommon.h>
 
-
-
-
+//----------------------------------------------------------------//
 int MOAIBulletShape::_addPlane ( lua_State* L ) {
 MOAI_LUA_SETUP ( MOAIBulletShape, "U" )
-
 	float width  = state.GetValue < float >( 2, 0.0f );	
 	float height = state.GetValue < float >( 3, 0.0f ); 
 	float lenght = state.GetValue < float >( 4, 0.0f ); 	
-
-	//SHAPE
-	//btCollisionShape* groundShape = new btStaticPlaneShape(btVector3(0, 10, 0), 0);
 	self->mShape = new btStaticPlaneShape(btVector3(width, height, lenght), 0);
 
-			//BODY
-			//btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, self->mMotion, self->mShape, btVector3(0, 0, 0));
-			//self->mBody = new btRigidBody(groundRigidBodyCI);
+	//btCollisionShape* groundShape = new btStaticPlaneShape(btVector3(0, 10, 0), 0);
+	//btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, self->mMotion, self->mShape, btVector3(0, 0, 0));
+	//self->mBody = new btRigidBody(groundRigidBodyCI);
 return 1;
 
 };
-
-// ***************************************************************
-// ***************************************************************
-// ***************************************************************
-// ***************************************************************
-// ***************************************************************
-// ***************************************************************
+//----------------------------------------------------------------//
 int MOAIBulletShape::_addSphere ( lua_State* L ) {
 MOAI_LUA_SETUP ( MOAIBulletShape, "U" )
-	float radius = state.GetValue < float >( 2, 0.0f );
-
-	//btSphereShape * mShape = new btCylinderShape(btVector3(width, height, lenght)); 
-	//btSphereShape * mShape = new btSphereShape(radius); 
-
-	self->mShape = new btSphereShape(radius);
-
-			//btRigidBody::btRigidBodyConstructionInfo mCI(self->mMass,  self->mMotion, self->mShape, self->mInertia);
-			//self->mBody = new btRigidBody(mCI);  
+		float radius = state.GetValue < float >( 2, 0.0f );
+		self->mShape = new btSphereShape(radius);	
+		//btSphereShape * mShape = new btCylinderShape(btVector3(width, height, lenght)); 
+		//btRigidBody::btRigidBodyConstructionInfo mCI(self->mMass,  self->mMotion, self->mShape, self->mInertia);
+		//self->mBody = new btRigidBody(mCI);  
 	return 1;
-
-
 };
-
-// ***************************************************************
-// ***************************************************************
-// ***************************************************************
-// ***************************************************************
-// ***************************************************************
-// ***************************************************************
-
+//----------------------------------------------------------------//
 int MOAIBulletShape::_addBox ( lua_State* L ) {
 MOAI_LUA_SETUP ( MOAIBulletShape, "U" )
 	
 	float width  = state.GetValue < float >( 2, 0.0f );	
 	float height = state.GetValue < float >( 3, 0.0f ); 
-	float lenght = state.GetValue < float >( 4, 0.0f ); 	
+	float lenght = state.GetValue < float >( 4, 0.0f ); 
 
-//SHAPE
-	//btBoxShape * mShape = new btCylinderShape(btVector3(width, height, lenght));
 	self->mShape = new btBoxShape(btVector3(width, height, lenght)); 
 
-
-			//self->mShape->calculateLocalInertia(self->mMass, self->mInertia);
-
-//BODY
+	//btBoxShape * mShape = new btCylinderShape(btVector3(width, height, lenght));
+	//self->mShape->calculateLocalInertia(self->mMass, self->mInertia);
 	//btRigidBody::btRigidBodyConstructionInfo mCI(self->mMass, self->mMotion, self->mShape, self->mInertia);
-    //self->mBody = new btRigidBody(mCI);    
+	//self->mBody = new btRigidBody(mCI);    
 
 
 	return 1;
 };
-
-
-
-// ***************************************************************
-// ***************************************************************
-// ***************************************************************
-// ***************************************************************
-// ***************************************************************
-// ***************************************************************
-
+//----------------------------------------------------------------//
 int MOAIBulletShape::_addCylinder ( lua_State* L ) {
 MOAI_LUA_SETUP ( MOAIBulletShape, "U" )
 
 	float width  = state.GetValue < float >( 2, 0.0f );	
 	float height = state.GetValue < float >( 3, 0.0f ); 
 	float lenght = state.GetValue < float >( 4, 0.0f ); 
-
-//SHAPE
-	//btCylinderShape * mShape = new btCylinderShape(btVector3(width, height, lenght)); 
 	self->mShape = new btCylinderShape(btVector3(width, height, lenght)); 
-//BODY
-		//btRigidBody::btRigidBodyConstructionInfo mCI(self->mMass, self->mMotion, self->mShape, self->mInertia);
-		//self->mBody = new btRigidBody(mCI);    
+	//btCylinderShape * mShape = new btCylinderShape(btVector3(width, height, lenght)); 
+	//btRigidBody::btRigidBodyConstructionInfo mCI(self->mMass, self->mMotion, self->mShape, self->mInertia);
+	//self->mBody = new btRigidBody(mCI);    
 	return 1;
 };
-
-
-
-
-// ***************************************************************
-// ***************************************************************
-// ***************************************************************
-// ***************************************************************
-// ***************************************************************
-// ***************************************************************
-
+//----------------------------------------------------------------//
 int MOAIBulletShape::_addCapsule ( lua_State* L ) {
 MOAI_LUA_SETUP ( MOAIBulletShape, "U" )
 
-
-
 	float radius  = state.GetValue < float >( 2, 0.0f );	
-	float height = state.GetValue < float >( 3, 0.0f ); 
-
-//SHAPE
-	//btCapsuleShape * mShape = new btCapsuleShape(radius, height); 
+	float height = state.GetValue < float >( 3, 0.0f ); 	
 	self->mShape  = new btCapsuleShape(radius, height);
 
-//BODY
+	//BODY
+	//btCapsuleShape * mShape = new btCapsuleShape(radius, height); 
 	//btRigidBody::btRigidBodyConstructionInfo mCI(self->mMass, self->mMotion, self->mShape, self->mInertia);
 	//self->mBody = new btRigidBody(mCI);   
 
 	return 1;
-
-
-
 };
-
-
-
-
-// ***************************************************************
-// ***************************************************************
-// ***************************************************************
-// ***************************************************************
-// ***************************************************************
-// ***************************************************************
-
+//----------------------------------------------------------------//
 int MOAIBulletShape::_addCone ( lua_State* L ) {
 MOAI_LUA_SETUP ( MOAIBulletShape, "U" )
-
 	float radius  = state.GetValue < float >( 2, 0.0f );	
 	float height = state.GetValue < float >( 3, 0.0f ); 
 
-//SHAPE
-	//btConeShape  * mShape = new btConeShape (radius, height); 
 	self->mShape = new btConeShape (radius, height);
 
-//BODY
+	//btConeShape  * mShape = new btConeShape (radius, height); 
 	//btRigidBody::btRigidBodyConstructionInfo mCI(self->mMass, self->mMotion, self->mShape, self->mInertia);
 	//self->mBody = new btRigidBody(mCI);  
-
-	//self->mBody->setRestitution(2);
 
 	return 1;
 
@@ -196,13 +123,14 @@ int MOAIBulletShape::_setMass ( lua_State* L ) {
 	float Inertia = state.GetValue < float >( 3, 0.0f );
 
 	//MASS
-		btScalar mMass = mass;
+		btScalar mMass = btScalar(mass);
 	//inertia
 		btVector3 mInertia(Inertia, Inertia, Inertia);	
+	//APPLY
 		self->mShape->calculateLocalInertia(mMass, mInertia);
 
 	//UPDATE // THIS IS WRONG BECAUSE IT CACLUATES MASS FROM SHAPES
-		self->mBody->setMassProps(mass, mInertia);
+		self->mBody->setMassProps(mMass, mInertia);
    
 	return 1;
 }
@@ -210,13 +138,12 @@ int MOAIBulletShape::_setMass ( lua_State* L ) {
 //----------------------------------------------------------------//
 int MOAIBulletShape::_addToBody ( lua_State* L ) {
 MOAI_LUA_SETUP ( MOAIBulletShape, "U" )
-btTransform t; 
 
-//PASS TRASNFORM
-t.setIdentity();
-t.setRotation ( btQuaternion ( self->mRot_x, self->mRot_y,self->mRot_z)); 
-t.setOrigin(btVector3 ( self->mLoc_x, self->mLoc_y,self->mLoc_z));
-self->mCompound->addChildShape(t,self->mShape); //MAKE FRIEND CLASS
+	btTransform t; 
+	t.setIdentity();
+	t.setRotation ( btQuaternion ( self->mRot_x, self->mRot_y,self->mRot_z)); 
+	t.setOrigin(btVector3 ( self->mLoc_x, self->mLoc_y,self->mLoc_z));
+	self->mCompound->addChildShape(t,self->mShape); //MAKE FRIEND CLASS
 
 
 return 1;
@@ -225,7 +152,6 @@ return 1;
 void MOAIBulletShape::setCompound (btCompoundShape*	mCompound) {
 	this->mCompound = mCompound;
 };
-
 //----------------------------------------------------------------//
 void MOAIBulletShape::setBody (btRigidBody*		mBody) {
 	this->mBody = mBody;
@@ -239,18 +165,15 @@ MOAIBulletShape::MOAIBulletShape () :
 mRot(0),
 mLoc(0),
 mShape(0),
-
 mLoc_x(0),
 mLoc_y(0),
 mLoc_z(0),
-
 mRot_x(0),
 mRot_y(0),
 mRot_z(0)
 
 {	
 	RTTI_BEGIN
-		//RTTI_EXTEND ( MOAITransformBase )	
 		RTTI_EXTEND ( MOAILuaObject )
 	RTTI_END	
 };
@@ -259,15 +182,12 @@ MOAIBulletShape::~MOAIBulletShape () {
 	printf(" \n ~MOAIBulletShape \n");
 	this->Destroy ();
 }
-
 //----------------------------------------------------------------//
 void MOAIBulletShape::RegisterLuaClass ( MOAILuaState& state ) {
-//	MOAITransformBase::RegisterLuaClass ( state );	
 	
 }
 //----------------------------------------------------------------//
 void MOAIBulletShape::RegisterLuaFuncs ( MOAILuaState& state ) {
-//	MOAITransformBase::RegisterLuaFuncs ( state );
 
 luaL_Reg regTable [] = {
 
