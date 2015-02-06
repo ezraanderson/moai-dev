@@ -16,7 +16,7 @@ MOAI_LUA_SETUP ( MOAIBulletShape, "U" )
 	float width  = state.GetValue < float >( 2, 0.0f );	
 	float height = state.GetValue < float >( 3, 0.0f ); 
 	float lenght = state.GetValue < float >( 4, 0.0f ); 	
-	self->mShape = new btStaticPlaneShape(btVector3(width, height, lenght), 0);
+	self->mShape = new btStaticPlaneShape(btVector3(width, height, lenght),0);
 
 	//btCollisionShape* groundShape = new btStaticPlaneShape(btVector3(0, 10, 0), 0);
 	//btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, self->mMotion, self->mShape, btVector3(0, 0, 0));
@@ -44,6 +44,7 @@ MOAI_LUA_SETUP ( MOAIBulletShape, "U" )
 
 	self->mShape = new btBoxShape(btVector3(width, height, lenght)); 
 
+	//self->mShape->setMargin( 0.001 );
 	//btBoxShape * mShape = new btCylinderShape(btVector3(width, height, lenght));
 	//self->mShape->calculateLocalInertia(self->mMass, self->mInertia);
 	//btRigidBody::btRigidBodyConstructionInfo mCI(self->mMass, self->mMotion, self->mShape, self->mInertia);

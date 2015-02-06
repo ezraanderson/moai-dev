@@ -128,6 +128,7 @@ void MOAIBulletJoint::RegisterLuaFuncs ( MOAILuaState& state ) {
 //----------------------------------------------------------------//
 void MOAIBulletJoint::SetJoint ( btTypedConstraint* joint ) {
 	this->mJoint = joint;
+	joint->setUserConstraintPtr ( this );
 }
 //----------------------------------------------------------------//
 void MOAIBulletJoint::SetBodyA (  MOAIBulletBody* body ) {

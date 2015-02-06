@@ -7,15 +7,34 @@
 #include <moai-bullet/MOAIBulletWorld.h>
 #include <bullet/src/LinearMath/btMotionState.h>
 #include <bullet/src/btBulletDynamicsCommon.h>
-
+#include <limits>
 
 class btRigidBody;
+
+typedef unsigned short  uint16;
+typedef unsigned int	uint32;
+
+//static const float DEFAULT_MASS = 0.0f;
+//static const float DEFAULT_FRICTION = 0.5f;
+//static const float DEFAULT_RESTITUTION = 0.0f;
+//static const float DEFAULT_ROLLING_FRICTION = 0.0f;
+
+static const uint16 DEFAULT_COLLISION_GROUP = 0x1;
+static const uint16 DEFAULT_COLLISION_MASK = 0x1; //WTF?
+
+
 
 class MOAIBulletBody :
 	public MOAITransformBase,	
 	public MOAIBulletPrim
 {
-private:	
+private:
+
+//
+	MOAILuaMemberRef	mCollisionHandler;
+
+	uint16 mCollision_group;
+	uint16 mCollision_mask;
 //WORLD
 	btDiscreteDynamicsWorld* mWorld; //<--REALLY FUCKING DUMB
 //BODY
@@ -31,7 +50,19 @@ private:
 
 //----------------------------------------------------------------//
 	static int		_NewShape				( lua_State* L );
+
+
+	static int		_SetFilter						( lua_State* L );
+	static int		_SetCallback					( lua_State* L );
+
+	static int		_AddCollisionGroup				( lua_State* L );
+	static int		_AddCollisionMask				( lua_State* L );
+	static int		_SetCollisionFlags				( lua_State* L );
+	static int		_NoResponse				( lua_State* L );
+	
 	static int		_AddToBody				( lua_State* L );
+
+
 	static int		_AddRag				( lua_State* L );
 //LINEAR
 	static int		_SetLinearVelocity			( lua_State* L );
@@ -76,6 +107,10 @@ private:
 
 	static int		_SetKinematic		( lua_State* L );
 	static int		_SetActivationState	( lua_State* L );
+
+//SET
+	static int		_SetCcdMotionThreshold		( lua_State* L );
+	static int		_SetCcdSweptSphereRadius	( lua_State* L );
 	
 //GET
 	static int		_GetPosition				( lua_State* L );
@@ -110,9 +145,11 @@ public:
 	friend class MOAIBulletShape;
 	friend class MOAIBulletWorld;
 	friend class MOAIBulletJoint;
+
 	DECL_LUA_FACTORY ( MOAIBulletBody )
 	//----------------------------------------------------------------//
-	void			setWorld				(btDiscreteDynamicsWorld* world_);
+	void			setWorld				(btDiscreteDynamicsWorld* world_);	
+	void			HandleCollision			(u32 eventType, MOAIBulletBody* bodyA, MOAIBulletBody* bodyB);
 	void			Destroy					();
 					MOAIBulletBody			();
 					~MOAIBulletBody			();

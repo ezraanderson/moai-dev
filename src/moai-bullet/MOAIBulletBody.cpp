@@ -389,6 +389,7 @@ int MOAIBulletBody::_SetLinearVelocity ( lua_State* L ) {
 	float velocity_z = state.GetValue < float >( 4, 0.0f );
     if (self->mBody)
     {
+		//self->mBody->set
        self->mBody->setLinearVelocity(btVector3(velocity_x, velocity_y, velocity_z));   
     }
 
@@ -465,7 +466,7 @@ int MOAIBulletBody::_SetAngularVelocity ( lua_State* L ) {
     {
        self->mBody->setAngularVelocity(btVector3(velocity_x, velocity_y, velocity_z));   
     }
-
+	
 	return 1;
 }
 
@@ -910,8 +911,23 @@ int MOAIBulletBody::_SetGravity ( lua_State* L ) {
 int MOAIBulletBody::_SetDeactivationTime ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletBody, "UN" )	;
 	float time = state.GetValue < float >( 2, 0.0f );	
-	self->mBody->setDeactivationTime(time);
-	
+	self->mBody->setDeactivationTime(time);	
+	return 1;
+};
+
+//----------------------------------------------------------------//
+int MOAIBulletBody::_SetCcdMotionThreshold ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIBulletBody, "UN" )	;
+	float setCcdMotionThreshold = state.GetValue < float >( 2, 0.0f );	
+	self->mBody->setCcdMotionThreshold(btScalar(setCcdMotionThreshold));	
+	return 1;
+};
+
+//----------------------------------------------------------------//
+int MOAIBulletBody::_SetCcdSweptSphereRadius ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIBulletBody, "UN" )	;
+	float setCcdSweptSphereRadius = state.GetValue < float >( 2, 0.0f );	
+	self->mBody->setCcdMotionThreshold(btScalar(setCcdSweptSphereRadius));	
 	return 1;
 };
 
@@ -930,10 +946,13 @@ void MOAIBulletBody::Destroy () {
 MOAIBulletBody::MOAIBulletBody () :
 	mBody ( 0 ),
 	mMotion( 0 ),
-	mCompound( 0 )
+	mCompound( 0 ),
+	mCollision_group(DEFAULT_COLLISION_GROUP),
+	mCollision_mask(DEFAULT_COLLISION_MASK)
 {
 	
 RTTI_BEGIN
+	RTTI_EXTEND ( MOAILuaObject )
 	RTTI_EXTEND ( MOAITransformBase )		
 RTTI_END	
 }
@@ -942,12 +961,131 @@ MOAIBulletBody::~MOAIBulletBody () {
 	printf("\n ~MOAIBulletBody \n");
 	this->Destroy ();	
 }
+
 //----------------------------------------------------------------//
-int MOAIBulletBody::_AddToWorld ( lua_State* L ) {
-	MOAI_LUA_SETUP ( MOAIBulletBody, "U" );	
-	self->mWorld->addRigidBody(self->mBody);
+int MOAIBulletBody::_AddCollisionGroup ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIBulletBody, "UN" )	;
+	uint16 group = state.GetValue < uint16 >( 2, 0 );	
+	self->mCollision_group = group;	
 	return 1;
 };
+//----------------------------------------------------------------//
+int MOAIBulletBody::_AddCollisionMask ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIBulletBody, "UN" )	;
+	uint16 mask = state.GetValue < uint16  >( 2, 0);	
+	self->mCollision_mask = mask;
+	return 1;
+};
+
+//----------------------------------------------------------------//
+int MOAIBulletBody::_SetCallback ( lua_State* L ) {
+		MOAI_LUA_SETUP ( MOAIBulletBody, "UF" )	;	
+		self->mCollisionHandler.SetRef ( *self, state, 2 );
+		return 1;
+}
+
+//----------------------------------------------------------------//
+void MOAIBulletBody::HandleCollision ( u32 eventType, MOAIBulletBody* bodyA,MOAIBulletBody* bodyB) {	
+	if ( this->mCollisionHandler ) {
+			
+		MOAIScopedLuaState state = MOAILuaRuntime::Get ().State ();
+		if ( this->mCollisionHandler.PushRef ( state )) {					
+			state.Push ( 1 );	
+			bodyA->PushLuaUserdata ( state );
+			bodyB->PushLuaUserdata ( state );					
+			state.DebugCall ( 3, 0 );
+		}
+	};	
+}
+
+int MOAIBulletBody::_NoResponse ( lua_State* L ) {
+		MOAI_LUA_SETUP ( MOAIBulletBody, "U" )
+		self->mBody->setCollisionFlags( self->mBody->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
+		return 1;
+};
+
+
+//----------------------------------------------------------------//
+int MOAIBulletBody::_SetFilter ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIBulletBody, "UNN" )	;
+	uint16 group = state.GetValue < uint16  >( 2, 0);
+	uint16 mask = state.GetValue < uint16  >( 3, 0);	
+	self->mCollision_group = group;
+	self->mCollision_mask = mask;
+	return 1;
+};
+
+//----------------------------------------------------------------//
+//I DON't DON't UNDERSAND
+int MOAIBulletBody::_SetCollisionFlags ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIBulletBody, "UN" )	;
+	 int mask = state.GetValue <  int  >( 2, 1 );	
+	self->mBody->setCollisionFlags( self->mBody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);	
+	return 1;
+};
+
+//----------------------------------------------------------------//
+int MOAIBulletBody::_AddToWorld ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIBulletBody, "UB" );	
+
+
+
+	 self->mWorld->addRigidBody(self->mBody,self->mCollision_group,self->mCollision_mask);
+
+// self->mWorld->addRigidBody(self->mBody);
+// self->mBody->setCollisionFlags(self->mBody->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
+
+ //static_cast <btRigidBodyWithEvents*>(self->mBody)->setMonitorCollisions(true);
+
+
+ 
+ //bool filter = state.GetValue <  bool  >( 2, false );
+ //if( filter == true) {
+	////	printf("FILTER TRUE \n");
+	//	self->mWorld->addRigidBody(self->mBody,self->mCollision_group,self->mCollision_mask);
+ //} else {
+	//// 	printf("FILTER FALSE \n");
+	//	self->mWorld->addRigidBody(self->mBody);
+ //}
+ 	
+
+
+
+
+
+
+//#define BIT(x) (1<<(x))
+//enum collisiontypes {
+//    COL_NOTHING = 0, //<Collide with nothing
+//    COL_SHIP = BIT(0), //<Collide with ships
+//    COL_WALL = BIT(1), //<Collide with walls
+//    COL_POWERUP = BIT(2) //<Collide with powerups
+//}
+//
+//int shipCollidesWith = COL_WALL;
+//int wallCollidesWith = COL_NOTHING;
+//int powerupCollidesWith = COL_SHIP | COL_WALL;
+
+
+//btRigidBody ship; // Set up the other ship stuff
+//btRigidBody wall; // Set up the other wall stuff
+//btRigidBody powerup; // Set up the other powerup stuff
+//
+//mWorld->addRigidBody(ship, COL_SHIP, shipCollidesWith);
+//mWorld->addRigidBody(wall, COL_WALL, wallCollidesWith);
+//mWorld->addRigidBody(powerup, COL_POWERUP, powerupCollidesWith);
+	
+//	addRigidBody 	( 	btRigidBody *  	body,short  	group,short  	mask ) 	
+
+		//printf("%d %d \n",self->mCollision_group,self->mCollision_mask);
+		self->mWorld->addRigidBody(self->mBody,self->mCollision_group,self->mCollision_mask);
+		return 1;
+};
+
+
+
+
+
 //----------------------------------------------------------------//
 int MOAIBulletBody::_AddToBody ( lua_State* L ) {
 
@@ -991,6 +1129,18 @@ void MOAIBulletBody::RegisterLuaFuncs ( MOAILuaState& state ) {
 	
 	luaL_Reg regTable [] = {
 
+//COLLISION
+
+{ "addCollisionGroup",				_AddCollisionGroup },
+{ "addCollisionMask",				_AddCollisionMask },	
+{ "setCollisionFlags",				_SetCollisionFlags },	
+
+{ "setFilter",						_SetFilter },
+{ "setCallback",					_SetCallback },
+{ "noReponse",						_NoResponse },
+
+
+
 
 { "addToBody",			_AddToBody },
 { "addRag",				_AddRag },	
@@ -1009,6 +1159,13 @@ void MOAIBulletBody::RegisterLuaFuncs ( MOAILuaState& state ) {
 { "setAngularFactor",			_SetAngularFactor },	
 { "setAngularRestThreshold",	_SetAngularRestThreshold },
 { "setAngularDamping",			_SetAngularDamping },
+
+//SET PASS
+{ "setCcdMotionThreshold",		_SetCcdMotionThreshold },
+{ "setCcdSweptSphereRadius",	_SetCcdSweptSphereRadius },
+
+
+
 
 //DAMPING
 { "setDamping",				 _SetDamping },
@@ -1052,7 +1209,7 @@ void MOAIBulletBody::RegisterLuaFuncs ( MOAILuaState& state ) {
 //REMOVE
 { "removeBodyFromWorld",				_RemoveBodyFromWorld },	
 
-{ "SetActivationState",					_SetActivationState },	
+{ "setActivationState",					_SetActivationState },	
 
 //GET
 { "getPosition",					_GetPosition },	
@@ -1072,7 +1229,7 @@ void MOAIBulletBody::RegisterLuaFuncs ( MOAILuaState& state ) {
 { "getRestitution",					_GetRestitution	 },	
 { "getContactProcessingThreshold",	_GetContactProcessingThreshold },	
 { "getCcdRadius",					_GetCcdMotionThreshold },	
-{ "isActive",					_IsActive },	
+{ "isActive",						_IsActive },	
 { "getCollidingBodies",					_GetCollidingBodies },	
 
 
@@ -1190,5 +1347,5 @@ bool MOAIBulletBody::ApplyAttrOp ( u32 attrID, MOAIAttrOp& attrOp, u32 op ) {
 //----------------------------------------------------------------//
 void MOAIBulletBody::SetBody ( btRigidBody* body ) {
 	this->mBody = body;
-	body->SetUserData ( this );
+	body->setUserPointer(this);
 }

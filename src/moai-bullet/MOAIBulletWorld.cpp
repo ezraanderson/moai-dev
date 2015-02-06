@@ -1,14 +1,42 @@
 #include "pch.h"
 
-#include <bullet/src/btBulletDynamicsCommon.h>
+//#include <bullet/src/btBulletDynamicsCommon.h>
+//#include "btRigidBodyWithCollisionEvents.h"
+
+//#include "bullet/src/BulletCollision/NarrowPhaseCollision/btVoronoiSimplexSolver.h"
+//#include "bullet/src/BulletCollision/CollisionShapes/btBoxShape.h"
+//#include "bullet/src/BulletCollision/NarrowPhaseCollision/btGjkPairDetector.h"
+//#include "bullet/src/BulletCollision/NarrowPhaseCollision/btPointCollector.h"
+//#include "bullet/src/BulletCollision/NarrowPhaseCollision/btVoronoiSimplexSolver.h"
+//#include "bullet/src/BulletCollision/NarrowPhaseCollision/btConvexPenetrationDepthSolver.h"
+//#include "bullet/src/BulletCollision/NarrowPhaseCollision/btGjkEpaPenetrationDepthSolver.h"
+
+////*********************************************
+//struct bulletObject{
+//        int id;
+//        float r,g,b;
+//        bool hit;
+//        btRigidBody* body;
+//        bulletObject(btRigidBody* b,int i,float r0,float g0,float b0) : body(b),id(i),r(r0),g(g0),b(b0),hit(false) {}
+//};
+////*********************************************
+//bool MOAIBulletWorld::callbackFunc(btManifoldPoint& cp,const btCollisionObject* obj1,int id1,int index1,const btCollisionObject* obj2,int id2,int index2)
+//{
+//        ((bulletObject*)obj1->getUserPointer())->hit=true;       
+//       ((bulletObject*)obj2->getUserPointer())->hit=true;
+//        return false;
+//}
+//
+
+//WTF
+#include <bullet/src/LinearMath/btQuickprof.h>
+
+
 
 #include <moai-bullet/MOAIBulletWorld.h>
-
 #include <moai-bullet/MOAIBulletDebugDraw.h>
-
 #include <moai-bullet/MOAIBulletBody.h>
 #include <moai-bullet/MOAIBulletShape.h>
-
 #include <moai-bullet/MOAIBulletJoint.h>
 #include <moai-bullet/MOAIBulletJointCone.h>
 #include <moai-bullet/MOAIBulletJointFixed.h>
@@ -16,8 +44,24 @@
 #include <moai-bullet/MOAIBulletJointHinge.h>
 #include <moai-bullet/MOAIBulletJointPoint.h>
 #include <moai-bullet/MOAIBulletJointSlide.h>
-
 #include <moai-bullet/MOAIBulletTransform.h>
+
+// CProfileManager()
+//THIS CALLBACKS DON' WORK I DON' UNDERSTAND
+//#include "btRigidBodyWithCollisionEvents.h"
+//btRigidBody* g_StaticGroundBox = NULL;
+// ICollisionInterface
+//void  MOAIBulletWorld::OnCollisionStart(btRigidBodyWithEvents* thisBodyA,btCollisionObject* bodyB,const btVector3& localSpaceContactPoint,const btVector3& worldSpaceContactPoint,const btVector3& worldSpaceContactNormal,const btScalar penetrationDistance,const btScalar appliedImpulse)	{
+//	printf("COLLID MOTHER FUCKER A\n");
+//}
+//void  MOAIBulletWorld::OnCollisionContinue(btRigidBodyWithEvents* thisBodyA,btCollisionObject* bodyB,const btVector3& localSpaceContactPoint,const btVector3& worldSpaceContactPoint,const btVector3& worldSpaceContactNormal,const btScalar penetrationDistance,const btScalar appliedImpulse)	{
+//	//printf("Collision Continue: %s - %s\n",thisBodyA!=g_StaticGroundBox ? thisBodyA->getCollisionShape()->getName() : "g_StaticGroundBox",bodyB!=g_StaticGroundBox ? bodyB->getCollisionShape()->getName() : "g_StaticGroundBox" );
+//	printf("COLLID MOTHER FUCKER D\n");
+//}
+//void  MOAIBulletWorld::OnCollisionStop(btRigidBodyWithEvents* thisBodyA,btCollisionObject* bodyB,const btVector3& localSpaceContactPoint,const btVector3& worldSpaceContactPoint,const btVector3& worldSpaceContactNormal,const btScalar penetrationDistance,const btScalar appliedImpulse)	{
+//	//printf("Collision End: %s - %s\n",thisBodyA!=g_StaticGroundBox ? thisBodyA->getCollisionShape()->getName() : "g_StaticGroundBox",bodyB!=g_StaticGroundBox ? bodyB->getCollisionShape()->getName() : "g_StaticGroundBox" );
+//	printf("COLLID MOTHER FUCKER C\n");
+//}
 
 //----------------------------------------------------------------//
 float MOAIBulletPrim::GetUnitsToMeters () {
@@ -26,7 +70,6 @@ float MOAIBulletPrim::GetUnitsToMeters () {
 	}
 	return 1.0f;
 }
-
 //----------------------------------------------------------------//
 MOAIBulletPrim::MOAIBulletPrim () :
 	mWorld ( 0 ),
@@ -38,10 +81,108 @@ bool MOAIBulletWorld::IsDone () {
 	return false;
 }
 //----------------------------------------------------------------//
+struct YourOwnFilterCallback : public btOverlapFilterCallback
+{
+	virtual bool	needBroadphaseCollision(btBroadphaseProxy* proxy0,btBroadphaseProxy* proxy1) const
+	{
+		bool collides = (proxy0->m_collisionFilterGroup & proxy1->m_collisionFilterMask) != 0;
+		collides = collides && (proxy1->m_collisionFilterGroup & proxy0->m_collisionFilterMask);	
+
+			btCollisionObject* colObj0 = static_cast<btCollisionObject*>(proxy0->m_clientObject);
+			btCollisionObject* colObj1 = static_cast<btCollisionObject*>(proxy1->m_clientObject);
+			
+			//PREVENT COLLIDING WITH SELF
+			if (colObj1 == colObj0) {
+				return collides;
+			};		
+
+			//LOOK : THE PLANE THE PLANE THE FUCKING PLANE
+			btCompoundShape *shapeA = (btCompoundShape *)colObj0->getCollisionShape();
+			btCompoundShape *shapeB = (btCompoundShape *)colObj1->getCollisionShape();		
+			if (shapeA->getNumChildShapes() > 0) {			
+				if (shapeA->getChildShape(0)->getShapeType() == STATIC_PLANE_PROXYTYPE)  {
+					return collides; //RETURN COLLID OR DOSNt HAPPEN
+				};			
+			};
+
+			if (shapeB->getNumChildShapes() > 0) {
+				if (shapeB->getChildShape(0)->getShapeType() == STATIC_PLANE_PROXYTYPE)  {
+					return collides;//RETURN COLLID OR DOSNt HAPPEN
+				};			
+			};	
+
+			//PUSH TO CALLBACK
+			btRigidBody* rigBodyA = ( btRigidBody* )colObj0;
+			MOAIBulletBody* moaiBodyA = ( MOAIBulletBody* )rigBodyA->getUserPointer (); 			
+			
+			btRigidBody* rigBodyB = ( btRigidBody* )colObj1;
+			MOAIBulletBody* moaiBodyB = ( MOAIBulletBody* )rigBodyB->getUserPointer (); 			
+
+			moaiBodyA->HandleCollision ( 1, moaiBodyA,moaiBodyB );
+
+		return collides;
+	}
+};
+//----------------------------------------------------------------//
+void MOAIBulletWorld::mNearCallback(btBroadphasePair& collisionPair, btCollisionDispatcher& dispatcher, const btDispatcherInfo& dispatchInfo) {
+	btCollisionObject* colObj0 = static_cast<btCollisionObject*>(collisionPair.m_pProxy0->m_clientObject);
+	btCollisionObject* colObj1 = static_cast<btCollisionObject*>(collisionPair.m_pProxy1->m_clientObject);
+
+	if(dispatcher.needsCollision(colObj0,colObj1))
+	{
+		btCollisionObjectWrapper obj0Wrap(0,colObj0->getCollisionShape(),colObj0,colObj0->getWorldTransform(),-1,-1);
+		btCollisionObjectWrapper obj1Wrap(0,colObj1->getCollisionShape(),colObj1,colObj1->getWorldTransform(),-1,-1);	
+		
+		//dispatcher will keep algorithms persistent in the collision pair
+		if (!collisionPair.m_algorithm)
+		{
+			collisionPair.m_algorithm = dispatcher.findAlgorithm(&obj0Wrap,&obj1Wrap);
+		}
+		if (collisionPair.m_algorithm)
+		{
+			btManifoldResult contactPointResult(&obj0Wrap,&obj1Wrap);
+
+
+			if (dispatchInfo.m_dispatchFunc == btDispatcherInfo::DISPATCH_DISCRETE)
+			{
+				//discrete collision detection query
+				collisionPair.m_algorithm->processCollision(&obj0Wrap,&obj1Wrap,dispatchInfo,&contactPointResult);
+
+				//CALL TO LUA
+				btRigidBody* rigBodyA = ( btRigidBody* )colObj0;
+				MOAIBulletBody* moaiBodyA = ( MOAIBulletBody* )rigBodyA->getUserPointer (); 
+			
+				//
+				btRigidBody* rigBodyB = ( btRigidBody* )colObj1;
+				MOAIBulletBody* moaiBodyB = ( MOAIBulletBody* )rigBodyB->getUserPointer (); 			
+
+				moaiBodyB->HandleCollision ( 1, moaiBodyA,moaiBodyB );			}
+			else
+			{
+				//continuous collision detection query, time of impact (toi)
+				btScalar toi = collisionPair.m_algorithm->calculateTimeOfImpact(colObj0,colObj1,dispatchInfo,&contactPointResult);
+				if (dispatchInfo.m_timeOfImpact > toi)
+				{
+					dispatchInfo.m_timeOfImpact = toi;
+				}
+			}
+			if (contactPointResult.getPersistentManifold()->getNumContacts()>0) 
+			{			
+
+
+			
+			}
+		}
+	}
+	dispatcher.defaultNearCallback(collisionPair, dispatcher, dispatchInfo);
+
+}
+//----------------------------------------------------------------//
 
 void MOAIBulletWorld::OnUpdate ( float step ) {			
-     mWorld->stepSimulation(1 / mStep, 10);	
+     mWorld->stepSimulation( mStep, mMaxSubSteps);	
 
+//UPDATE ALL OBJECTS
 	for (int j=mWorld->getNumCollisionObjects()-1; j>=0 ;j--){	
 		btCollisionObject* obj = mWorld->getCollisionObjectArray()[j];
 		btRigidBody* body = btRigidBody::upcast(obj);
@@ -49,22 +190,65 @@ void MOAIBulletWorld::OnUpdate ( float step ) {
 		//ACTIVE AND AWAKE THE SAME THING?
 			if ( body->isActive()) {
 				if (body && body->getMotionState())
-				{
+				{			
+
+					//CULLING PERHAPS ??
 					//btTransform trans;
 					//body->getMotionState()->getWorldTransform(trans);
 					//printf("world pos = %f,%f,%f\n",float(trans.getOrigin().getX()),float(trans.getOrigin().getY()),float(trans.getOrigin().getZ()));
 
-					MOAIBulletBody* moaiBody = ( MOAIBulletBody* )body->GetUserData (); //HAD TO ADD TO BULLET
+					MOAIBulletBody* moaiBody = ( MOAIBulletBody* )body->getUserPointer (); //HAD TO ADD TO BULLET
 					moaiBody->ScheduleUpdate ();
 				};
 			
 			};	
 	}
 
+
+//***************************************************************************************************
+//***************************************************************************************************
+//***************************************************************************************************
+//COLLISION MANIFOLDS
+ /*  int numManifolds = mWorld->getDispatcher()->getNumManifolds();
+    for (int i=0;i<numManifolds;i++)
+    {
+        btPersistentManifold* contactManifold =  mWorld->getDispatcher()->getManifoldByIndexInternal(i);
+        btCollisionObject* obA =  const_cast<btCollisionObject*>(contactManifold->getBody0());
+        btCollisionObject* obB =  const_cast<btCollisionObject*>(contactManifold->getBody1());
+
+        int numContacts = contactManifold->getNumContacts();
+        for (int j=0;j<numContacts;j++)
+        {
+            btManifoldPoint& pt = contactManifold->getContactPoint(j);
+            if (pt.getDistance()<0.f)
+            {
+				printf("objects \n");
+		CALL TO LUA
+				btRigidBody* rigBodyA = ( btRigidBody* )obA;
+				btRigidBody* rigBodyB = ( btRigidBody* )obB;
+
+				MOAIBulletBody* moaiBodyA = ( MOAIBulletBody* )rigBodyA->getUserPointer (); 				
+				MOAIBulletBody* moaiBodyB = ( MOAIBulletBody* )rigBodyB->getUserPointer (); 			
+
+				WHY IS I ON B
+				moaiBodyB->HandleCollision ( 1, moaiBodyA,moaiBodyB );
+
+				printf("COLLISION\n");
+                const btVector3& ptA = pt.getPositionWorldOnA();
+                const btVector3& ptB = pt.getPositionWorldOnB();
+                const btVector3& normalOnB = pt.m_normalWorldOnB;
+
+            }
+        }
+    }*/
+//***************************************************************************************************
+//***************************************************************************************************
+//***************************************************************************************************
 };
 //----------------------------------------------------------------//
 void MOAIBulletWorld::DrawDebug () {
 	if ( this->mDebugDraw ) {	
+		//printf("FUCK");
 		MOAIDraw::Bind ();	
 		this->mDebugDraw->mSize = 0;
 
@@ -88,7 +272,7 @@ void MOAIBulletWorld::SayGoodbye ( btCompoundShape* shape) {
 //NO USER DATA CONTAINER MUST ADDED IT TO BULLET SOURCE CODE??
 //***********************************************************
 
-		//MOAIBulletShape* moaiFixture = ( MOAIBulletShape* )fixture->GetUserData ();
+		//MOAIBulletShape* moaiFixture = ( MOAIBulletShape* )fixture->getUserPointer ();
 		//if ( moaiFixture->mFixture ) {
 		//	moaiFixture->mFixture = 0;
 		//	moaiFixture->SetWorld ( 0 );
@@ -103,7 +287,7 @@ void MOAIBulletWorld::SayGoodbye ( btTypedConstraint* joint ) {
 //NO USER DATA CONTAINER MUST ADDED IT TO BULLET SOURCE CODE??
 //***********************************************************
 
-	//MOAIBulletJoint* moaiJoint = ( MOAIBulletJoint* )joint->GetUserData ();
+	//MOAIBulletJoint* moaiJoint = ( MOAIBulletJoint* )joint->getUserPointer ();
 	//if ( moaiJoint->mJoint ) {
 	//		moaiJoint->mJoint = 0;
 	//		moaiJoint->SetWorld ( 0 );
@@ -177,51 +361,99 @@ void MOAIBulletWorld::Destroy () {
 	this->mLock = false;
 }
 //----------------------------------------------------------------//
+int MOAIBulletWorld::_create( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIBulletWorld, "U" )
+
+	self->mBroadphase				= new btDbvtBroadphase();	
+	self->mCollisionConfiguration	= new btDefaultCollisionConfiguration(self->mConstructionInfo);
+	self->mCollisionDispatcher		= new btCollisionDispatcher(self->mCollisionConfiguration);
+	self->mSolver					= new btSequentialImpulseConstraintSolver;
+	self->mWorld					= new btDiscreteDynamicsWorld(self->mCollisionDispatcher, self->mBroadphase, self->mSolver, self->mCollisionConfiguration);
+
+	//const btVector3 worldAabbMin( -1000.0, -1000.0, -1000.0 );
+	//const btVector3 worldAabbMax( 1000.0, 1000.0, 1000.0 );
+	//btBroadphaseInterface = new btAxisSweep3(worldAabbMin, worldAabbMax, 1638 );
+
+	self->mWorld->setGravity(btVector3(0, 0, 0));
+	self->mWorld->getDispatchInfo().m_useContinuous		= true;
+	self->mWorld->getSolverInfo().m_splitImpulse		= true; // Disable by default for performance
+
+	//***********************************
+	//OTHER STUFF
+	//self->mWorld->setNumTasks
+
+	self->mDebugDraw = new MOAIBulletDebugDraw ();
+	self->mWorld->setDebugDrawer(self->mDebugDraw );		
+
+	//****************************************************
+	//SET CALLBACKS : DOSEN"T WORK
+		//ICollisionEvents::SetInstance(this,this->mWorld);
+		//gContactAddedCallback//=callbackFunc;
+
+	//NEAR
+		//mCollisionDispatcher->setNearCallback(this->mNearCallback);
+		btOverlapFilterCallback * filterCallback = new YourOwnFilterCallback();
+		self->mWorld->getPairCache()->setOverlapFilterCallback(filterCallback);
+
+	return 1;
+}
+
+//----------------------------------------------------------------//
 MOAIBulletWorld::MOAIBulletWorld () :
     mCollisionConfiguration(0),
     mCollisionDispatcher(0),
+	mDebugDraw(0),
     mBroadphase(0),
     mSolver(0),
     mWorld(0),
 	mDrawScale(1),
 	mDrawJointSize(1),
-	mStep(60),
+	mStep(1/60),
+	mMaxSubSteps(10),
 	mLock(false)
 {
 
 RTTI_BEGIN
 	RTTI_EXTEND ( MOAIAction )			
 RTTI_END
-
-	mBroadphase				= new btDbvtBroadphase();	
+//PRO-is wrapped in 
+	//BT_NO_PROFILE 1
+	//ProfileIterator * m_profileIterator =  CProfileManager::Get_Iterator();
 	//LOWER MEMORY FOOT PRINT
-	btDefaultCollisionConstructionInfo constructionInfo = btDefaultCollisionConstructionInfo();
-	constructionInfo.m_defaultMaxCollisionAlgorithmPoolSize = 1023;
-	constructionInfo.m_defaultMaxPersistentManifoldPoolSize = 1023;
-	mCollisionConfiguration = new btDefaultCollisionConfiguration(constructionInfo);
-	//collisionConfiguration_	= new btDefaultCollisionConfiguration();	
-
-	mCollisionDispatcher	= new btCollisionDispatcher(mCollisionConfiguration);
-	mSolver					= new btSequentialImpulseConstraintSolver;
-	mWorld					= new btDiscreteDynamicsWorld(mCollisionDispatcher, mBroadphase, mSolver, mCollisionConfiguration);
-
-	mWorld->setGravity(btVector3(0, 0, 0));
-	mWorld->getDispatchInfo().m_useContinuous	= true;
-	mWorld->getSolverInfo().m_splitImpulse		= true; // Disable by default for performance
-	//DEBUG
-	mDebugDraw = new MOAIBulletDebugDraw ();
-	mWorld->setDebugDrawer(this->mDebugDraw );	
-
+	 this->mConstructionInfo		=  btDefaultCollisionConstructionInfo();
+	//mConstructionInfo.m_defaultMaxCollisionAlgorithmPoolSize = 1023;
+	//mConstructionInfo.m_defaultMaxPersistentManifoldPoolSize = 1023;	
+	//m_defaultMaxPersistentManifoldPoolSize( 1638 ), //65536
+	//m_defaultMaxCollisionAlgorithmPoolSize( 1638 ), //65536
+	//m_defaultStackAllocatorSize( 131072 ) // 5 * 1024 * 1024
 };
 //----------------------------------------------------------------//
 MOAIBulletWorld::~MOAIBulletWorld () {
-	delete mWorld;
-    delete mSolver;
-    delete mCollisionDispatcher;
-    delete mCollisionConfiguration;
-    delete mBroadphase;
-	delete mDebugDraw;
+	printf("\n~MOAIBulletWorld");
 
+	if (this->mWorld) {
+		delete mWorld;
+	};
+
+	if (this->mSolver) {
+		delete mSolver;
+	}
+
+	if (this->mCollisionDispatcher) {
+		delete mCollisionDispatcher;
+	}
+
+	if (this->mCollisionConfiguration) {
+		delete mCollisionConfiguration;
+	}
+
+	if (this->mBroadphase) {
+		delete mBroadphase;
+	}
+
+	if (this->mDebugDraw) {
+		delete mDebugDraw;
+	}
 };
 //----------------------------------------------------------------//
 int MOAIBulletWorld::_addBody ( lua_State* L ) {
@@ -244,7 +476,19 @@ int MOAIBulletWorld::_addBody ( lua_State* L ) {
 	
 
 	btRigidBody::btRigidBodyConstructionInfo info(mMass,body->mMotion,body->mCompound,mInertia);  
-	body->mBody = new btRigidBody(info);  
+
+			//*********************************************************
+			//body->mBody = new btRigidBody(info); //DOESN'T WORK
+
+	
+	body->mBody = new btRigidBody(info);
+
+	//WTF
+	//static_cast <btRigidBodyWithEvents*> (body->mBody)->setMonitorCollisions(true); 
+	//static_cast <btRigidBodyWithEvents*>(body->mBody)->setMonitorCollisions(true);
+	//body->mBody->setMonitorCollisions(true);	
+
+
 	body->setWorld(self->mWorld);	
 	body->SetBody(body->mBody);	//WTF
 
@@ -270,20 +514,22 @@ int MOAIBulletWorld::_addJointHinge ( lua_State* L ) {
 			btTransform tb = *transB->mTransform;
 
 	btHingeConstraint*		hingeC;
-	hingeC = new btHingeConstraint(*bodyA->mBody, *bodyB->mBody, ta, tb); //IS THIS A LEAK?
+	hingeC = new btHingeConstraint(*bodyA->mBody, *bodyB->mBody, ta, tb);
 
 	hingeC->setDbgDrawSize(self->mDrawJointSize);
 	self->mWorld->addConstraint(hingeC, true);	
 
-	MOAIBulletJointHinge* mJoint = new MOAIBulletJointHinge (); //POINTER TO POINTER?
+	MOAIBulletJointHinge* mJoint = new MOAIBulletJointHinge (); 
+
 	mJoint->SetJoint(hingeC);
 	mJoint->SetBodyA(bodyA);
 	mJoint->SetBodyB(bodyB);
-		//mJoint->setuserdata // NEED TO ADD TO BULLET SOURCE CODE
+
 	mJoint->SetWorld ( self );
 	mJoint->LuaRetain ( bodyA );
 	mJoint->LuaRetain ( bodyB );
 	self->LuaRetain ( mJoint );
+
 	mJoint->PushLuaUserdata ( state );
 	return 1;
 }
@@ -307,15 +553,16 @@ int MOAIBulletWorld::_addJointCone ( lua_State* L ) {
 			btTransform tb = *transB->mTransform;
 
 	btConeTwistConstraint*	coneC;	
-	coneC = new btConeTwistConstraint(*bodyA->mBody, *bodyB->mBody, ta, tb); //NEED TO MAKE JOINT SIZE
+	coneC = new btConeTwistConstraint(*bodyA->mBody, *bodyB->mBody, ta, tb); 
 	coneC->setDbgDrawSize(self->mDrawJointSize);
 	self->mWorld->addConstraint(coneC, true);	
 
-	MOAIBulletJointCone* mJoint = new MOAIBulletJointCone (); //POINTER TO POINTER?
+	MOAIBulletJointCone* mJoint = new MOAIBulletJointCone (); 
+
 	mJoint->SetJoint(coneC);
 	mJoint->SetBodyA(bodyA);
 	mJoint->SetBodyB(bodyB);
-	//mJoint->setuserdata  // NEED TO ADD TO BULLET SOURCE CODE
+
 	mJoint->SetWorld ( self );
 	mJoint->LuaRetain ( bodyA );
 	mJoint->LuaRetain ( bodyB );
@@ -345,7 +592,7 @@ int MOAIBulletWorld::_addJointSlider ( lua_State* L ) {
 	bool joint_bool = state.GetValue < bool >( 6, false );
 
 	btSliderConstraint*	sliderC;	
-	sliderC = new btSliderConstraint(*bodyA->mBody, *bodyB->mBody, ta, tb,joint_bool); //ANOTHER ARGGUMENT
+	sliderC = new btSliderConstraint(*bodyA->mBody, *bodyB->mBody, ta, tb,joint_bool); 
 	sliderC->setDbgDrawSize(self->mDrawJointSize);
 	self->mWorld->addConstraint(sliderC, true);
 
@@ -357,11 +604,12 @@ int MOAIBulletWorld::_addJointSlider ( lua_State* L ) {
 		//self->mWorld->addConstraint(sliderC, true);
 
 
-	MOAIBulletJointSlide* mJoint = new MOAIBulletJointSlide (); //POINTER TO POINTER?
+	MOAIBulletJointSlide* mJoint = new MOAIBulletJointSlide (); 
+
 	mJoint->SetJoint(sliderC);
 	mJoint->SetBodyA(bodyA);
 	mJoint->SetBodyB(bodyB);
-	//mJoint->setuserdata ? // NEED TO ADD TO BULLET SOURCE CODE
+
 	mJoint->SetWorld ( self );
 	mJoint->LuaRetain ( bodyA );
 	mJoint->LuaRetain ( bodyB );
@@ -412,11 +660,11 @@ int MOAIBulletWorld::_addJointFreedom ( lua_State* L ) {
 	freeDomeC->getTranslationalLimitMotor()->m_targetVelocity[0] = -5.0f;
 	freeDomeC->getTranslationalLimitMotor()->m_maxMotorForce[0] = 0.1f;
 
-	MOAIBulletJointFreedom* mJoint = new MOAIBulletJointFreedom (); //POINTER TO POINTER?
+	MOAIBulletJointFreedom* mJoint = new MOAIBulletJointFreedom (); 
 	mJoint->SetJoint(freeDomeC);
 	mJoint->SetBodyA(bodyA);
 	mJoint->SetBodyB(bodyB);
-	//mJoint->setuserdata ? // NEED TO ADD TO BULLET SOURCE CODE
+	
 	mJoint->SetWorld ( self );
 	mJoint->LuaRetain ( bodyA );
 	mJoint->LuaRetain ( bodyB );
@@ -463,15 +711,15 @@ int MOAIBulletWorld::_addJointFixed ( lua_State* L ) {
 			btTransform tb = *transB->mTransform;
 
 	btFixedConstraint*	fixedC;	
-	fixedC = new btFixedConstraint(*bodyA->mBody, *bodyB->mBody, ta, tb); //ANOTHER ARGGUMENT
+	fixedC = new btFixedConstraint(*bodyA->mBody, *bodyB->mBody, ta, tb); 
 	fixedC->setDbgDrawSize(self->mDrawJointSize);
 	self->mWorld->addConstraint(fixedC, true);
 
-	MOAIBulletJointFixed* mJoint = new MOAIBulletJointFixed (); //POINTER TO POINTER?
+	MOAIBulletJointFixed* mJoint = new MOAIBulletJointFixed (); 
 	mJoint->SetJoint(fixedC);
 	mJoint->SetBodyA(bodyA);
 	mJoint->SetBodyB(bodyB);
-	//mJoint->setuserdata ? // NEED TO ADD TO BULLET SOURCE CODE
+
 	mJoint->SetWorld ( self );
 	mJoint->LuaRetain ( bodyA );
 	mJoint->LuaRetain ( bodyB );
@@ -500,33 +748,34 @@ int MOAIBulletWorld::_addJointPoint ( lua_State* L ) {
 	btVector3 pivotInB(b_x,b_y,b_z);
 
 	btPoint2PointConstraint*	PointC;	
-	PointC = new btPoint2PointConstraint(*bodyA->mBody, *bodyB->mBody, pivotInA, pivotInB); //ANOTHER ARGGUMENT
+	PointC = new btPoint2PointConstraint(*bodyA->mBody, *bodyB->mBody, pivotInA, pivotInB); 
 	PointC->setDbgDrawSize(self->mDrawJointSize);
 	self->mWorld->addConstraint(PointC, true);
 
-	MOAIBulletJointPoint* mJoint = new MOAIBulletJointPoint (); //POINTER TO POINTER?
+	MOAIBulletJointPoint* mJoint = new MOAIBulletJointPoint (); 
 	mJoint->SetJoint(PointC);
 	mJoint->SetBodyA(bodyA);
 	mJoint->SetBodyB(bodyB);
-	//mJoint->setuserdata ? // NEED TO ADD TO BULLET SOURCE CODE
+	
 	mJoint->SetWorld ( self );
 	mJoint->LuaRetain ( bodyA );
 	mJoint->LuaRetain ( bodyB );
 	self->LuaRetain ( mJoint );
 	mJoint->PushLuaUserdata ( state );
-
-
-
-
-
 	return 1;
 };
-
 //----------------------------------------------------------------//
 int MOAIBulletWorld::_setStep ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletWorld, "UN" )
-	float step = state.GetValue < float >( 2, 60.0f );
+	float step = state.GetValue < float >( 2, 1.0f/60.0f );
 	self->mStep = step;	
+	return 1;
+}
+//----------------------------------------------------------------//
+int MOAIBulletWorld::_setMaxSubSteps ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIBulletWorld, "UN" )
+	int step = state.GetValue < int >( 2, 10 );
+	self->mMaxSubSteps = step;	
 	return 1;
 }
 //----------------------------------------------------------------//
@@ -536,6 +785,28 @@ int MOAIBulletWorld::_setGravity ( lua_State* L ) {
 	float gravity_y = state.GetValue < float >( 3, 0.0f );
 	float gravity_z = state.GetValue < float >( 4, 0.0f );
 	self->mWorld->setGravity(btVector3(gravity_x, gravity_y, gravity_z));
+	return 1;
+};
+//----------------------------------------------------------------//
+int MOAIBulletWorld::_setForceUpdateAllAabbs ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIBulletWorld, "U" )
+	bool forceUpdate = state.GetValue < bool >( 2, true );
+	self->mWorld->setForceUpdateAllAabbs(forceUpdate);
+	return 1;
+};
+//----------------------------------------------------------------//
+int MOAIBulletWorld::_defaultMaxCollisionAlgorithmPoolSize ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIBulletWorld, "U" )
+	long defaultMaxCollisionAlgorithmPoolSize = state.GetValue < long >( 2, true );
+	self->mConstructionInfo.m_defaultMaxCollisionAlgorithmPoolSize = defaultMaxCollisionAlgorithmPoolSize;
+	return 1;
+	
+};
+//----------------------------------------------------------------//
+int MOAIBulletWorld::_defaultMaxPersistentManifoldPoolSize ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIBulletWorld, "U" )
+	long defaultMaxCollisionAlgorithmPoolSize = state.GetValue < long >( 2, true );
+	self->mConstructionInfo.m_defaultMaxPersistentManifoldPoolSize = defaultMaxCollisionAlgorithmPoolSize;
 	return 1;
 };
 //----------------------------------------------------------------//
@@ -584,10 +855,13 @@ void MOAIBulletWorld::RegisterLuaClass ( MOAILuaState& state ) {
 void MOAIBulletWorld::RegisterLuaFuncs ( MOAILuaState& state ) {
 	MOAIAction::RegisterLuaFuncs ( state );
 	luaL_Reg regTable [] = {
-//BODY
-		{ "addBody",					_addBody }, 
-//SHOULD MAKE SHAPES LIKE THIS
 
+//MANIFOLD
+		{ "defaultMaxCollisionAlgorithmPoolSize",					_defaultMaxCollisionAlgorithmPoolSize }, 
+		{ "defaultMaxPersistentManifoldPoolSize",					_defaultMaxPersistentManifoldPoolSize }, 
+//INTI
+		{ "create",						_create }, 
+		{ "addBody",					_addBody }, 
 //JOINTS
 		{ "addJointHinge",				_addJointHinge },
 		{ "addJointCone",				_addJointCone }, 
@@ -599,12 +873,20 @@ void MOAIBulletWorld::RegisterLuaFuncs ( MOAILuaState& state ) {
 //WORLD
 		{ "setDrawScale",				_setDrawScale },
 		{ "setDrawJointSize",			_setDrawJointSize },
+		{ "setForceUpdateAllAabbs",		_setForceUpdateAllAabbs },
+		
 		{ "setStep",					_setStep },
+		{ "setMaxSubSteps",				_setMaxSubSteps },
+	
 		{ "setGravity",					_setGravity },
 		{ "useContinuous",				_useContinuous },
 		{ "splitImpulse",				_splitImpulse },
-		{ "Iterations",					_Iterations },	
+		{ "iterations",					_Iterations },	
 		{ NULL, NULL }
 	};	
 	luaL_register ( state, 0, regTable );
 }
+
+
+
+
