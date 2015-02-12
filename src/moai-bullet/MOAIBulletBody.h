@@ -5,6 +5,8 @@
 #define	MOAIBULLETBODY_H
 
 #include <moai-bullet/MOAIBulletWorld.h>
+#include <moai-bullet/MOAIBulletVehicle.h>
+
 #include <bullet/src/LinearMath/btMotionState.h>
 #include <bullet/src/btBulletDynamicsCommon.h>
 #include <limits>
@@ -30,40 +32,53 @@ class MOAIBulletBody :
 {
 private:
 
-//
 	MOAILuaMemberRef	mCollisionHandler;
 
 	uint16 mCollision_group;
 	uint16 mCollision_mask;
 //WORLD
-	btDiscreteDynamicsWorld* mWorld; //<--REALLY FUCKING DUMB
+	btDiscreteDynamicsWorld* mWorld; 
 //BODY
 	btRigidBody*			mBody;
 
 //MOTION
 	btDefaultMotionState*	mMotion;
 
-//SHAPE : SHOULD HAVE OWN SHAPES MAYBE?
-	//btCollisionShape*		mShape;
+//SHAPE : SHOULD HAVE OWN SHAPES MAYBE? //btCollisionShape*		mShape;	
 	btCompoundShape*		mCompound;
 
+//FOR STATE SAVE
+	btVector3 mRot;
+	btVector3 mLoc;
 
 //----------------------------------------------------------------//
+
+	static int		_CleanProxyFromPairs    ( lua_State* L );
+
 	static int		_NewShape				( lua_State* L );
+	static int		_NewVehicle				( lua_State* L );
 
+	static int		_SetFilter				( lua_State* L );
+	static int		_SetCallback			( lua_State* L );
 
-	static int		_SetFilter						( lua_State* L );
-	static int		_SetCallback					( lua_State* L );
-
-	static int		_AddCollisionGroup				( lua_State* L );
-	static int		_AddCollisionMask				( lua_State* L );
-	static int		_SetCollisionFlags				( lua_State* L );
+	static int		_AddCollisionGroup		( lua_State* L );
+	static int		_AddCollisionMask		( lua_State* L );
+	static int		_SetCollisionFlags		( lua_State* L );
 	static int		_NoResponse				( lua_State* L );
 	
 	static int		_AddToBody				( lua_State* L );
 
+//STATE
+	static int		_stateSet				( lua_State* L );
+	static int		_stateRest				( lua_State* L );
+//CLEAR FORCE
+	static int		_clearForces			( lua_State* L );
 
+//OBJECTS
 	static int		_AddRag				( lua_State* L );
+	static int		_AddCar				( lua_State* L );
+	static int		_CarUpdate			( lua_State* L );
+
 //LINEAR
 	static int		_SetLinearVelocity			( lua_State* L );
 	static int		_SetLinearFactor			( lua_State* L );
@@ -98,13 +113,14 @@ private:
 	static int		_SetDeactivationTime	( lua_State* L );
 	static int		_SetSleepingThresholds	( lua_State* L );	
 
-//MASS	: ON SHAPE
-	//static int		_SetMass		( lua_State* L );
-
+//POSTION
 	static int		_SetPosition		( lua_State* L );
 	static int		_SetRotation		( lua_State* L );
+
+//WORLD
 	static int		_AddToWorld			( lua_State* L );
 
+//ACTIVITY
 	static int		_SetKinematic		( lua_State* L );
 	static int		_SetActivationState	( lua_State* L );
 

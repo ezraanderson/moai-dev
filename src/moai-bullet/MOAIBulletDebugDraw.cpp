@@ -77,33 +77,38 @@ gfxDevice.WriteFinalColor4b ();
 };
 //----------------------------------------------------------------//
 void    MOAIBulletDebugDraw::drawLine(const btVector3& from,const btVector3& to, const btVector3& fromColor, const btVector3& toColor){
-	//printf("drawLineB \n");
+	printf("drawLineB \n");
 };
 //----------------------------------------------------------------//
 void  MOAIBulletDebugDraw::reportErrorWarning(const char* warningString){
-	//printf("reportErrorWarning \n");
+	printf("reportErrorWarning \n");
 };
 //----------------------------------------------------------------//
 void  MOAIBulletDebugDraw::draw3dText(const btVector3& location,const char* textString){
-	//printf("draw3dText \n");
+	printf("draw3dText \n");
 };
 //----------------------------------------------------------------//
 void  MOAIBulletDebugDraw::setDebugMode(int debugMode){
-	//printf("setDebugMode \n");
+	printf("setDebugMode \n");
 }; 
 //----------------------------------------------------------------//
 int    MOAIBulletDebugDraw::getDebugMode()const{
-	return (btIDebugDraw::DBG_DrawWireframe | btIDebugDraw::DBG_DrawConstraints | btIDebugDraw::DBG_DrawConstraintLimits);
-};
-//----------------------------------------------------------------//
-void MOAIBulletDebugDraw::drawAabb(const btVector3& from,const btVector3& to,const btVector3& color){
-	//printf("drawAabb \n");
+	//return (btIDebugDraw::DBG_DrawWireframe | btIDebugDraw::DBG_DrawConstraints | btIDebugDraw::DBG_DrawConstraintLimits);
+
+		return (btIDebugDraw::DBG_DrawWireframe | btIDebugDraw::DBG_DrawConstraints | btIDebugDraw::DBG_DrawConstraintLimits);
+	//return (btIDebugDraw::DBG_FastWireframe | btIDebugDraw::DBG_DrawConstraints | btIDebugDraw::DBG_DrawConstraintLimits);
+	
 
 };
 //----------------------------------------------------------------//
-void MOAIBulletDebugDraw::drawTransform(const btTransform& transform, btScalar orthoLen){
-	//printf("drawTransform \n");
+void MOAIBulletDebugDraw::drawAabb(const btVector3& from,const btVector3& to,const btVector3& color){
+	printf("drawAabb \n");
+
 };
+//----------------------------------------------------------------//
+//void MOAIBulletDebugDraw::drawTransform(const btTransform& transform, btScalar orthoLen){
+//	printf("drawTransform \n");
+//};
 //----------------------------------------------------------------//
 void MOAIBulletDebugDraw::WriteVtx ( MOAIGfxDevice& gfxDevice, float x, float y,float z ) {
 ZLVec3D vtx;

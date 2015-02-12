@@ -43,7 +43,7 @@ class MOAIBulletDebugDraw : public btIDebugDraw  {
 
   virtual void drawAabb(const btVector3& from,const btVector3& to,const btVector3& color);
 
-  virtual void drawTransform(const btTransform& transform, btScalar orthoLen);
+  //virtual void drawTransform(const btTransform& transform, btScalar orthoLen);
 
 
 

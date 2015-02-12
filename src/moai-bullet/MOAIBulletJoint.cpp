@@ -9,13 +9,9 @@
 //----------------------------------------------------------------//
 int MOAIBulletJoint::_getBreakingImpulse ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletJoint, "U" )
-	float unitsToMeters = self->GetUnitsToMeters ();
-
-	if ( !self->mJoint ) {
-		MOAILog ( state, MOAILogMessages::MOAIBox2DJoint_MissingInstance );
+	if ( !self->mJoint ) {	
 		return 0;
 	}
-
 	float length = state.GetValue < float >( 2, 0.0f );	
 	btTypedConstraint*	joint = self->mJoint;
 
@@ -25,16 +21,11 @@ int MOAIBulletJoint::_getBreakingImpulse ( lua_State* L ) {
 }
 //----------------------------------------------------------------//
 int MOAIBulletJoint::_setBreakingImpulse ( lua_State* L ) {
-	
 
 	MOAI_LUA_SETUP ( MOAIBulletJoint, "U" )
-	float unitsToMeters = self->GetUnitsToMeters ();
-
 	if ( !self->mJoint ) {
-		MOAILog ( state, MOAILogMessages::MOAIBox2DJoint_MissingInstance );
 		return 0;
 	}
-
 		float length = state.GetValue < float >( 2, 0.0f );	
 		btTypedConstraint*	joint = self->mJoint;
 		joint->setBreakingImpulseThreshold(length);	
@@ -42,11 +33,32 @@ int MOAIBulletJoint::_setBreakingImpulse ( lua_State* L ) {
 	return 0;
 }
 //----------------------------------------------------------------//
-int MOAIBulletJoint::_getBodyA ( lua_State* L ) {
+int MOAIBulletJoint::_isEnabled ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletJoint, "U" )
-	
 	if ( !self->mJoint ) {
-		MOAILog ( state, MOAILogMessages::MOAIBox2DJoint_MissingInstance );
+		return 0;
+	}
+
+	btTypedConstraint*	joint = self->mJoint;
+	state.Push ( joint->isEnabled() );
+	return 1;
+}
+//----------------------------------------------------------------//
+int MOAIBulletJoint::_setEnabled ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIBulletJoint, "U" )
+	if ( !self->mJoint ) {
+		return 0;
+	}
+
+	bool enabled = state.GetValue < bool >( 2, 0.0f );	
+	btTypedConstraint*	joint = self->mJoint;
+	joint->setEnabled(enabled);
+	return 0;
+}
+//----------------------------------------------------------------//
+int MOAIBulletJoint::_getBodyA ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIBulletJoint, "U" )	
+	if ( !self->mJoint ) {
 		return 0;
 	}		
 	self->mBodyA->PushLuaUserdata ( state);	
@@ -54,10 +66,8 @@ int MOAIBulletJoint::_getBodyA ( lua_State* L ) {
 }
 //----------------------------------------------------------------//
 int MOAIBulletJoint::_getBodyB ( lua_State* L ) {
-	MOAI_LUA_SETUP ( MOAIBulletJoint, "U" )
-	
+	MOAI_LUA_SETUP ( MOAIBulletJoint, "U" )	
 	if ( !self->mJoint ) {
-		MOAILog ( state, MOAILogMessages::MOAIBox2DJoint_MissingInstance );
 		return 0;
 	}
 	self->mBodyB->PushLuaUserdata ( state);		
@@ -71,11 +81,7 @@ int MOAIBulletJoint::_destroy ( lua_State* L ) {
 	};
 	return 0;
 };
-
-//================================================================//
-// MOAIBox2DJoint
-//================================================================//
-
+//----------------------------------------------------------------//
 void MOAIBulletJoint::Destroy () {
 	if ( this->mJoint ) {		
 		btDiscreteDynamicsWorld* mWorld = this->mWorld->mWorld;	
@@ -91,7 +97,6 @@ MOAIBulletJoint::MOAIBulletJoint () :
 		RTTI_EXTEND ( MOAILuaObject )
 	RTTI_END
 }
-
 //----------------------------------------------------------------//
 MOAIBulletJoint::~MOAIBulletJoint () {
 
@@ -102,7 +107,6 @@ MOAIBulletJoint::~MOAIBulletJoint () {
 	
 	this->Destroy ();
 }
-
 //----------------------------------------------------------------//
 void MOAIBulletJoint::RegisterLuaClass ( MOAILuaState& state ) {
 	MOAIBulletPrim::RegisterLuaClass ( state );
@@ -118,7 +122,8 @@ void MOAIBulletJoint::RegisterLuaFuncs ( MOAILuaState& state ) {
 		{ "getBodyB",						_getBodyB },
 		{ "getBreakingImpulse",				_getBreakingImpulse },
 		{ "setBreakingImpulse",				_setBreakingImpulse },
-
+		{ "isEnabled",						_isEnabled },
+		{ "setEnabled",						_setEnabled },
 		{ NULL, NULL }
 	};
 	

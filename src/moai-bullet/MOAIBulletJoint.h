@@ -28,8 +28,9 @@ protected:
 	static int			_getBodyB							( lua_State* L );
 	static int			_setBreakingImpulse					( lua_State* L );
 	static int			_getBreakingImpulse					( lua_State* L );
+	static int			_isEnabled							( lua_State* L );
+	static int			_setEnabled							( lua_State* L );	
 
-	
 	//----------------------------------------------------------------//
 	void				SetJoint				( btTypedConstraint* joint );
 	void				SetBodyA				( MOAIBulletBody* body );
@@ -38,7 +39,6 @@ protected:
 public:
 	
 	friend class MOAIBulletWorld;
-
 	friend class MOAIBulletJointSlide;
 	friend class MOAIBulletJointHinge;
 	friend class MOAIBulletJointCone;

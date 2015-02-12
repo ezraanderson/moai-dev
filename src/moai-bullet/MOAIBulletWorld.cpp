@@ -37,6 +37,7 @@
 #include <moai-bullet/MOAIBulletDebugDraw.h>
 #include <moai-bullet/MOAIBulletBody.h>
 #include <moai-bullet/MOAIBulletShape.h>
+
 #include <moai-bullet/MOAIBulletJoint.h>
 #include <moai-bullet/MOAIBulletJointCone.h>
 #include <moai-bullet/MOAIBulletJointFixed.h>
@@ -118,7 +119,9 @@ struct YourOwnFilterCallback : public btOverlapFilterCallback
 			btRigidBody* rigBodyB = ( btRigidBody* )colObj1;
 			MOAIBulletBody* moaiBodyB = ( MOAIBulletBody* )rigBodyB->getUserPointer (); 			
 
-			moaiBodyA->HandleCollision ( 1, moaiBodyA,moaiBodyB );
+				if (moaiBodyA) {
+					moaiBodyA->HandleCollision ( 1, moaiBodyA,moaiBodyB );
+				};
 
 		return collides;
 	}
@@ -196,9 +199,12 @@ void MOAIBulletWorld::OnUpdate ( float step ) {
 					//btTransform trans;
 					//body->getMotionState()->getWorldTransform(trans);
 					//printf("world pos = %f,%f,%f\n",float(trans.getOrigin().getX()),float(trans.getOrigin().getY()),float(trans.getOrigin().getZ()));
-
-					MOAIBulletBody* moaiBody = ( MOAIBulletBody* )body->getUserPointer (); //HAD TO ADD TO BULLET
-					moaiBody->ScheduleUpdate ();
+					
+						//FIX FOR RAG DOLLS
+						MOAIBulletBody* moaiBody = ( MOAIBulletBody* )body->getUserPointer (); //HAD TO ADD TO BULLET
+						if (moaiBody) {
+							moaiBody->ScheduleUpdate ();
+						}
 				};
 			
 			};	
@@ -246,9 +252,8 @@ void MOAIBulletWorld::OnUpdate ( float step ) {
 //***************************************************************************************************
 };
 //----------------------------------------------------------------//
-void MOAIBulletWorld::DrawDebug () {
+void MOAIBulletWorld::DrawDebug () {	
 	if ( this->mDebugDraw ) {	
-		//printf("FUCK");
 		MOAIDraw::Bind ();	
 		this->mDebugDraw->mSize = 0;
 
@@ -374,9 +379,19 @@ int MOAIBulletWorld::_create( lua_State* L ) {
 	//const btVector3 worldAabbMax( 1000.0, 1000.0, 1000.0 );
 	//btBroadphaseInterface = new btAxisSweep3(worldAabbMin, worldAabbMax, 1638 );
 
-	self->mWorld->setGravity(btVector3(0, 0, 0));
-	self->mWorld->getDispatchInfo().m_useContinuous		= true;
-	self->mWorld->getSolverInfo().m_splitImpulse		= true; // Disable by default for performance
+	//GRAVITY
+		self->mWorld->setGravity(btVector3(0, 0, 0));
+	
+	//SOLVER
+		self->mWorld->getSolverInfo().m_splitImpulse			= true; // Disable by default for performance
+
+	//DISPATCH
+		self->mWorld->getDispatchInfo().m_useContinuous			= true;
+		self->mWorld->getDispatchInfo().m_enableSPU				= true;
+		self->mWorld->getDispatchInfo().m_allowedCcdPenetration = 0.01f;
+
+
+	//self->mWorld->getDispatchInfo().
 
 	//***********************************
 	//OTHER STUFF
@@ -456,42 +471,39 @@ MOAIBulletWorld::~MOAIBulletWorld () {
 	}
 };
 //----------------------------------------------------------------//
-int MOAIBulletWorld::_addBody ( lua_State* L ) {
+int MOAIBulletWorld::_newBody ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletWorld, "UU" )	
-
-//NEW CLASS
-	MOAIBulletBody* body = new MOAIBulletBody ();	
 
 	MOAIBulletTransform* transA = state.GetLuaObject < MOAIBulletTransform >(2, true );
 	if ( !( transA )) return 0;
 	btTransform ta = *transA->mTransform;
 
+	//RESET VALUES	
+
+	//NEW CLASS
+		MOAIBulletBody* body = new MOAIBulletBody ();	
 	//MASS
 		btScalar mMass = 1.0;
 	//INERTIA
 		btVector3 mInertia(0.0, 0.0, 0.0);
-
-	body->mMotion	= new btDefaultMotionState(ta);	
-	body->mCompound = new btCompoundShape();   
+	//MOTION & COMPOIND
+		body->mMotion	= new btDefaultMotionState(ta);	
+		body->mCompound = new btCompoundShape();   
 	
 
 	btRigidBody::btRigidBodyConstructionInfo info(mMass,body->mMotion,body->mCompound,mInertia);  
 
-			//*********************************************************
-			//body->mBody = new btRigidBody(info); //DOESN'T WORK
-
-	
-	body->mBody = new btRigidBody(info);
-
-	//WTF
+	//*********************************************************
+	//body->mBody = new btRigidBody(info); //DOESN'T WORK
 	//static_cast <btRigidBodyWithEvents*> (body->mBody)->setMonitorCollisions(true); 
 	//static_cast <btRigidBodyWithEvents*>(body->mBody)->setMonitorCollisions(true);
 	//body->mBody->setMonitorCollisions(true);	
 
+	
+	body->mBody = new btRigidBody(info);
 
 	body->setWorld(self->mWorld);	
-	body->SetBody(body->mBody);	//WTF
-
+	body->SetBody(body->mBody); //SHOULDNT THIS BE MOAI DATA
 	self->LuaRetain ( body );
 	body->PushLuaUserdata ( state );
 	return 1;
@@ -761,6 +773,7 @@ int MOAIBulletWorld::_addJointPoint ( lua_State* L ) {
 	mJoint->LuaRetain ( bodyA );
 	mJoint->LuaRetain ( bodyB );
 	self->LuaRetain ( mJoint );
+
 	mJoint->PushLuaUserdata ( state );
 	return 1;
 };
@@ -769,14 +782,14 @@ int MOAIBulletWorld::_setStep ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletWorld, "UN" )
 	float step = state.GetValue < float >( 2, 1.0f/60.0f );
 	self->mStep = step;	
-	return 1;
+	return 0;
 }
 //----------------------------------------------------------------//
 int MOAIBulletWorld::_setMaxSubSteps ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletWorld, "UN" )
 	int step = state.GetValue < int >( 2, 10 );
 	self->mMaxSubSteps = step;	
-	return 1;
+	return 0;
 }
 //----------------------------------------------------------------//
 int MOAIBulletWorld::_setGravity ( lua_State* L ) {
@@ -785,7 +798,7 @@ int MOAIBulletWorld::_setGravity ( lua_State* L ) {
 	float gravity_y = state.GetValue < float >( 3, 0.0f );
 	float gravity_z = state.GetValue < float >( 4, 0.0f );
 	self->mWorld->setGravity(btVector3(gravity_x, gravity_y, gravity_z));
-	return 1;
+	return 0;
 };
 //----------------------------------------------------------------//
 int MOAIBulletWorld::_setForceUpdateAllAabbs ( lua_State* L ) {
@@ -799,21 +812,35 @@ int MOAIBulletWorld::_defaultMaxCollisionAlgorithmPoolSize ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletWorld, "U" )
 	long defaultMaxCollisionAlgorithmPoolSize = state.GetValue < long >( 2, true );
 	self->mConstructionInfo.m_defaultMaxCollisionAlgorithmPoolSize = defaultMaxCollisionAlgorithmPoolSize;
-	return 1;
-	
+	return 0;	
 };
 //----------------------------------------------------------------//
 int MOAIBulletWorld::_defaultMaxPersistentManifoldPoolSize ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletWorld, "U" )
 	long defaultMaxCollisionAlgorithmPoolSize = state.GetValue < long >( 2, true );
 	self->mConstructionInfo.m_defaultMaxPersistentManifoldPoolSize = defaultMaxCollisionAlgorithmPoolSize;
-	return 1;
+	return 0;
 };
 //----------------------------------------------------------------//
 int MOAIBulletWorld::_useContinuous ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletWorld, "U" )
 	bool continous = state.GetValue < bool >( 2, true );
 	self->mWorld->getDispatchInfo().m_useContinuous	= continous;
+	return 0;
+}
+//----------------------------------------------------------------//
+int MOAIBulletWorld::_enableSPU	( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIBulletWorld, "U" )
+	bool spu = state.GetValue < bool >( 2, true );
+	self->mWorld->getDispatchInfo().m_enableSPU	= spu;
+	return 0;
+}
+
+//----------------------------------------------------------------//
+int MOAIBulletWorld::_allowedCcdPenetration	( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIBulletWorld, "U" )
+	float pen = state.GetValue < float >( 2, 0.0f );
+	self->mWorld->getDispatchInfo().m_allowedCcdPenetration	= pen;
 	return 0;
 }
 //----------------------------------------------------------------//
@@ -830,38 +857,46 @@ int MOAIBulletWorld::_Iterations ( lua_State* L ) {
 	int iterations = state.GetValue < int >( 2, 4 );
 	btContactSolverInfo& info = self->mWorld->getSolverInfo();
 	info.m_numIterations = iterations;
-	return 1;
+	return 0;
 }
 //----------------------------------------------------------------//
 int MOAIBulletWorld::_setDrawScale ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletWorld, "UN" )	
 	float drawScale = state.GetValue < float >( 2, 1.0f );
 	self->mDrawScale = drawScale;
-	return 1;
+	return 0;
 }
 //----------------------------------------------------------------//
 int MOAIBulletWorld::_setDrawJointSize ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletWorld, "UN" )	
 	float drawSize = state.GetValue < float >( 2, 1.0f );
 	self->mDrawJointSize = drawSize;
-	return 1;
+	return 0;
+}
+//----------------------------------------------------------------//
+int MOAIBulletWorld::_DrawDebugLua ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIBulletWorld, "U" )	
+	self->DrawDebug();	
+	return 0;
 }
 //----------------------------------------------------------------//
 void MOAIBulletWorld::RegisterLuaClass ( MOAILuaState& state ) {
 	MOAIAction::RegisterLuaClass ( state );		
 	state.SetField ( -1, "COMPOUND_SHAPE", ( u32 )1 );
 }
+
 //----------------------------------------------------------------//
 void MOAIBulletWorld::RegisterLuaFuncs ( MOAILuaState& state ) {
 	MOAIAction::RegisterLuaFuncs ( state );
 	luaL_Reg regTable [] = {
+
 
 //MANIFOLD
 		{ "defaultMaxCollisionAlgorithmPoolSize",					_defaultMaxCollisionAlgorithmPoolSize }, 
 		{ "defaultMaxPersistentManifoldPoolSize",					_defaultMaxPersistentManifoldPoolSize }, 
 //INTI
 		{ "create",						_create }, 
-		{ "addBody",					_addBody }, 
+		{ "newBody",					_newBody }, 
 //JOINTS
 		{ "addJointHinge",				_addJointHinge },
 		{ "addJointCone",				_addJointCone }, 
@@ -881,7 +916,14 @@ void MOAIBulletWorld::RegisterLuaFuncs ( MOAILuaState& state ) {
 		{ "setGravity",					_setGravity },
 		{ "useContinuous",				_useContinuous },
 		{ "splitImpulse",				_splitImpulse },
+
+		{ "allowedCcdPenetration",		_allowedCcdPenetration },
+		{ "enableSPU",					_enableSPU },
+
 		{ "iterations",					_Iterations },	
+//DEBUG DRAW
+		{"drawDebugLua",				_DrawDebugLua	},
+
 		{ NULL, NULL }
 	};	
 	luaL_register ( state, 0, regTable );

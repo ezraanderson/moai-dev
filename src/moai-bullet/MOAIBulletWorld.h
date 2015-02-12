@@ -10,14 +10,10 @@
 
 
 class MOAIBulletDebugDraw;
-
 class MOAIBulletBody;
 class MOAIBulletShape;
 class MOAIBulletJoint;
 class MOAIBulletArbiter;
-
-
-
 
 //================================================================//
 // MOAIBox2DPrim
@@ -46,9 +42,6 @@ public:
 		return this->mDestroy;
 	}
 };
-
-
-
 
 
 class MOAIBulletWorld : 
@@ -89,6 +82,11 @@ float mDrawJointSize;
 bool  mLock;
 
 //----------------------------------------------------------------//
+static int		_DrawDebugLua		    ( lua_State* L );
+
+
+
+
 static int		_create					( lua_State* L );
 
 static int		_defaultMaxCollisionAlgorithmPoolSize 			( lua_State* L );
@@ -102,10 +100,14 @@ static int		_setDrawJointSize		( lua_State* L );
 static int		_setForceUpdateAllAabbs ( lua_State* L );
 static int		_setGravity 			( lua_State* L );
 static int		_useContinuous 			( lua_State* L );
+static int		_enableSPU 				( lua_State* L );
+static int		_allowedCcdPenetration 	( lua_State* L );
+
+
 static int		_splitImpulse 			( lua_State* L );
 static int		_Iterations 			( lua_State* L );
 
-static int		_addBody				( lua_State* L );
+static int		_newBody				( lua_State* L );
 
 
 static int		_addJointHinge			( lua_State* L );

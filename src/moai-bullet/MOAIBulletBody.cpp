@@ -1,9 +1,14 @@
 // Copyright (c) 2010-2011 Zipline Games, Inc. All Rights Reserved.
 // http://getmoai.com
 #include "pch.h"
+
 #include <moai-bullet/MOAIBulletBody.h>
 #include <moai-bullet/MOAIBulletShape.h>
+#include <moai-bullet/MOAIBulletVehicle.h>
+
 #include <bullet/src/btBulletDynamicsCommon.h>
+#include <moai-bullet/MOAIBulletTransform.h>
+
 
 //**************************************************************************************************************
 //**************************************************************************************************************
@@ -19,11 +24,12 @@
 //**************************************************************************************************************
 btRigidBody* localCreateRigidBody (btScalar mass, const btTransform& startTransform, btCollisionShape* shape)
 {
+
 		btVector3 localInertia(0,0,0);
-		shape->calculateLocalInertia(1,localInertia);
+		shape->calculateLocalInertia(mass,localInertia);
 
 		btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
-		btRigidBody::btRigidBodyConstructionInfo rbInfo(1,myMotionState,shape,localInertia);
+		btRigidBody::btRigidBodyConstructionInfo rbInfo(mass,myMotionState,shape,localInertia);
 		btRigidBody* body = new btRigidBody(rbInfo);
 
 		//body->setCollisionFlags( body->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
@@ -195,11 +201,11 @@ float joint_draw = 0.1;
 localA.setIdentity(); 
 localB.setIdentity();
 
-		localA.getBasis().setEulerZYX(0,0,0); 
-		localA.setOrigin(btVector3(btScalar(0.), btScalar(0.15), btScalar(0.)));
+localA.getBasis().setEulerZYX(0,0,0); 
+localA.setOrigin(btVector3(btScalar(0.), btScalar(0.15), btScalar(0.)));
 
-		localB.getBasis().setEulerZYX(0,0,0); 
-		localB.setOrigin(btVector3(btScalar(0.), btScalar(-0.15), btScalar(0.)));
+localB.getBasis().setEulerZYX(0,0,0); 
+localB.setOrigin(btVector3(btScalar(0.), btScalar(-0.15), btScalar(0.)));
 
 hingeC = new btHingeConstraint(*m_bodies[BODYPART_PELVIS], *m_bodies[BODYPART_SPINE], localA, localB);
 hingeC->setLimit(btScalar(-M_PI_4), btScalar(M_PI_2));
@@ -283,9 +289,6 @@ m_joints[JOINT_RIGHT_KNEE] = hingeC;
 
 
 self->mWorld->addConstraint(m_joints[JOINT_RIGHT_KNEE], true);
-
-
-
 //****************************************************************************************
 //****************************************************************************************
 localA.setIdentity();
@@ -300,14 +303,6 @@ coneC->setDbgDrawSize(joint_draw);
 m_joints[JOINT_LEFT_SHOULDER] = coneC;
 
 self->mWorld->addConstraint(m_joints[JOINT_LEFT_SHOULDER], true);
-
-
-
-
-
-
-
-
 
 //****************************************************************************************
 //****************************************************************************************
@@ -376,6 +371,280 @@ return 1;
 //**************************************************************************************************************
 
 
+
+//TEMP GLOBAL
+btRaycastVehicle	*m_vehicle;
+btRigidBody			*m_carChassis;
+//MAKE A WHEEL SHAPE : JUST FOR DRAWING
+//btCollisionShape* m_wheelShape;		
+//m_wheelShape = new btCylinderShapeX(btVector3(wheelWidth,wheelRadius,wheelRadius));
+//m_shapeDrawer->drawOpenGL(m,m_wheelShape,wheelColor,getDebugMode(),worldBoundsMin,worldBoundsMax);
+
+btScalar suspensionRestLength(0.6);
+#define CUBE_HALF_EXTENTS 1
+
+float	gEngineForce			= 00.f;
+float	gBreakingForce			= 00.f;
+float	maxEngineForce			= 1000.f;//this should be engine/velocity dependent
+float	maxBreakingForce		= 100.f;
+float	gVehicleSteering		= 0.f;
+float	steeringIncrement		= 0.01f;
+float	steeringClamp			= 0.3f;
+float	wheelRadius				= 0.7f;
+float	wheelWidth				= 0.4f;
+float	wheelFriction			= 1000;//BT_LARGE_FLOAT;
+float	suspensionStiffness		= 20.f;
+float	suspensionDamping		= 2.3f;
+float	suspensionCompression	= 4.4f;
+float	rollInfluence			= 0.1f;//1.0f;
+
+btVector3 wheelDirectionCS0(0,-1,0);
+btVector3 wheelAxleCS(-1,0,0);
+
+
+int MOAIBulletBody::_AddCar ( lua_State* L ) {
+MOAI_LUA_SETUP ( MOAIBulletBody, "UN" )	
+
+
+
+
+btCollisionShape*	chassisShape = new btBoxShape(btVector3(1.f,0.5f,2.f));
+btCompoundShape*	compound	 = new btCompoundShape();
+
+
+//****************************************************
+//****************************************************
+//****************************************************
+//SHAPE
+btTransform localTrans;
+localTrans.setIdentity();
+localTrans.getBasis().setEulerZYX(0,0,0);
+localTrans.setOrigin(btVector3(0,1,0));	
+compound->addChildShape(localTrans,chassisShape);
+
+//****************************************************
+//****************************************************
+//****************************************************
+
+
+
+
+//********************************************************
+//********************************************************
+//BODY 
+btTransform tr;
+tr.setIdentity();
+tr.getBasis().setEulerZYX(0,0,0);
+tr.setOrigin(btVector3(0,0,0));
+m_carChassis = localCreateRigidBody(0,tr,compound); //MASS 300 or 800
+//********************************************************
+//********************************************************
+
+
+
+
+
+
+//SET IT TO THE WORLD
+	self->mWorld->addRigidBody(m_carChassis);
+
+		{
+
+			//MAKE A RAY CAST
+			btVehicleRaycaster* m_vehicleRayCaster  = new btDefaultVehicleRaycaster(self->mWorld);
+			//TUNE IT
+			btRaycastVehicle::btVehicleTuning m_tuning;
+
+					//m_tuning.m_frictionSlip			= 0;
+					//m_tuning.m_maxSuspensionForce		= 0;
+					//m_tuning.m_maxSuspensionTravelCm	= 0;
+					//m_tuning.m_suspensionCompression	= 0;
+					//m_tuning.m_suspensionDamping		= 0;
+					//m_tuning.m_suspensionStiffness	= 0;
+
+
+			//MAKE A VEHICLE : TUNE : BODY : CASTER
+			m_vehicle			= new btRaycastVehicle(m_tuning,m_carChassis,m_vehicleRayCaster);	
+			m_carChassis->setActivationState(DISABLE_DEACTIVATION);	
+
+
+
+			// MAKE JOINTS
+			btVector3 connectionPointCS0;
+			float connectionHeight	= 1.2f;
+			bool  isFrontWheel		= false;	
+
+			//***********************	
+			connectionPointCS0= btVector3(CUBE_HALF_EXTENTS-(0.3*wheelWidth),connectionHeight,2*CUBE_HALF_EXTENTS-wheelRadius);
+			m_vehicle->addWheel(connectionPointCS0,wheelDirectionCS0,wheelAxleCS,suspensionRestLength,wheelRadius,m_tuning,isFrontWheel);
+			//***********************
+			connectionPointCS0 = btVector3(-CUBE_HALF_EXTENTS+(0.3*wheelWidth),connectionHeight,2*CUBE_HALF_EXTENTS-wheelRadius);
+			m_vehicle->addWheel(connectionPointCS0,wheelDirectionCS0,wheelAxleCS,suspensionRestLength,wheelRadius,m_tuning,isFrontWheel);
+			//***********************
+			connectionPointCS0 = btVector3(-CUBE_HALF_EXTENTS+(0.3*wheelWidth),connectionHeight,-2*CUBE_HALF_EXTENTS+wheelRadius);	
+			m_vehicle->addWheel(connectionPointCS0,wheelDirectionCS0,wheelAxleCS,suspensionRestLength,wheelRadius,m_tuning,isFrontWheel);
+			//***********************
+			connectionPointCS0 = btVector3(CUBE_HALF_EXTENTS-(0.3*wheelWidth),connectionHeight,-2*CUBE_HALF_EXTENTS+wheelRadius);
+			m_vehicle->addWheel(connectionPointCS0,wheelDirectionCS0,wheelAxleCS,suspensionRestLength,wheelRadius,m_tuning,isFrontWheel);
+			
+			//*************************************************************************
+			//*************************************************************************
+
+					//for (int i=0;i<m_vehicle->getNumWheels();i++)
+					//{
+					//	btWheelInfo& wheel = m_vehicle->getWheelInfo(i);
+					//	wheel.m_suspensionStiffness			= suspensionStiffness;
+					//	wheel.m_wheelsDampingRelaxation		= suspensionDamping;
+					//	wheel.m_wheelsDampingCompression	= suspensionCompression;
+					//	wheel.m_frictionSlip				= wheelFriction;
+					//	wheel.m_rollInfluence				= rollInfluence;
+					//	//wheel.
+					//}
+
+
+
+
+			//SET VIEHICLE TO WORLD
+			self->mWorld->addVehicle(m_vehicle);		
+
+			//SET CORDINATES ON VEICL
+			int rightIndex   = 0;
+			int upIndex		 = 1;
+			int forwardIndex = 2;			
+			m_vehicle->setCoordinateSystem(rightIndex,upIndex,forwardIndex);
+
+
+
+
+
+					//m_tuning.m_frictionSlip			= 0;
+					//m_tuning.m_maxSuspensionForce		= 0;
+					//m_tuning.m_maxSuspensionTravelCm	= 0;
+					//m_tuning.m_suspensionCompression	= 0;
+					//m_tuning.m_suspensionDamping		= 0;
+					//m_tuning.m_suspensionStiffness	= 0;
+
+
+
+
+		}
+
+
+
+return 1;
+};
+
+//*******************************************************************
+int MOAIBulletBody::_CarUpdate ( lua_State* L ) {
+MOAI_LUA_SETUP ( MOAIBulletBody, "UN" )	
+
+s32 dir = state.GetValue < s32 >( 2, 0.0f );
+
+if (dir == 5) {	
+	gVehicleSteering = 0;
+};
+
+//UP
+if (dir == 1) {	
+	gEngineForce = maxEngineForce;
+	gBreakingForce = 0.f;
+};
+//RIGHT
+if (dir == 4) {	
+	gVehicleSteering += steeringIncrement;
+	if ( gVehicleSteering > steeringClamp) 
+	gVehicleSteering = steeringClamp;
+};
+//DOWN
+if (dir == 3) {	
+	gBreakingForce = maxBreakingForce;
+	gEngineForce = 0.f;
+};
+//LEFT
+if (dir == 2) {	
+	gVehicleSteering -= steeringIncrement;
+	if ( gVehicleSteering < -steeringClamp)
+	gVehicleSteering = -steeringClamp;
+}
+
+
+	btTransform chassisWorldTrans;
+	//look at the vehicle
+	m_carChassis->getMotionState()->getWorldTransform(chassisWorldTrans);
+	btVector3 m_cameraTargetPosition = chassisWorldTrans.getOrigin();
+	
+
+	btQuaternion rotation =chassisWorldTrans.getRotation();
+	float quaternion_x = rotation.x();
+	float quaternion_y = rotation.y();		
+	float quaternion_z = rotation.z();
+
+	//printf("%f \n",quaternion_x);
+	//**************************************************************************************************************
+	int wheelIndex;
+
+
+//BRAKING
+
+	//********************************
+		wheelIndex = 3;
+		m_vehicle->applyEngineForce(gEngineForce,wheelIndex);
+		m_vehicle->setBrake(gBreakingForce,wheelIndex);
+	//********************************
+		wheelIndex = 2;
+		m_vehicle->applyEngineForce(gEngineForce,wheelIndex);
+		m_vehicle->setBrake(gBreakingForce,wheelIndex);
+
+
+
+
+//STEARING
+	//********************************
+				wheelIndex = 1;
+				m_vehicle->setSteeringValue(gVehicleSteering,wheelIndex);
+	//********************************
+				wheelIndex = 4;
+				m_vehicle->setSteeringValue(gVehicleSteering,wheelIndex);
+
+
+
+
+
+
+		//LOC
+		lua_pushnumber ( state, m_cameraTargetPosition.getX() ); 
+		lua_pushnumber ( state, m_cameraTargetPosition.getY() ); 
+		lua_pushnumber ( state, m_cameraTargetPosition.getZ() ); 
+		//ROT
+		lua_pushnumber ( state, quaternion_x ); 
+		lua_pushnumber ( state, quaternion_y ); 
+		lua_pushnumber ( state, quaternion_z ); 
+		
+		return 6;
+
+};
+
+
+
+
+
+//int MOAIBulletBody::_renderCar ( lua_State* L ) {
+//
+//
+//};
+
+//**************************************************************************************************************
+//**************************************************************************************************************
+//**************************************************************************************************************
+//**************************************************************************************************************
+//**************************************************************************************************************
+//**************************************************************************************************************
+//**************************************************************************************************************
+//**************************************************************************************************************
+//**************************************************************************************************************
+//**************************************************************************************************************
+//**************************************************************************************************************
+//**************************************************************************************************************
 
 
 
@@ -590,8 +859,7 @@ int MOAIBulletBody::_GetAnisotropicFriction ( lua_State* L ) {
 	lua_pushnumber ( state, friction_x ); 
 	lua_pushnumber ( state, friction_y ); 
 	lua_pushnumber ( state, friction_z ); 
-
-	return 1;
+	return 3;
 }
 //----------------------------------------------------------------//
 int MOAIBulletBody::_GetFriction ( lua_State* L ) {
@@ -627,7 +895,7 @@ int MOAIBulletBody::_GetAngularFactor ( lua_State* L ) {
 	lua_pushnumber ( state, angularFactor_y ); 
 	lua_pushnumber ( state, angularFactor_z ); 
 
-	return 1;
+	return 3;
 }
 //----------------------------------------------------------------//
 int MOAIBulletBody::_GetAngularVelocity ( lua_State* L ) { 
@@ -641,7 +909,7 @@ int MOAIBulletBody::_GetAngularVelocity ( lua_State* L ) {
 	lua_pushnumber ( state, angularVelocity_x ); 
 	lua_pushnumber ( state, angularVelocity_y ); 
 	lua_pushnumber ( state, angularVelocity_z ); 
-	return 1;
+	return 3;
 }
 //----------------------------------------------------------------//
 int MOAIBulletBody::_GetLinearDamping ( lua_State* L ) { 
@@ -683,7 +951,7 @@ int MOAIBulletBody::_GetLinearFactor ( lua_State* L ) {
 	lua_pushnumber ( state, linearFactor_x ); 
 	lua_pushnumber ( state, linearFactor_y ); 
 	lua_pushnumber ( state, linearFactor_z ); 
-	return 1;
+	return 3;
 }
 //----------------------------------------------------------------//
 int MOAIBulletBody::_GetLinearVelocity ( lua_State* L ) { 
@@ -695,7 +963,7 @@ int MOAIBulletBody::_GetLinearVelocity ( lua_State* L ) {
 	lua_pushnumber ( state, linearVelocity_x ); 
 	lua_pushnumber ( state, linearVelocity_y ); 
 	lua_pushnumber ( state, linearVelocity_z ); 
-	return 1;
+	return 3;
 }
 //----------------------------------------------------------------//
 int MOAIBulletBody::_GetRotation ( lua_State* L ) { 
@@ -713,7 +981,7 @@ int MOAIBulletBody::_GetRotation ( lua_State* L ) {
 	//return body_ ? ToQuaternion(body_->getWorldTransform().getRotation()) : Quaternion::IDENTITY;
 	//lua_pushnumber ( state, restThreshold );
 
-	return 1;
+	return 3;
 }
 //----------------------------------------------------------------//
 int MOAIBulletBody::_GetPosition ( lua_State* L ) { 
@@ -730,13 +998,13 @@ int MOAIBulletBody::_GetPosition ( lua_State* L ) {
 
    // return ToVector3(transform.getOrigin()) - ToQuaternion(transform.getRotation()) * centerOfMass_;
 	//lua_pushnumber ( state, restThreshold ); 
-	return 1;
+	return 3;
 }
 //----------------------------------------------------------------//
 int MOAIBulletBody::_RemoveBodyFromWorld ( lua_State* L ) { 
-MOAI_LUA_SETUP ( MOAIBulletBody, "U" )	;
-self->mWorld->removeRigidBody(self->mBody);  
-return 1;
+	MOAI_LUA_SETUP ( MOAIBulletBody, "U" )	;
+	self->mWorld->removeRigidBody(self->mBody);  
+	return 0;
 };
 //----------------------------------------------------------------//
 int MOAIBulletBody::_ResetForces ( lua_State* L ) { 
@@ -749,7 +1017,7 @@ MOAI_LUA_SETUP ( MOAIBulletBody, "UNNN" )	;
 	btVector3 torque(torque_x, torque_y, torque_z);
 	self->mBody->applyTorque(torque);
 
-return 1;
+return 0;
 };
 //----------------------------------------------------------------//
 int MOAIBulletBody::_ApplyImpulse ( lua_State* L ) { 
@@ -761,7 +1029,7 @@ MOAI_LUA_SETUP ( MOAIBulletBody, "UNNN" )	;
 	btVector3 impulse(impulse_x, impulse_y, impulse_z);
 	self->mBody->applyCentralImpulse(impulse);
 
-return 1;
+return 0;
 };
 //----------------------------------------------------------------//
 int MOAIBulletBody::_ApplyImpulseOffset ( lua_State* L ) { 
@@ -781,7 +1049,7 @@ MOAI_LUA_SETUP ( MOAIBulletBody, "UNNN" )	;
 	//body_->applyImpulse(ToBtVector3(impulse), ToBtVector3(position - centerOfMass_));
 	self->mBody->applyImpulse(impulse,offset);
 
-return 1;
+return 0;
 };
 //----------------------------------------------------------------//
 int MOAIBulletBody::_ApplyTorque ( lua_State* L ) { 
@@ -793,7 +1061,7 @@ MOAI_LUA_SETUP ( MOAIBulletBody, "UNNN" )	;
 	btVector3 torque(torque_x, torque_y, torque_z);
 	self->mBody->applyTorque(torque);
 
-return 1;
+return 0;
 };
 //----------------------------------------------------------------//
 int MOAIBulletBody::_ApplyForce ( lua_State* L ) { 
@@ -804,7 +1072,7 @@ MOAI_LUA_SETUP ( MOAIBulletBody, "UNNN" )	;
 	btVector3 force(force_x, force_y, force_z);
 	self->mBody->applyCentralForce(force);
 
-return 1;
+return 0;
 };
 //----------------------------------------------------------------//
 int MOAIBulletBody::_ApplyForceOffset ( lua_State* L ) { 
@@ -823,7 +1091,7 @@ MOAI_LUA_SETUP ( MOAIBulletBody, "UNNNNNN" )	;
 	//body_->applyImpulse(ToBtVector3(impulse), ToBtVector3(position - centerOfMass_));
 	self->mBody->applyForce(force,offset);
 
-return 1;
+return 0;
 };
 //----------------------------------------------------------------//
 int MOAIBulletBody::_ApplyTorqueImpulse ( lua_State* L ) { 
@@ -834,14 +1102,14 @@ MOAI_LUA_SETUP ( MOAIBulletBody, "UNNN" )	;
 	btVector3 torque(torque_x, torque_y, torque_z);
 	self->mBody->applyTorqueImpulse(torque);
 
-return 1;
+return 0;
 };
 //----------------------------------------------------------------//
 int MOAIBulletBody::_SetRollingFriction ( lua_State* L ) { 
 MOAI_LUA_SETUP ( MOAIBulletBody, "UN" )	;
 	float friction = state.GetValue < float >( 2, 0.0f );	
 	self->mBody->setRollingFriction(friction);
-return 1;
+return 0;
 };
 //----------------------------------------------------------------//
 int MOAIBulletBody::_SetAnisotropicFriction ( lua_State* L ) { 
@@ -852,7 +1120,7 @@ MOAI_LUA_SETUP ( MOAIBulletBody, "UNNN" )	;
 	btVector3 friction(friction_x, friction_y, friction_z);
 	self->mBody->setAnisotropicFriction(friction);
 
-return 1;
+return 0;
 };
 //----------------------------------------------------------------//
 int MOAIBulletBody::_SetActivationState ( lua_State* L ) {		
@@ -860,7 +1128,7 @@ int MOAIBulletBody::_SetActivationState ( lua_State* L ) {
 	int state_set = state.GetValue < int >( 2, 1 );
 		self->mBody->setActivationState(state_set);
 
-	return 1;
+	return 0;
 };
 //----------------------------------------------------------------//
 int MOAIBulletBody::_SetKinematic ( lua_State* L ) {
@@ -869,7 +1137,7 @@ int MOAIBulletBody::_SetKinematic ( lua_State* L ) {
 		self->mBody->setCollisionFlags( self->mBody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
 		self->mBody->setActivationState(DISABLE_DEACTIVATION);
 
-	return 1;
+	return 0;
 };
 //----------------------------------------------------------------//
 int MOAIBulletBody::_SetPosition ( lua_State* L ) {
@@ -883,7 +1151,7 @@ int MOAIBulletBody::_SetPosition ( lua_State* L ) {
 	worldTrans.setIdentity();
 	worldTrans.setOrigin ( btVector3 ( btScalar(loc_x),btScalar(loc_y),btScalar(loc_z)) );
 
-	return 1;
+	return 0;
 };
 //----------------------------------------------------------------//
 int MOAIBulletBody::_SetRotation ( lua_State* L ) {
@@ -891,11 +1159,13 @@ int MOAIBulletBody::_SetRotation ( lua_State* L ) {
 	float rot_x = state.GetValue < float >( 2, 0.0f );
 	float rot_y = state.GetValue < float >( 3, 0.0f );
 	float rot_z = state.GetValue < float >( 4, 0.0f );
+	float angle = state.GetValue < float >( 5, 0.0f );
 
 	btTransform& worldTrans = self->mBody->getWorldTransform();
 	worldTrans.setIdentity();
 	worldTrans.setRotation ( btQuaternion ( rot_x,rot_y,rot_z,1 ) ); 
-	return 1;
+	//worldTrans.setRotation ( btQuaternion ( btVector3(rot_x,rot_y,rot_z),angle ) );
+	return 0;
 };
 //----------------------------------------------------------------//
 int MOAIBulletBody::_SetGravity ( lua_State* L ) {
@@ -903,32 +1173,29 @@ int MOAIBulletBody::_SetGravity ( lua_State* L ) {
 	float gravity_x = state.GetValue < float >( 2, 0.0f );
 	float gravity_y = state.GetValue < float >( 3, 0.0f );
 	float gravity_z = state.GetValue < float >( 4, 0.0f );
-	self->mBody->setGravity(btVector3(gravity_x, gravity_y, gravity_z));
-	
-	return 1;
+	self->mBody->setGravity(btVector3(gravity_x, gravity_y, gravity_z));	
+	return 0;
 };
 //----------------------------------------------------------------//
 int MOAIBulletBody::_SetDeactivationTime ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletBody, "UN" )	;
 	float time = state.GetValue < float >( 2, 0.0f );	
 	self->mBody->setDeactivationTime(time);	
-	return 1;
+	return 0;
 };
-
 //----------------------------------------------------------------//
 int MOAIBulletBody::_SetCcdMotionThreshold ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletBody, "UN" )	;
 	float setCcdMotionThreshold = state.GetValue < float >( 2, 0.0f );	
 	self->mBody->setCcdMotionThreshold(btScalar(setCcdMotionThreshold));	
-	return 1;
+	return 0;
 };
-
 //----------------------------------------------------------------//
 int MOAIBulletBody::_SetCcdSweptSphereRadius ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletBody, "UN" )	;
 	float setCcdSweptSphereRadius = state.GetValue < float >( 2, 0.0f );	
 	self->mBody->setCcdMotionThreshold(btScalar(setCcdSweptSphereRadius));	
-	return 1;
+	return 0;
 };
 
 //----------------------------------------------------------------//
@@ -947,6 +1214,8 @@ MOAIBulletBody::MOAIBulletBody () :
 	mBody ( 0 ),
 	mMotion( 0 ),
 	mCompound( 0 ),
+	mRot(0,0,0),
+	mLoc(0,0,0),
 	mCollision_group(DEFAULT_COLLISION_GROUP),
 	mCollision_mask(DEFAULT_COLLISION_MASK)
 {
@@ -961,29 +1230,26 @@ MOAIBulletBody::~MOAIBulletBody () {
 	printf("\n ~MOAIBulletBody \n");
 	this->Destroy ();	
 }
-
 //----------------------------------------------------------------//
 int MOAIBulletBody::_AddCollisionGroup ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletBody, "UN" )	;
 	uint16 group = state.GetValue < uint16 >( 2, 0 );	
 	self->mCollision_group = group;	
-	return 1;
+	return 0;
 };
 //----------------------------------------------------------------//
 int MOAIBulletBody::_AddCollisionMask ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletBody, "UN" )	;
 	uint16 mask = state.GetValue < uint16  >( 2, 0);	
 	self->mCollision_mask = mask;
-	return 1;
+	return 0;
 };
-
 //----------------------------------------------------------------//
 int MOAIBulletBody::_SetCallback ( lua_State* L ) {
-		MOAI_LUA_SETUP ( MOAIBulletBody, "UF" )	;	
-		self->mCollisionHandler.SetRef ( *self, state, 2 );
-		return 1;
+	MOAI_LUA_SETUP ( MOAIBulletBody, "UF" )	;	
+	self->mCollisionHandler.SetRef ( *self, state, 2 );
+	return 0;
 }
-
 //----------------------------------------------------------------//
 void MOAIBulletBody::HandleCollision ( u32 eventType, MOAIBulletBody* bodyA,MOAIBulletBody* bodyB) {	
 	if ( this->mCollisionHandler ) {
@@ -997,14 +1263,12 @@ void MOAIBulletBody::HandleCollision ( u32 eventType, MOAIBulletBody* bodyA,MOAI
 		}
 	};	
 }
-
+//----------------------------------------------------------------//
 int MOAIBulletBody::_NoResponse ( lua_State* L ) {
-		MOAI_LUA_SETUP ( MOAIBulletBody, "U" )
-		self->mBody->setCollisionFlags( self->mBody->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
-		return 1;
+	MOAI_LUA_SETUP ( MOAIBulletBody, "U" )
+	self->mBody->setCollisionFlags( self->mBody->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
+	return 0;
 };
-
-
 //----------------------------------------------------------------//
 int MOAIBulletBody::_SetFilter ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletBody, "UNN" )	;
@@ -1012,7 +1276,7 @@ int MOAIBulletBody::_SetFilter ( lua_State* L ) {
 	uint16 mask = state.GetValue < uint16  >( 3, 0);	
 	self->mCollision_group = group;
 	self->mCollision_mask = mask;
-	return 1;
+	return 0;
 };
 
 //----------------------------------------------------------------//
@@ -1021,16 +1285,15 @@ int MOAIBulletBody::_SetCollisionFlags ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletBody, "UN" )	;
 	 int mask = state.GetValue <  int  >( 2, 1 );	
 	self->mBody->setCollisionFlags( self->mBody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);	
-	return 1;
+	return 0;
 };
 
 //----------------------------------------------------------------//
 int MOAIBulletBody::_AddToWorld ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletBody, "UB" );	
 
+	self->mWorld->addRigidBody(self->mBody,self->mCollision_group,self->mCollision_mask);
 
-
-	 self->mWorld->addRigidBody(self->mBody,self->mCollision_group,self->mCollision_mask);
 
 // self->mWorld->addRigidBody(self->mBody);
 // self->mBody->setCollisionFlags(self->mBody->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
@@ -1047,11 +1310,6 @@ int MOAIBulletBody::_AddToWorld ( lua_State* L ) {
 	//// 	printf("FILTER FALSE \n");
 	//	self->mWorld->addRigidBody(self->mBody);
  //}
- 	
-
-
-
-
 
 
 //#define BIT(x) (1<<(x))
@@ -1078,46 +1336,145 @@ int MOAIBulletBody::_AddToWorld ( lua_State* L ) {
 //	addRigidBody 	( 	btRigidBody *  	body,short  	group,short  	mask ) 	
 
 		//printf("%d %d \n",self->mCollision_group,self->mCollision_mask);
-		self->mWorld->addRigidBody(self->mBody,self->mCollision_group,self->mCollision_mask);
-		return 1;
+		//self->mWorld->addRigidBody(self->mBody,self->mCollision_group,self->mCollision_mask);
+
+
+	return 0;
 };
 
 
 
 
+//****************************************************************************
+//****************************************************************************
+//****************************************************************************
+//****************************************************************************
+//****************************************************************************
 
 //----------------------------------------------------------------//
+//MANUALL SET A SHAPE TO A BODY
 int MOAIBulletBody::_AddToBody ( lua_State* L ) {
-
 MOAI_LUA_SETUP ( MOAIBulletBody, "UU" )
 MOAIBulletShape* shapeA = state.GetLuaObject < MOAIBulletShape >( 2, true );
-
 	//AT ZERO ZERO
 	btTransform t; 
 	t.setIdentity();
-	t.setRotation ( btQuaternion ( 0,0,0)); 
 	t.setOrigin(btVector3 ( 0,0,0));
+	t.getBasis().setEulerZYX(0,0,0);
+	//self->mCompound->addChildShape(self->mBody->getWorldTransform(),shapeA->mShape); //MAKE FRIEND CLASS
+ 	self->mCompound->addChildShape(t,shapeA->mShape); //MAKE FRIEND CLASS
 
-	self->mCompound->addChildShape(self->mBody->getWorldTransform(),shapeA->mShape); //MAKE FRIEND CLASS
-
-return 1;
+return 0;
 };
 //----------------------------------------------------------------//
-int MOAIBulletBody::_NewShape ( lua_State* L ) {
-	MOAI_LUA_SETUP ( MOAIBulletBody, "U" )	
+int	MOAIBulletBody::_stateSet( lua_State* L ){
+MOAI_LUA_SETUP ( MOAIBulletBody, "U" )	
+	btVector3 origine = self->mBody->getWorldTransform().getOrigin();
+	self->mLoc.setX(origine.x());
+	self->mLoc.setY(origine.y());
+	self->mLoc.setZ(origine.z());
 
+	btQuaternion rotation = self->mBody->getWorldTransform().getRotation();
+	self->mRot.setX(rotation.x());
+	self->mRot.setX(rotation.y());
+	self->mRot.setX(rotation.z());
+
+return 0;
+};
+//----------------------------------------------------------------//
+int	MOAIBulletBody::_stateRest( lua_State* L ){
+MOAI_LUA_SETUP ( MOAIBulletBody, "U" )	
+
+	//REMOVE FROM WORLD
+	self->mWorld->removeRigidBody(self->mBody);
+
+	//RESET
+	self->mBody->clearForces();
+	btVector3 zeroVector(0,0,0);
+	self->mBody->setLinearVelocity(zeroVector);
+	self->mBody->setAngularVelocity(zeroVector);
+
+	//ORIGIN
+	btTransform	tr;
+	tr.setIdentity();
+	tr.setOrigin ( btVector3 ( (self->mLoc.getX()),(self->mLoc.getY()),(self->mLoc.getZ())) );
+	tr.setRotation ( btQuaternion ( self->mRot.getX(),self->mRot.getY(),self->mRot.getZ() ) ); 
+	self->mBody->setWorldTransform(tr); 
+
+	//PROXIES
+	self->mWorld->getBroadphase()->getOverlappingPairCache()->cleanProxyFromPairs(self->mBody->getBroadphaseHandle(),self->mWorld->getDispatcher());
+
+	//ADD TO WORLD
+	self->mWorld->addRigidBody(self->mBody);
+
+
+return 0;
+};
+
+//----------------------------------------------------------------//
+int MOAIBulletBody::_NewShape ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIBulletBody, "UU" )	
+
+	MOAIBulletTransform* transA = state.GetLuaObject < MOAIBulletTransform >(2, true );
+	if ( !( transA )) return 0;
+	btTransform ta = *transA->mTransform;
+
+	float loc_x = ta.getOrigin().getX();
+	float loc_y = ta.getOrigin().getY();
+	float loc_z = ta.getOrigin().getZ();
+
+	//NOT SURE THIS IS CORRECT;
+	float rot_x = ta.getRotation().getX();
+	float rot_y = ta.getRotation().getY();
+	float rot_z = ta.getRotation().getZ();
+	
 	MOAIBulletShape* shape = new MOAIBulletShape ();
 	shape->setCompound(self->mCompound);	
 	shape->setBody(self->mBody);
+
+	shape->setOrigin(loc_x,loc_y,loc_z); //DUMB ?
+	shape->setEulerZYX(rot_x,rot_y,rot_z);//DUMB ?
+
 	self->LuaRetain ( shape );
 	shape->PushLuaUserdata ( state );
+
 	return 1;
 }
+//----------------------------------------------------------------//
+int MOAIBulletBody::_NewVehicle ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIBulletBody, "U" )	
+
+	//MAKE A RAY CAST
+	btVehicleRaycaster* m_vehicleRayCaster  = new btDefaultVehicleRaycaster(self->mWorld);
+
+	MOAIBulletVehicle* vehicle = new MOAIBulletVehicle ();
+
+	vehicle->setCompound(self->mCompound);	//SET COMOUND
+	vehicle->setBody(self->mBody);			
+	vehicle->setCaster(m_vehicleRayCaster);		
+	vehicle->setWorld(self->mWorld);	
+
+	self->LuaRetain ( vehicle );
+	vehicle->PushLuaUserdata ( state );
+	return 1;
+}
+//----------------------------------------------------------------//
+int MOAIBulletBody::_CleanProxyFromPairs ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIBulletBody, "U" )		
+		self->mWorld->getBroadphase()->getOverlappingPairCache()->cleanProxyFromPairs(self->mBody->getBroadphaseHandle(),self->mWorld->getDispatcher());
+	return 0;
+}
+//----------------------------------------------------------------//
+int MOAIBulletBody::_clearForces ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIBulletBody, "U" )		
+	self->mBody->clearForces();
+	return 0;
+}
+
 //----------------------------------------------------------------//
 void MOAIBulletBody::setWorld (btDiscreteDynamicsWorld* world_) {
 	this->mWorld = world_;
 };
-
 //----------------------------------------------------------------//
 void MOAIBulletBody::RegisterLuaClass ( MOAILuaState& state ) {
 	MOAITransformBase::RegisterLuaClass ( state );	
@@ -1129,8 +1486,12 @@ void MOAIBulletBody::RegisterLuaFuncs ( MOAILuaState& state ) {
 	
 	luaL_Reg regTable [] = {
 
-//COLLISION
 
+
+//CLEAN
+{ "cleanProxyFromPairs",					_CleanProxyFromPairs }, 
+
+//COLLISION
 { "addCollisionGroup",				_AddCollisionGroup },
 { "addCollisionMask",				_AddCollisionMask },	
 { "setCollisionFlags",				_SetCollisionFlags },	
@@ -1139,14 +1500,22 @@ void MOAIBulletBody::RegisterLuaFuncs ( MOAILuaState& state ) {
 { "setCallback",					_SetCallback },
 { "noReponse",						_NoResponse },
 
+//CLEAR FORCE
+{ "clearForces",			_clearForces },
 
-
-
+//
 { "addToBody",			_AddToBody },
+
+///OBJECTS
 { "addRag",				_AddRag },	
+{ "addCar",				_AddCar },	
+{ "carUpdate",			_CarUpdate },	
+
+
 
 //BODY
 { "newShape",			_NewShape },
+{ "newVehicle",			_NewVehicle },
 
 //LINEAR
 { "setLinearVelocity",			_SetLinearVelocity },	
@@ -1164,8 +1533,9 @@ void MOAIBulletBody::RegisterLuaFuncs ( MOAILuaState& state ) {
 { "setCcdMotionThreshold",		_SetCcdMotionThreshold },
 { "setCcdSweptSphereRadius",	_SetCcdSweptSphereRadius },
 
-
-
+//DAMPING
+{ "stateSet",				 _stateSet },
+{ "stateReset",				 _stateRest },
 
 //DAMPING
 { "setDamping",				 _SetDamping },

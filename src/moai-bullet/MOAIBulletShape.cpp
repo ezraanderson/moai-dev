@@ -11,7 +11,7 @@
 #include <bullet/src/btBulletDynamicsCommon.h>
 
 //----------------------------------------------------------------//
-int MOAIBulletShape::_addPlane ( lua_State* L ) {
+int MOAIBulletShape::_makePlane ( lua_State* L ) {
 MOAI_LUA_SETUP ( MOAIBulletShape, "U" )
 	float width  = state.GetValue < float >( 2, 0.0f );	
 	float height = state.GetValue < float >( 3, 0.0f ); 
@@ -25,7 +25,7 @@ return 1;
 
 };
 //----------------------------------------------------------------//
-int MOAIBulletShape::_addSphere ( lua_State* L ) {
+int MOAIBulletShape::_makeSphere ( lua_State* L ) {
 MOAI_LUA_SETUP ( MOAIBulletShape, "U" )
 		float radius = state.GetValue < float >( 2, 0.0f );
 		self->mShape = new btSphereShape(radius);	
@@ -35,7 +35,7 @@ MOAI_LUA_SETUP ( MOAIBulletShape, "U" )
 	return 1;
 };
 //----------------------------------------------------------------//
-int MOAIBulletShape::_addBox ( lua_State* L ) {
+int MOAIBulletShape::_makeBox ( lua_State* L ) {
 MOAI_LUA_SETUP ( MOAIBulletShape, "U" )
 	
 	float width  = state.GetValue < float >( 2, 0.0f );	
@@ -51,10 +51,10 @@ MOAI_LUA_SETUP ( MOAIBulletShape, "U" )
 	//self->mBody = new btRigidBody(mCI);    
 
 
-	return 1;
+	return 0;
 };
 //----------------------------------------------------------------//
-int MOAIBulletShape::_addCylinder ( lua_State* L ) {
+int MOAIBulletShape::_makeCylinder ( lua_State* L ) {
 MOAI_LUA_SETUP ( MOAIBulletShape, "U" )
 
 	float width  = state.GetValue < float >( 2, 0.0f );	
@@ -64,10 +64,10 @@ MOAI_LUA_SETUP ( MOAIBulletShape, "U" )
 	//btCylinderShape * mShape = new btCylinderShape(btVector3(width, height, lenght)); 
 	//btRigidBody::btRigidBodyConstructionInfo mCI(self->mMass, self->mMotion, self->mShape, self->mInertia);
 	//self->mBody = new btRigidBody(mCI);    
-	return 1;
+	return 0;
 };
 //----------------------------------------------------------------//
-int MOAIBulletShape::_addCapsule ( lua_State* L ) {
+int MOAIBulletShape::_makeCapsule ( lua_State* L ) {
 MOAI_LUA_SETUP ( MOAIBulletShape, "U" )
 
 	float radius  = state.GetValue < float >( 2, 0.0f );	
@@ -79,10 +79,10 @@ MOAI_LUA_SETUP ( MOAIBulletShape, "U" )
 	//btRigidBody::btRigidBodyConstructionInfo mCI(self->mMass, self->mMotion, self->mShape, self->mInertia);
 	//self->mBody = new btRigidBody(mCI);   
 
-	return 1;
+	return 0;
 };
 //----------------------------------------------------------------//
-int MOAIBulletShape::_addCone ( lua_State* L ) {
+int MOAIBulletShape::_makeCone ( lua_State* L ) {
 MOAI_LUA_SETUP ( MOAIBulletShape, "U" )
 	float radius  = state.GetValue < float >( 2, 0.0f );	
 	float height = state.GetValue < float >( 3, 0.0f ); 
@@ -93,7 +93,7 @@ MOAI_LUA_SETUP ( MOAIBulletShape, "U" )
 	//btRigidBody::btRigidBodyConstructionInfo mCI(self->mMass, self->mMotion, self->mShape, self->mInertia);
 	//self->mBody = new btRigidBody(mCI);  
 
-	return 1;
+	return 0;
 
 
 
@@ -104,17 +104,23 @@ int MOAIBulletShape::_SetPosition ( lua_State* L ) {
 	self->mLoc_x		= state.GetValue < float >( 2, 0.0f );	
 	self->mLoc_y		= state.GetValue < float >( 3, 0.0f ); 
 	self->mLoc_z		= state.GetValue < float >( 4, 0.0f ); 
-	return 1;
+	return 0;
 };
 //----------------------------------------------------------------//
 int MOAIBulletShape::_SetRotation ( lua_State* L ) {
 MOAI_LUA_SETUP ( MOAIBulletShape, "U" )
-
 	self->mRot_x	= state.GetValue < float >( 2, 0.0f );	
 	self->mRot_y	= state.GetValue < float >( 3, 0.0f ); 
 	self->mRot_z	= state.GetValue < float >( 4, 0.0f ); 
-	return 1;
+	return 0;
 
+};
+//----------------------------------------------------------------//
+int MOAIBulletShape::_setMargin ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIBulletShape, "U" )
+	float margin= state.GetValue < float >( 2, 0.0f );	
+	self->mShape->setMargin(margin);
+	return 0;
 };
 //----------------------------------------------------------------//
 int MOAIBulletShape::_setMass ( lua_State* L ) {
@@ -133,33 +139,42 @@ int MOAIBulletShape::_setMass ( lua_State* L ) {
 	//UPDATE // THIS IS WRONG BECAUSE IT CACLUATES MASS FROM SHAPES
 		self->mBody->setMassProps(mMass, mInertia);
    
-	return 1;
+	return 0;
 }
 
 //----------------------------------------------------------------//
 int MOAIBulletShape::_addToBody ( lua_State* L ) {
 MOAI_LUA_SETUP ( MOAIBulletShape, "U" )
-
 	btTransform t; 
 	t.setIdentity();
 	t.setRotation ( btQuaternion ( self->mRot_x, self->mRot_y,self->mRot_z)); 
 	t.setOrigin(btVector3 ( self->mLoc_x, self->mLoc_y,self->mLoc_z));
 	self->mCompound->addChildShape(t,self->mShape); //MAKE FRIEND CLASS
-
-
-return 1;
+return 0;
 };
 //----------------------------------------------------------------//
 void MOAIBulletShape::setCompound (btCompoundShape*	mCompound) {
 	this->mCompound = mCompound;
 };
 //----------------------------------------------------------------//
+//REMBERING THE BODY??
 void MOAIBulletShape::setBody (btRigidBody*		mBody) {
 	this->mBody = mBody;
 };
 //----------------------------------------------------------------//
+void MOAIBulletShape::setOrigin	(float loc_x,float loc_y,float loc_z) {
+	this->mLoc_x = loc_x;
+	this->mLoc_y = loc_y;
+	this->mLoc_z = loc_z;	
+};
+//----------------------------------------------------------------//
+void MOAIBulletShape::setEulerZYX	(float rot_x,float rot_y,float rot_z) {
+	this->mRot_x = rot_x;
+	this->mRot_y = rot_y;
+	this->mRot_z = rot_z;
+};
+//----------------------------------------------------------------//
 void MOAIBulletShape::Destroy () {
-
 }
 //----------------------------------------------------------------//
 MOAIBulletShape::MOAIBulletShape () :
@@ -192,14 +207,16 @@ void MOAIBulletShape::RegisterLuaFuncs ( MOAILuaState& state ) {
 
 luaL_Reg regTable [] = {
 
-	{ "addSphere",		_addSphere },
-	{ "addBox",			_addBox },	
-	{ "addCylinder",	_addCylinder },	
-	{ "addCapsule",		_addCapsule },		
-	{ "addCone",		_addCone },		
-	{ "addPlane",		_addPlane },
+	{ "makeSphere",		_makeSphere },
+	{ "makeBox",		_makeBox },	
+	{ "makeCylinder",	_makeCylinder },	
+	{ "makeCapsule",	_makeCapsule },		
+	{ "makeCone",		_makeCone },		
+	{ "makePlane",		_makePlane },
 
 	{ "setMass",		_setMass },
+	{ "setMargin",		_setMargin },
+
 	{ "addToBody",		_addToBody },	
 
 	{ "setPosition",		_SetPosition },		

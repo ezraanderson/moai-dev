@@ -22,10 +22,14 @@ protected:
 	static int			_setOrigin				( lua_State* L );
 	static int			_setEulerZYX			( lua_State* L );
 	static int			_doOffset				( lua_State* L );
+	static int			_getScale				( lua_State* L );
+
+
 
 public:
 	
 	friend class MOAIBulletWorld;
+	friend class MOAIBulletBody;
 
 	DECL_LUA_FACTORY ( MOAIBulletTransform )
 	//----------------------------------------------------------------//

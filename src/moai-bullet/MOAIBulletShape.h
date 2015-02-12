@@ -17,7 +17,7 @@ private:
 	btCompoundShape*		mCompound;
 	btRigidBody*			mBody;	
 	
-//I AM SHOULD BE VEC3
+//SHOULD BE VEC3
 	float mRot_x;
 	float mRot_y;
 	float mRot_z;
@@ -30,18 +30,21 @@ private:
 	ZLVec3D *mRot;
 	ZLVec3D *mLoc;
 
-	static int		_addPlane				( lua_State* L );
-	static int		_addSphere				( lua_State* L );
-	static int		_addBox					( lua_State* L );
-	static int		_addCylinder			( lua_State* L );
-	static int		_addCapsule				( lua_State* L );
-	static int		_addCone				( lua_State* L );
+	static int		_makePlane				( lua_State* L );
+	static int		_makeSphere				( lua_State* L );
+	static int		_makeBox				( lua_State* L );
+	static int		_makeCylinder			( lua_State* L );
+	static int		_makeCapsule			( lua_State* L );
+	static int		_makeCone				( lua_State* L );
+
+
 	static int		_addToBody				( lua_State* L );
 
 	static int		_setMass				( lua_State* L );
+	static int		_setMargin				( lua_State* L );
 
-	static int		_SetPosition					( lua_State* L );
-	static int		_SetRotation					( lua_State* L );
+	static int		_SetPosition			( lua_State* L );
+	static int		_SetRotation			( lua_State* L );
 
 public:
 	
@@ -50,6 +53,8 @@ public:
 	//----------------------------------------------------------------//
 	void			setCompound					(btCompoundShape*	mCompound);
 	void			setBody						(btRigidBody*		mBody);
+	void			setOrigin					(float loc_x,float loc_y,float loc_z);
+	void			setEulerZYX					(float rot_x,float rot_y,float rot_z);
 
 	void			Destroy					();
 					MOAIBulletShape			();
