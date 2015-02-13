@@ -24,7 +24,8 @@ typedef unsigned int	uint32;
 static const uint16 DEFAULT_COLLISION_GROUP = 0x1;
 static const uint16 DEFAULT_COLLISION_MASK = 0x1; //WTF?
 
-
+#define MOAI_BULLET_idName	"idName"
+#define MOAI_BULLET_idType	"idType"
 
 class MOAIBulletBody :
 	public MOAITransformBase,	
@@ -48,11 +49,13 @@ private:
 	btCompoundShape*		mCompound;
 
 //FOR STATE SAVE
-	btVector3 mRot;
-	btVector3 mLoc;
+	btVector3	mRot;
+	btVector3	mLoc;
+	string		idName;
 
+	static int		_SetIdType		 ( lua_State* L );
+	static int		_SetIdName		 ( lua_State* L );
 //----------------------------------------------------------------//
-
 	static int		_CleanProxyFromPairs    ( lua_State* L );
 
 	static int		_NewShape				( lua_State* L );
@@ -164,6 +167,7 @@ public:
 
 	DECL_LUA_FACTORY ( MOAIBulletBody )
 	//----------------------------------------------------------------//
+	
 	void			setWorld				(btDiscreteDynamicsWorld* world_);	
 	void			HandleCollision			(u32 eventType, MOAIBulletBody* bodyA, MOAIBulletBody* bodyB);
 	void			Destroy					();
@@ -171,6 +175,24 @@ public:
 					~MOAIBulletBody			();
 	void			RegisterLuaClass		( MOAILuaState& state );
 	void			RegisterLuaFuncs		( MOAILuaState& state );
+
+
+	void			SetValue				(cc8* key );
+
+	enum {
+			EVENT_VALUE_CHANGED,
+		};
+
+	//template < typename TYPE >
+	//void SetValue ( cc8* key, TYPE value ) {	
+	//	MOAIScopedLuaState state = MOAILuaRuntime::Get ().State ();		
+	//	state.Push ( key );
+	//	state.Push ( value );		
+	//	this->SetValue ( state );
+	//}
+
+
+
 };
 
 #endif

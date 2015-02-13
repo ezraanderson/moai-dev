@@ -119,8 +119,12 @@ struct YourOwnFilterCallback : public btOverlapFilterCallback
 			btRigidBody* rigBodyB = ( btRigidBody* )colObj1;
 			MOAIBulletBody* moaiBodyB = ( MOAIBulletBody* )rigBodyB->getUserPointer (); 			
 
-				if (moaiBodyA) {
-					moaiBodyA->HandleCollision ( 1, moaiBodyA,moaiBodyB );
+				//if (moaiBodyA) {
+				//	moaiBodyA->HandleCollision ( 1, moaiBodyA,moaiBodyB );
+				//};
+
+				if (moaiBodyB) {
+					moaiBodyB->HandleCollision ( 1, moaiBodyB,moaiBodyA );
 				};
 
 		return collides;
@@ -426,6 +430,7 @@ MOAIBulletWorld::MOAIBulletWorld () :
 	mStep(1/60),
 	mMaxSubSteps(10),
 	mLock(false)
+
 {
 
 RTTI_BEGIN

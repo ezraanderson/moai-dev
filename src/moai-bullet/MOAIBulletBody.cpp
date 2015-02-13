@@ -1216,6 +1216,7 @@ MOAIBulletBody::MOAIBulletBody () :
 	mCompound( 0 ),
 	mRot(0,0,0),
 	mLoc(0,0,0),
+	idName("id"),
 	mCollision_group(DEFAULT_COLLISION_GROUP),
 	mCollision_mask(DEFAULT_COLLISION_MASK)
 {
@@ -1440,6 +1441,42 @@ int MOAIBulletBody::_NewShape ( lua_State* L ) {
 
 	return 1;
 }
+
+
+
+//----------------------------------------------------------------//
+//THIS IS NOT CORRECT  : MUST LOOK UP THE INDEX
+int MOAIBulletBody::_SetIdName ( lua_State* L ) {
+MOAI_LUA_SETUP ( MOAIBulletBody, "U" )		
+cc8* idName	= state.GetValue < cc8* >( 2, "none" );
+int top = state.GetTop();
+//printf("top ---%d \n",top);
+for (int i = top; i --> 0; ) {
+	bool has = state.HasField(i,"idName");
+	//printf("i ---%d \n",i);
+	if (has == 1) {
+			state.SetField ( i, "idName", idName); //IS TOP THIS IS WRONG 
+	};
+};
+	return 0;
+};
+//----------------------------------------------------------------//
+//THIS IS NOT CORRECT : MUST LOOK UP THE INDEX
+int MOAIBulletBody::_SetIdType ( lua_State* L ) {
+MOAI_LUA_SETUP ( MOAIBulletBody, "U" )	
+cc8* idName	= state.GetValue < cc8* >( 2, "none" );
+int top = state.GetTop();
+//printf("top ---%d \n",top);
+for (int i = top; i --> 0; ) {
+	bool has = state.HasField(i,"idType");
+	//printf("i ---%d \n",i);
+	if (has == 1) {
+			state.SetField ( i, "idType", idName); //IS TOP THIS IS WRONG 
+	};
+};
+	return 0;
+};
+
 //----------------------------------------------------------------//
 int MOAIBulletBody::_NewVehicle ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBulletBody, "U" )	
@@ -1479,14 +1516,27 @@ void MOAIBulletBody::setWorld (btDiscreteDynamicsWorld* world_) {
 void MOAIBulletBody::RegisterLuaClass ( MOAILuaState& state ) {
 	MOAITransformBase::RegisterLuaClass ( state );	
 }
+
+
 //----------------------------------------------------------------//
 void MOAIBulletBody::RegisterLuaFuncs ( MOAILuaState& state ) {
 	
 	MOAITransformBase::RegisterLuaFuncs ( state );
+
+
+	state.SetField ( -1, MOAI_BULLET_idName, "none");
+	state.SetField ( -1, MOAI_BULLET_idType, "none");
+
+
 	
 	luaL_Reg regTable [] = {
 
 
+{ "setIdName",							_SetIdName }, 
+{ "setIdType",							_SetIdType },
+
+//
+{ "cleanProxyFromPairs",					_CleanProxyFromPairs }, 
 
 //CLEAN
 { "cleanProxyFromPairs",					_CleanProxyFromPairs }, 
