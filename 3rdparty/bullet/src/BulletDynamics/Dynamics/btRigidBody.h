@@ -59,6 +59,10 @@ enum	btRigidBodyFlags
 class btRigidBody  : public btCollisionObject
 {
 
+
+
+
+
 	btMatrix3x3	m_invInertiaTensorWorld;
 	btVector3		m_linearVelocity;
 	btVector3		m_angularVelocity;
@@ -94,6 +98,9 @@ class btRigidBody  : public btCollisionObject
 	
 	int				m_debugBodyId;
 	
+//**********************************************
+//MOAI:EZRA
+void* moai_userdata;
 
 protected:
 
@@ -106,6 +113,7 @@ protected:
 
 
 public:
+
 
 
 	///The btRigidBodyConstructionInfo structure provides information to create a rigid body. Setting mass to zero creates a fixed (non-dynamic) rigid body.
@@ -189,6 +197,12 @@ protected:
 	void	setupRigidBody(const btRigidBodyConstructionInfo& constructionInfo);
 
 public:
+
+
+
+
+
+
 
 	void			proceedToTransform(const btTransform& newTrans); 
 	
