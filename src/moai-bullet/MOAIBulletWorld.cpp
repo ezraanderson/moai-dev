@@ -81,6 +81,11 @@ MOAIBulletPrim::MOAIBulletPrim () :
 bool MOAIBulletWorld::IsDone () {
 	return false;
 }
+
+
+
+
+
 //----------------------------------------------------------------//
 struct YourOwnFilterCallback : public btOverlapFilterCallback
 {

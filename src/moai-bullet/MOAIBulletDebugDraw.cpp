@@ -119,9 +119,9 @@ gfxDevice.WriteVtx ( vtx );
 gfxDevice.WriteFinalColor4b ();
 }
 //----------------------------------------------------------------//
-void MOAIBulletDebugDraw::resetSize ( ) {
-	mSize = 0;
-}
+//void MOAIBulletDebugDraw::resetSize ( ) {
+//	mSize = 0;
+//}
 
 
 

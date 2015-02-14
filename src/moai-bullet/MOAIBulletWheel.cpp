@@ -105,9 +105,7 @@ mSuspensionRestLength(0.6f)
 }
 //----------------------------------------------------------------//
 MOAIBulletWheel::~MOAIBulletWheel () {
-	if (this->mConnect) {
-		delete (this->mConnect);
-	};
+
 
 }
 //----------------------------------------------------------------//

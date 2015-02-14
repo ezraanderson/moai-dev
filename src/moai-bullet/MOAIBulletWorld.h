@@ -8,6 +8,7 @@
 //#include <bullet/src/LinearMath/btQuickprof.h> // #ifndef BT_NO_PROFILE-
 //#include <moai-bullet/btRigidBodyWithCollisionEvents.h> //CUSTOM CALL BACKS DON"TWORK
 
+//class MOAISim;
 
 class MOAIBulletDebugDraw;
 class MOAIBulletBody;
@@ -15,9 +16,7 @@ class MOAIBulletShape;
 class MOAIBulletJoint;
 class MOAIBulletArbiter;
 
-//================================================================//
-// MOAIBox2DPrim
-//================================================================//
+
 class MOAIBulletPrim :
 	public virtual MOAILuaObject  {
 protected:

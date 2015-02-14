@@ -17,7 +17,8 @@ class MOAIBulletDebugDraw : public btIDebugDraw  {
 	long mSize;
 
 	void WriteVtx ( MOAIGfxDevice& gfxDevice, float x, float y,float z );
-	void MOAIBulletDebugDraw::resetSize ();
+
+	//void MOAIBulletDebugDraw::resetSize ();
 
  public:
 
