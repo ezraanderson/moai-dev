@@ -1,0 +1,4 @@
+ blender --background file.blend --python export-moai.py -- MeshNameInBlender exported-file.lua
+
+
+ blender --background D:\DESKTOP\blender\cube.blend --python D:\DESKTOP\blender\export-moai.py -- spine  F:\moai\pull\moai-dev\samples\bullet\spine.lua
