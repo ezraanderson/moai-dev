@@ -311,6 +311,7 @@ GLenum _remapEnum ( u32 zglEnum ) {
 		case ZGL_PRIM_TRIANGLE_FAN:						return GL_TRIANGLE_FAN;	
 		case ZGL_PRIM_TRIANGLE_STRIP:					return GL_TRIANGLE_STRIP;
 		case ZGL_PRIM_TRIANGLES:						return GL_TRIANGLES;
+		//case ZGL_PRIM_POLYGON:							return GL_POLYGON;
 
 		case ZGL_PROGRAM_INFO_ACTIVE_ATTRIBUTES:			return GL_ACTIVE_ATTRIBUTES;
 		case ZGL_PROGRAM_INFO_ACTIVE_ATTRIBUTE_MAX_LENGTH:	return GL_ACTIVE_ATTRIBUTE_MAX_LENGTH;
@@ -632,41 +633,24 @@ void zglDisable ( u32 cap ) {
 //----------------------------------------------------------------//
 void zglDrawArrays ( u32 primType, u32 first, u32 count ) {
 
-	//glDrawArrays ( _remapEnum ( primType ), ( GLint )first, ( GLsizei )count );
-    
-    //glTexEnvi( GL_POINT_SPRITE_ARB, GL_COORD_REPLACE_ARB, GL_TRUE );
-
-   // glEnable( GL_POINT_SPRITE_ARB );
-  //  glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+//*********************************************************************
+//*********************************************************************
+//*********************************************************************
+//*********************************************************************
+//PARTICL_SOUP
 #if defined(__SDL__)
-
      glEnable( GL_POINT_SPRITE_ARB );
      glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+#endif	 
+  glDrawArrays ( _remapEnum ( primType ), ( GLint )first, ( GLsizei )count );
+
+//*********************************************************************
+//*********************************************************************
+//*********************************************************************
+//*********************************************************************
 
 
-//glEnable(GL_POINT_SMOOTH);
-//glEnable(GL_BLEND);
-//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
-
-
-     //glEnable(GL_POINT_SMOOTH); //THIS IS FOR OUYA VS
-    // glHint(GL_POINT_SMOOTH_HINT,GL_NICEST);
-    // printf("WTF \n\n");
-     //glEnable( GL_NORMALIZE );
-
-     //glHint(GL_CLIP_VOLUME_CLIPPING_HINT_EXT,GL_FASTEST) ;
-     //glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
-    // glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-    // glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
-#endif
-
-
-
-//WEB_GL DRAW POINTNS : DOESN"T WORK
-//#ifdef MOAI_OS_HTML
-//glEnable( GL_POINT_SPRITE_ARB );
-//glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
-//#endif
+//glDrawArrays ( _remapEnum ( primType ), ( GLint )first, ( GLsizei )count );
 
 
 
@@ -676,33 +660,36 @@ void zglDrawArrays ( u32 primType, u32 first, u32 count ) {
 
 
 
-
-
-    glDrawArrays ( _remapEnum ( primType ), ( GLint )first, ( GLsizei )count );
-
-     //  glDisable( GL_POINT_SPRITE_ARB );
-    //   glDisable(GL_VERTEX_PROGRAM_POINT_SIZE);
 
 }
 
 //----------------------------------------------------------------//
 void zglDrawElements ( u32 primType, u32 count, u32 indexType, const void* indices ) {
-    // glEnable( GL_POINT_SPRITE_ARB );
-    // glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+
+	// printf("UPDATING zglDrawElements\n");
 
 
-#if defined(__SDL__)
+//*********************************************************************
+//*********************************************************************
+//*********************************************************************
+//*********************************************************************
+//PARTICL_SOUP
+//#if defined(__SDL__)
+//     glEnable( GL_POINT_SPRITE_ARB );
+//     glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+//#endif
+//	   glDrawElements ( _remapEnum ( primType ), ( GLsizei )count, _remapEnum ( indexType ), ( const GLvoid* )indices );
+//
+//*********************************************************************
+//*********************************************************************
+//*********************************************************************
+//*********************************************************************
 
-     glEnable( GL_POINT_SPRITE_ARB );
-     glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
-#endif
+glDrawElements ( _remapEnum ( primType ), ( GLsizei )count, _remapEnum ( indexType ), ( const GLvoid* )indices );
 
 
 
-	    glDrawElements ( _remapEnum ( primType ), ( GLsizei )count, _remapEnum ( indexType ), ( const GLvoid* )indices );
-
-       //glDisable( GL_POINT_SPRITE_ARB );
-       //glDisable(GL_VERTEX_PROGRAM_POINT_SIZE);
+     
 }
 
 //----------------------------------------------------------------//
@@ -1151,7 +1138,7 @@ void zglBufferDataUpdate ( u32 target, u32 sizeIndex,u32 size, const void* data,
 
 
 
-    // printf("UPDATING BUFFER\n");
+
 
 
     //glBufferSubData(GL_UNIFORM_BUFFER,
