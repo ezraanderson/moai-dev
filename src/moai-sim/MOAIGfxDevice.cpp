@@ -228,9 +228,16 @@ void MOAIGfxDevice::BeginPrim () {
 
 	if ( this->mPrimSize ) {
       //  printf("vsize psize %i \n",this->mPrimSize,this->mVertexFormat->GetVertexSize ());
-		u32 primBytes   = this->mPrimSize * this->mVertexFormat->GetVertexSize ();
+		//u32 primBytes   = this->mPrimSize * this->mVertexFormat->GetVertexSize ();
+		//this->mMaxPrims = ( u32 )( this->mSize / primBytes );
+		//this->mPrimTop  = this->mTop + primBytes;
+
+		u32 primBytes = this->mPrimSize * this->mVertexFormat->GetVertexSize ();
 		this->mMaxPrims = ( u32 )( this->mSize / primBytes );
-		this->mPrimTop  = this->mTop + primBytes;
+		this->mPrimTop = this->mTop + primBytes;
+
+
+
 	}
 }
 
@@ -239,9 +246,6 @@ void MOAIGfxDevice::BeginPrim () {
 void MOAIGfxDevice::setPrimeSize (long pSize) {
 		 this->mPrimSize = pSize;
 };
-
-
-
 
 //----------------------------------------------------------------//
 void MOAIGfxDevice::BeginPrim ( u32 primType ) {
@@ -614,12 +618,11 @@ MOAIGfxDevice::MOAIGfxDevice () :
 	
 	RTTI_SINGLE ( MOAIGlobalEventSource )
 	
-	//this->Reserve ( DEFAULT_BUFFER_SIZE );
+	 //this->Reserve ( DEFAULT_BUFFER_SIZE );
 
-    //EZRA
-    //2,147,483,647
-    //4,294,967,295
-        this->Reserve ( 100000000 );
+    //PARTICLE_SOUP
+	//BULLET_
+     this->Reserve ( 100000000 );
 	
 	for ( u32 i = 0; i < TOTAL_VTX_TRANSFORMS; ++i ) {
 		this->mVertexTransforms [ i ].Ident ();
@@ -675,6 +678,7 @@ void MOAIGfxDevice::PushDeleter ( u32 type, u32 id ) {
 void MOAIGfxDevice::RegisterLuaClass ( MOAILuaState& state ) {
 
 	state.SetField ( -1, "EVENT_RESIZE", ( u32 )EVENT_RESIZE );
+	state.SetField ( -1, "EVENT_FOCUS", ( u32 )EVENT_FOCUS );
 
 	luaL_Reg regTable [] = {
 		{ "getFrameBuffer",				_getFrameBuffer },
@@ -1076,6 +1080,7 @@ void MOAIGfxDevice::SetPrimType ( u32 primType ) {
 			case ZGL_PRIM_LINE_STRIP:
 			case ZGL_PRIM_TRIANGLE_FAN:
 			case ZGL_PRIM_TRIANGLE_STRIP:
+			//case ZGL_PRIM_POLYGON:
 			default:
 				this->mPrimSize = 0;
 				break;
@@ -1282,9 +1287,16 @@ void MOAIGfxDevice::SetVertexFormat () {
 
 //----------------------------------------------------------------//
 void MOAIGfxDevice::SetVertexFormat ( const MOAIVertexFormat& format ) {
-
 	this->SetVertexFormat ( format, this->mBuffer );
 }
+
+
+
+
+
+
+
+
 
 //----------------------------------------------------------------//
 void MOAIGfxDevice::SetVertexFormat ( const MOAIVertexFormat& format, void* buffer ) {
