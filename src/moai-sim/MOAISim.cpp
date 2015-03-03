@@ -739,6 +739,8 @@ MOAISim::MOAISim () :
 	mSetSimStepFunc ( 0 ),
 	mShowCursorFunc ( 0 ),
 	mHideCursorFunc ( 0 ),
+	mTitleFunc ( 0 ),
+	mResizeWindowFunc ( 0 ),
 	mGCActive ( true ),
 	mGCStep ( 0 ),
 	mForceGC ( true ) {
@@ -865,6 +867,10 @@ void MOAISim::RegisterLuaClass ( MOAILuaState& state ) {
 		{ "setTraceback",				_setTraceback },
 		{ "showCursor",					_showCursor },
 		{ "timeToFrames",				_timeToFrames },
+
+		{ "resizeWindow",				_resizeWindow},
+		{ "title",						_title},
+
 		{ NULL, NULL }
 	};
 
@@ -941,6 +947,36 @@ double MOAISim::StepSim ( double step, u32 multiplier ) {
 }
 
 
+//----------------------------------------------------------------//
+int MOAISim::_resizeWindow ( lua_State* L ) {
+	
+	MOAILuaState state ( L );
+	if ( !state.CheckParams ( 1, "NN" )) return 0;	
+	u32 width = state.GetValue < u32 >( 1, 320 );
+	u32 height = state.GetValue < u32 >( 2, 480 );
+
+	ResizeWindowFunc func = MOAISim::Get ().GetResizeWindowFunc ();
+	if ( func ) {	
+		func (  width, height );
+		MOAIGfxDevice::Get ().SetBufferSize ( width, height );
+	}
+
+	return 0;
+}
+//----------------------------------------------------------------//
+int MOAISim::_title ( lua_State* L ) {
+	
+	MOAILuaState state ( L );
+	if ( !state.CheckParams ( 1, "s" )) return 0;	
+
+	cc8* title_string = lua_tostring ( state, 1 );
+	TitleFunc func = MOAISim::Get ().GetTitleFunc ();
+	if ( func ) {		
+		func (  title_string );
+	}
+
+	return 0;
+}
 
 
 
@@ -958,6 +994,7 @@ void MOAISim::Update () {
 	MOAIScopedLuaState state = MOAILuaRuntime::Get ().State ();
 
 	if ( !this->mLuaGCFunc ) {
+		printf(" >> MOAISim::Update --> this->mLuaGCFun *******************\n");
 	//
 		lua_getglobal ( state, LUA_GC_FUNC_NAME );
 		this->mLuaGCFunc.SetRef ( *this, state, -1 );
@@ -971,6 +1008,7 @@ void MOAISim::Update () {
 
 	if ( this->mForceGC ) {   		
 		// force a full cycle
+		printf(" >> MOAISim::Update --> ForceGarbageCollection *******************\n");
 		MOAILuaRuntime::Get ().ForceGarbageCollection ();
 		this->mForceGC = false;
 	}

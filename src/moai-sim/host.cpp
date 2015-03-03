@@ -42,8 +42,6 @@ void AKUSimContextInitialize () {
 	REGISTER_LUA_CLASS ( MOAIAnimCurveQuat )
 	REGISTER_LUA_CLASS ( MOAIAnimCurveVec )
 	REGISTER_LUA_CLASS ( MOAIBoundsDeck )
-    REGISTER_LUA_CLASS ( MOAIBox )
-    REGISTER_LUA_CLASS ( MOAIEzraTask )
 	REGISTER_LUA_CLASS ( MOAIButtonSensor )
 	REGISTER_LUA_CLASS ( MOAICamera )
 	REGISTER_LUA_CLASS ( MOAICameraAnchor2D )
@@ -307,6 +305,16 @@ void AKUSetFunc_OpenWindow ( AKUOpenWindowFunc func ) {
 }
 
 //----------------------------------------------------------------//
+void AKUSetFunc_ResizeWindow ( AKUResizeWindowFunc func ) {
+	MOAISim::Get ().SetResizeWindowFunc ( func );
+}
+
+//----------------------------------------------------------------//
+void AKUSetFunc_Title ( AKUTitleFunc func ) {
+	MOAISim::Get ().SetTitleFunc ( func );
+}
+
+//----------------------------------------------------------------//
 void AKUSetFunc_SetSimStep ( AKUSetSimStepFunc func ) {
 
 	MOAISim::Get ().SetSetSimStepFunc ( func );
@@ -437,7 +445,7 @@ void AKUSetViewSize ( int width, int height ) {
 	
 	MOAIGfxDevice& device = MOAIGfxDevice::Get ();
 	
-	u32 currentWidth = device.GetWidth ();
+	u32 currentWidth  = device.GetWidth ();
 	u32 currentHeight = device.GetHeight ();
 	
 	if (( currentWidth != ( u32 )width ) || ( currentHeight != ( u32 )height )) {
@@ -453,12 +461,15 @@ void AKUSetViewSize ( int width, int height ) {
 	}
 }
 
-
-
-
-
-
-
+//----------------------------------------------------------------//
+void AKUSendFocus( char const* message ) {
+		MOAIGfxDevice& device = MOAIGfxDevice::Get ();
+		MOAIScopedLuaState state = MOAILuaRuntime::Get ().State ();
+		if ( device.PushListener ( MOAIGfxDevice::EVENT_FOCUS, state )) {
+			lua_pushstring ( state, message);	
+			state.DebugCall ( 1, 0 );
+		}
+};
 //----------------------------------------------------------------//
 void AKUSoftReleaseGfxResources ( int age ) {
 

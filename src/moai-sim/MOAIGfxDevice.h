@@ -74,6 +74,7 @@ public:
 	
 	enum {
 		EVENT_RESIZE,
+		EVENT_FOCUS,
 		TOTAL_EVENTS,
 	};
 	

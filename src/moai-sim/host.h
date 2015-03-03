@@ -9,6 +9,8 @@
 
 #include <moai-core/host.h>
 
+
+
 enum {
 	AKU_ORIENTATION_PORTRAIT,
 	AKU_ORIENTATION_LANDSCAPE,
@@ -19,8 +21,15 @@ typedef void ( *AKUEnterFullscreenModeFunc )	();
 typedef void ( *AKUExitFullscreenModeFunc )		();
 typedef void ( *AKUShowCursorFunc )				();
 typedef void ( *AKUHideCursorFunc )				();
+
+typedef void ( *AKUTitleFunc )					(const char* title);
+typedef void ( *AKUResizeWindowFunc)			(int width, int height);
+
 typedef void ( *AKUOpenWindowFunc )				( const char* title, int width, int height );
 typedef void ( *AKUSetSimStepFunc )				( double step );
+
+
+
 
 // setup
 AKU_API void			AKUSimAppFinalize				();
@@ -51,6 +60,13 @@ AKU_API void			AKUSetFunc_ShowCursor			( AKUShowCursorFunc func );
 AKU_API void			AKUSetFunc_HideCursor			( AKUHideCursorFunc func );
 AKU_API void			AKUSetFunc_OpenWindow			( AKUOpenWindowFunc func );
 AKU_API void			AKUSetFunc_SetSimStep			( AKUSetSimStepFunc func );
+
+AKU_API void			AKUSetFunc_Title				( AKUTitleFunc func );
+AKU_API void			AKUSetFunc_ResizeWindow			( AKUResizeWindowFunc func );
+AKU_API void			AKUSendFocus					( char const* message );
+
+
+
 
 // input device api
 AKU_API void			AKUReserveInputDevices			( int total );

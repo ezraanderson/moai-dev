@@ -8,6 +8,7 @@
 #include <moai-util/MOAITaskSubscriber.h>
 #include <moai-util/MOAITaskThread.h>
 
+
 class MOAIProp;
 
 //================================================================//
@@ -47,6 +48,10 @@ public:
 	typedef void ( *ShowCursorFunc )				();
 	typedef void ( *HideCursorFunc )				();
 	typedef void ( *OpenWindowFunc )				( const char* title, int width, int height );
+
+	typedef void ( *ResizeWindowFunc )				( int width, int height );
+	typedef void ( *TitleFunc )						( const char* title);
+
 	typedef void ( *SetSimStepFunc )				( double step );
 
 private:
@@ -90,10 +95,16 @@ private:
 	
 	EnterFullscreenModeFunc		mEnterFullscreenModeFunc;
 	ExitFullscreenModeFunc		mExitFullscreenModeFunc;
+
+	ResizeWindowFunc			mResizeWindowFunc;
+	TitleFunc					mTitleFunc;
+
 	OpenWindowFunc				mOpenWindowFunc;
 	SetSimStepFunc				mSetSimStepFunc;
 	ShowCursorFunc				mShowCursorFunc;
 	HideCursorFunc				mHideCursorFunc;
+
+
 	
 	u32					mGCActive;
 	u32					mGCStep;
@@ -140,6 +151,8 @@ private:
 	static int		_setTraceback				( lua_State* L );
 	static int		_timeToFrames				( lua_State* L );
 
+	static int		_title						( lua_State* L );
+	static int		_resizeWindow				( lua_State* L );
 	//----------------------------------------------------------------//
 	#ifdef DOXYGEN
 		static int		_clearRenderStack		( lua_State* L );
@@ -181,6 +194,8 @@ public:
 	GET_SET ( HideCursorFunc, HideCursorFunc, mHideCursorFunc );
 	GET_SET ( OpenWindowFunc, OpenWindowFunc, mOpenWindowFunc );
 	GET_SET ( SetSimStepFunc, SetSimStepFunc, mSetSimStepFunc );
+	GET_SET ( TitleFunc, TitleFunc, mTitleFunc );
+	GET_SET ( ResizeWindowFunc, ResizeWindowFunc, mResizeWindowFunc );
 	
 	static const u32 LOOP_FLAGS_DEFAULT		= SIM_LOOP_ALLOW_SPIN | SIM_LOOP_LONG_DELAY;
 	static const u32 LOOP_FLAGS_FIXED		= SIM_LOOP_FORCE_STEP | SIM_LOOP_NO_DEFICIT | SIM_LOOP_NO_SURPLUS;
