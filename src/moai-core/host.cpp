@@ -100,45 +100,25 @@ void AKUClearMemPool () {
 //----------------------------------------------------------------//
 AKUContextID AKUCreateContext () {
 
-    //printf("CRASHING A \n");
+	 //printf("CRASHING G \n");
 
 	sContext = new AKUContext;
-	 // printf("CRASHING B \n");
-
 	sContextID = ++sContextIDCounter;
 	( *sContextMap )[ sContextID ] = sContext;
 
 	MOAIGlobalsMgr::Set ( sContext->mGlobals  );
-
-     // printf("CRASHING C \n");
-
 	MOAILuaRuntime::Affirm ();
 	MOAILogMgr::Affirm ();
-	
-    //  printf("CRASHING D \n");
-
-	MOAILuaRuntime& luaRuntime = MOAILuaRuntime::Get ();
-
-    // printf("CRASHING E \n");
-
+	MOAILuaRuntime& luaRuntime = MOAILuaRuntime::Get ();  
 	luaRuntime.Open ();
-
-         //printf("CRASHING F \n");
-
-	luaRuntime.LoadLibs ();
-
-     // printf("CRASHING G \n");
-	
+	luaRuntime.LoadLibs ();	
 	MOAILogMessages::RegisterDefaultLogMessages ();
-	
-
 
 	REGISTER_LUA_CLASS ( MOAILuaRuntime )
 	REGISTER_LUA_CLASS ( MOAIDeserializer )
 	REGISTER_LUA_CLASS ( MOAILogMgr )
 	REGISTER_LUA_CLASS ( MOAISerializer )
-
-       printf("CRASHING G \n");
+	
 
 	return sContextIDCounter;
 }

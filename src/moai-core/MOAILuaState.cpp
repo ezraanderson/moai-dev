@@ -296,13 +296,11 @@ u32 MOAILuaState::GetColor32 ( int idx, float r, float g, float b, float a ) {
 	ZLColorVec color = this->GetColor ( idx, r, g, b, a );
 	return color.PackRGBA ();
 }
-
 //----------------------------------------------------------------//
 void MOAILuaState::GetField ( int idx, cc8* name ) {
 
 	lua_getfield ( this->mState, idx, name );
 }
-
 //----------------------------------------------------------------//
 void MOAILuaState::GetField ( int idx, int key ) {
 
@@ -311,7 +309,6 @@ void MOAILuaState::GetField ( int idx, int key ) {
 	lua_pushinteger ( this->mState, key );
 	lua_gettable ( this->mState, idx );
 }
-
 //----------------------------------------------------------------//
 STLString MOAILuaState::GetField ( int idx, cc8* key, cc8* value ) {
 
@@ -325,7 +322,6 @@ STLString MOAILuaState::GetField ( int idx, cc8* key, cc8* value ) {
 	}
 	return str;
 }
-
 //----------------------------------------------------------------//
 STLString MOAILuaState::GetField ( int idx, int key, cc8* value ) {
 
@@ -339,7 +335,6 @@ STLString MOAILuaState::GetField ( int idx, int key, cc8* value ) {
 	}
 	return str;
 }
-
 //----------------------------------------------------------------//
 STLString MOAILuaState::GetField ( int idx, cc8* key, const STLString& value ) {
 
@@ -719,7 +714,7 @@ bool MOAILuaState::HasField ( int idx, cc8* name ) {
 	bool hasField = ( lua_isnil ( this->mState, -1 ) == false );
 	lua_pop ( this->mState, 1 );
 	
-	return hasField;
+	return 1;
 }
 
 //----------------------------------------------------------------//
