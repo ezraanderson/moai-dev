@@ -9,7 +9,5 @@ varying vec4 colorVarying;
 varying vec2 uvVarying;
 
 void main () {
-    gl_Position = position; 
-	uvVarying = uv;
-    colorVarying = color;
+
 }

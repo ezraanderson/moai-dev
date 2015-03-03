@@ -43,6 +43,7 @@ camera:setLoc(0,20,camera:getFocalLength ( 80 ))
 local layer = MOAILayer.new ()
 layer:setViewport ( viewport_game )
 layer:setCamera ( camera )
+layer:setClearDepth ( true )
 MOAISim.pushRenderPass ( layer )
 
 local bWorld = {}
@@ -173,7 +174,7 @@ plane   = {}
 m_props = {}  
 m_mesh = {}  
 
-m_mesh['plank']         =  makeBoard ( 100,25,50, 'tree.png' )  
+m_mesh['plank']         =  makeBoard ( 100,25,50, 'fountain.png' )  
 m_mesh['box']          =   makeBoard ( 25,25,25, 'clay.png' )  
 m_mesh['lava']          =   makeBoard ( 25,25,25, 'lava.png' )    
 

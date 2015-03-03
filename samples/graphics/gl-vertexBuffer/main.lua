@@ -41,12 +41,16 @@ vbo:writeFloat ( -64, 64 )
 vbo:writeFloat ( 0, 0 )
 vbo:writeColor32 ( 0, 0, 1 )
 
+
+
+
 vbo:bless ()
 
 mesh = MOAIMesh.new ()
 mesh:setTexture ( "moai.png" )
 mesh:setVertexBuffer ( vbo )
 mesh:setPrimType ( MOAIMesh.GL_TRIANGLE_FAN )
+mesh:setHigh(4)
 
 if MOAIGfxDevice.isProgrammable () then
 

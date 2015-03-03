@@ -6,7 +6,10 @@
 
 MOAISim.openWindow ( "test", 320, 480 )
 
+print("HELLO")
+
 viewport = MOAIViewport.new ()
+
 viewport:setSize ( 320, 480 )
 viewport:setScale ( 320, -480 )
 

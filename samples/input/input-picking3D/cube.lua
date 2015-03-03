@@ -113,7 +113,6 @@ function makeCube ( size )
 	mesh:setVertexBuffer ( vbo )
 	mesh:setIndexBuffer ( ibo )
 	mesh:setPrimType ( MOAIMesh.GL_TRIANGLES )
-
 	local prop = MOAIProp.new ()
 	prop:setDeck ( mesh )
 	prop:setCullMode ( MOAIProp.CULL_BACK )

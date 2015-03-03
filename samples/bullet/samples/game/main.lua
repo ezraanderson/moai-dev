@@ -42,6 +42,8 @@ local state_obj      = {} --OBJ LIST FOR RESTING THE GAME
 --********************************************************************
 --BUFFER
   MOAIGfxDevice.getFrameBuffer ():setClearDepth ( true )
+  
+  
   --MOAIGfxDevice.getFrameBuffer ():setClearColor ( .2,.3,.1,.1 )
 --********************************************************************
 --VIEWPORTS
@@ -69,10 +71,13 @@ local state_obj      = {} --OBJ LIST FOR RESTING THE GAME
 --LAYERS
 
   --GAME
-  layer = MOAILayerPass.new ()
+  --layer = MOAILayerPass.new ()
+  layer = MOAILayer.new ()  
   layer:setViewport ( viewport_game )
   layer:setSortMode ( MOAILayer.SORT_NONE )
   layer:setCamera ( camera )
+  layer:setClearDepth ( true )
+  
   MOAISim.pushRenderPass ( layer )
 
 
@@ -171,6 +176,8 @@ function makeBoxMesh ( xMin, yMin, zMin, xMax, yMax, zMax, texture )
 
 	local mesh = MOAIMesh.new ()
 	mesh:setTexture ( texture )
+  mesh:setTexture  ("images/fountain.png")
+  
 	mesh:setVertexBuffer ( vbo )
 	mesh:setPrimType ( MOAIMesh.GL_TRIANGLES )
 --	mesh:setHigh(36)
