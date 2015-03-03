@@ -14,16 +14,13 @@ cd `dirname $0`/..
 
 if [$1 = "--fast"]; then
 
-echo "FAST_________________"
+    echo "FAST_________________"       
+    cd cmake     
+    cd build-linux
 
-cd cmake     
-cd build-linux
+else     
 
-else
-
-
-echo "REBUILDING_________________"
-
+echo "REBUILDING_________________"     
 
 cd cmake
 rm -rf build-linux
@@ -33,6 +30,7 @@ cmake \
 -DBUILD_LINUX=TRUE \
 -DSDL_HOST=TRUE \
 -DMOAI_BOX2D=TRUE \
+-DMOAI_BULLET=TRUE \
 -DMOAI_CHIPMUNK=TRUE \
 -DMOAI_CURL=TRUE \
 -DMOAI_CRYPTO=TRUE \

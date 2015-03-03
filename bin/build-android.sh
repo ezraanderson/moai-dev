@@ -1,9 +1,12 @@
 #!/bin/bash
 
-export ANDROID_NDK=/home/ezra/Desktop/android-ndk-r9c/
+
 export PATH=$PATH:/home/ezra/cmake/bin
 
-
+export ANDROID_NDK=/home/ezra/Desktop/android-ndk-r10/
+#export NDK_TOOLCHAIN_VERSION=4.6
+##export NDK_TOOLCHAIN_VERSION=4.9
+#export PATH=$PATH:$ANDROID_ROOT/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/include
 
 source ~/.bash_profile
 

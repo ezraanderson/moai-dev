@@ -49,12 +49,20 @@ cmake ^
 -DMOAI_SFMT=TRUE ^
 -DMOAI_VORBIS=TRUE ^
 -DMOAI_UNTZ=TRUE ^
--DMOAI_LUAJIT=TRUE ^
+-DMOAI_LUAJIT=FALSE ^
 -DSDL_HOST=TRUE ^
 -DMOAI_HTTP_CLIENT=TRUE ^
+-DPLUGIN_MOAI-BULLET=FALSE ^
+-DPLUGIN_MOAI-EZRA=TRUE ^
+-DPLUGIN_DIR=F:/plugins/ ^
 ..\..\
 
+::cmake --build . --config Release  
+:: msbuild /p:DXSDK_DIR=Lib\x86
+
 :end
+
+
 
 @echo off
 

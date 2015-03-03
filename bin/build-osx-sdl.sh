@@ -13,7 +13,7 @@
 cd `dirname $0`/..
 
 
-if [ $1 = "--fast" ]; then
+if [[ $1 = "--fast" ]]; then
 
 echo "FAST_________________"
 
@@ -32,6 +32,7 @@ cmake \
 -DBUILD_OSX=TRUE \
 -DSDL_HOST=TRUE \
 -DMOAI_BOX2D=TRUE \
+-DMOAI_BULLET=TRUE \
 -DMOAI_CHIPMUNK=TRUE \
 -DMOAI_CURL=TRUE \
 -DMOAI_CRYPTO=TRUE \
@@ -52,9 +53,10 @@ cmake \
 -DMOAI_LUAJIT=TRUE \
 -DMOAI_HTTP_CLIENT=TRUE \
 -DGCC_FORCE_32_BIT=TRUE \
+-DCMAKE_BUILD_TYPE=Release \
 ../
 
-
+#-DGCC_FORCE_32_BIT=FALSE \
 fi
 
 

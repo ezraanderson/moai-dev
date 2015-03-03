@@ -1,4 +1,12 @@
+## CHARTBOOSTER DOESN"T WORK ON THES     
+
+#./bin/build-ios.sh ./bin/dummy/
+
+
+
 #!/bin/bash
+
+
 
 #================================================================#
 # Copyright (c) 2010-2011 Zipline Games, Inc.
@@ -7,7 +15,7 @@
 #================================================================#
 
 # Set this to a name which will be valid for "codesign -s", or the build
-# will fail.
+# will fail.      
 SIGN_IDENTITY='iPhone Developer'
 
 codesign_msg=$(codesign -s "$SIGN_IDENTITY" 2>&1)
@@ -56,7 +64,7 @@ use_untz="true"
 
 adcolony_flags="false"
 billing_flags="false"                                                                                                                                                     
-chartboost_flags=
+chartboost_flags="false" 
 crittercism_flags="false"
 facebook_flags="false"
 playhaven_flags="false"
@@ -234,18 +242,26 @@ else
 
 
 cd cmake
+cd /Users/ezra/Desktop/build-drive/
+
 rm -rf build-ios
 mkdir build-ios
 cd build-ios
 
 echo "Building resource list from ${LUASRC}"
-ruby ../host-ios/build_resources.rb "${LUASRC}"
+
+#ruby ../host-ios/build_resources.rb "${LUASRC}"
+ruby /Volumes/moai-dev/cmake/host-ios/build_resources.rb "${LUASRC}"
 
 echo "> Creating xcode project"
 echo ">>>> PLATFORM_PATH ${PLATFORM_PATH}"
+echo "-------------------------------------------"
+echo "WHAY WONT IT CHANGE THE DIR"
 
 #create our makefiles
-cmake -DDISABLED_EXT="$disabled_ext" -DMOAI_BOX2D=0 \
+#cmake -DDISABLED_EXT="$disabled_ext" -DMOAI_BOX2D=0 -DMOAI_BULLET=1 \
+ 
+cmake -DDISABLED_EXT="$disabled_ext" -DMOAI_BOX2D=0 -DMOAI_BULLET=1 \
 -DMOAI_CHIPMUNK=0 -DMOAI_CURL=1 -DMOAI_CRYPTO=0 -DMOAI_EXPAT=1 -DMOAI_FREETYPE=1 \
 -DMOAI_HTTP_CLIENT=1 -DMOAI_JSON=1 -DMOAI_JPG=0 -DMOAI_LUAEXT=1 \
 -DMOAI_MONGOOSE=0 -DMOAI_OGG=1 -DMOAI_OPENSSL=0 -DMOAI_SQLITE3=0 \
@@ -258,7 +274,7 @@ cmake -DDISABLED_EXT="$disabled_ext" -DMOAI_BOX2D=0 \
 -DAPP_VERSION="${APP_VERSION}" \
 -DCMAKE_BUILD_TYPE="Release" \
 -G "Xcode" \
-../
+/Volumes/moai-dev/cmake//
 
 
 
