@@ -182,6 +182,8 @@ void MOAIDraw::EndDrawString () {
 	// Setup for drawing
 	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
 
+
+
 	// Get current state
 	const ZLMatrix4x4& orgWorldTransform = gfxDevice.GetVertexTransform ( MOAIGfxDevice::VTX_WORLD_TRANSFORM );
 
@@ -189,7 +191,7 @@ void MOAIDraw::EndDrawString () {
 	gfxDevice.GetVertexMtxMode ( orgVtxModeInput, orgVtxModeOutput );
 
 	// TODO
-	//GLint orgSrcBlend, orgDestBlend;
+	//int orgSrcBlend, orgDestBlend;
 	//glGetIntegerv ( GL_BLEND_SRC, &orgSrcBlend );
 	//glGetIntegerv ( GL_BLEND_DST, &orgDestBlend );
 
@@ -197,9 +199,14 @@ void MOAIDraw::EndDrawString () {
 
 	gfxDevice.SetShaderPreset ( MOAIShaderMgr::FONT_SHADER );
 	gfxDevice.SetVertexMtxMode ( MOAIGfxDevice::VTX_STAGE_WORLD, MOAIGfxDevice::VTX_STAGE_PROJ );
+			//gfxDevice.SetBlendMode ( ZGL_BLEND_FACTOR_SRC_ALPHA, ZGL_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA );
+			//gfxDevice.SetBlendMode ( ZGL_BLEND_FACTOR_ONE, ZGL_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA );
 
+	//BROKEN
+		gfxDevice.SetBlendMode ( ZGL_BLEND_FACTOR_ONE, ZGL_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA );
+	//WORKS
+		gfxDevice.SetBlendMode ( ZGL_BLEND_FACTOR_SRC_ALPHA, ZGL_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA );
 
-	gfxDevice.SetBlendMode ( ZGL_BLEND_FACTOR_ONE, ZGL_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA );
 
 	MOAIQuadBrush::BindVertexFormat ( gfxDevice );
 
@@ -235,7 +242,6 @@ void MOAIDraw::EndDrawString () {
 
 		STLList < GlyphPlacement >::const_iterator it;
 		for ( it = g_CurrentTextDrawContext->mGlyphs.begin (); it != g_CurrentTextDrawContext->mGlyphs.end (); ++it ) {
-
 			const GlyphPlacement& glyphPlacement = *it;
 			MOAIGlyph* glyph = glyphPlacement.glyph;
 			MOAITextureBase* glyphTexture = font.GetGlyphTexture ( *glyph );
@@ -248,8 +254,10 @@ void MOAIDraw::EndDrawString () {
 
 	gfxDevice.SetVertexTransform ( MOAIGfxDevice::VTX_WORLD_TRANSFORM, orgWorldTransform );
 	gfxDevice.SetVertexMtxMode ( orgVtxModeInput, orgVtxModeOutput );
+
 	//gfxDevice.SetBlendMode ( orgSrcBlend, orgDestBlend ); // TODO
-	
+	//gfxDevice.SetBlendMode ( ZGL_BLEND_FACTOR_ONE, ZGL_BLEND_FACTOR_ZERO );
+
 	gfxDevice.Flush();
 
 	// Clear context
@@ -581,37 +589,24 @@ int MOAIDraw::_drawTexture ( lua_State* L ) {
 int MOAIDraw::_drawText ( lua_State* L ) {
 
 	MOAILuaState state ( L );
-
-	// TODO	
-	cc8* text = lua_tostring ( state, 4 );
+	cc8* text = lua_tostring ( state, 3 );
 	if ( text ) {
-          printf("PRINTING TEXT A\n");
-
-
-		float x = state.GetValue < float >( 5, 0.0f );
-		float y = state.GetValue < float >( 6, 0.0f );
-		float scale = state.GetValue < float >( 7, 1.0f );
-
-		float shadowOffsetX = state.GetValue < float >( 8, 0.0f );
-		float shadowOffsetY = state.GetValue < float >( 9, 0.0f );
-
-		MOAIFont* font = state.GetLuaObject < MOAIFont >( 2, false );
-		if ( font ) {
-            printf("PRINTING TEXT B\n");
-			float fontSize = state.GetValue < float >( 3, font->GetDefaultSize () );
-
-			MOAIDraw::DrawString ( text, x, y, scale, *font, fontSize, shadowOffsetX, shadowOffsetY, 0, 0 );
-		}
-	}
-
+	float x = state.GetValue < float >( 4, 0.0f );
+	float y = state.GetValue < float >( 5, 0.0f );
+	float scale = state.GetValue < float >( 6, 1.0f );
+	float shadowOffsetX = state.GetValue < float >( 7, 0.0f );
+	float shadowOffsetY = state.GetValue < float >( 8, 0.0f );
+	MOAIFont* font = state.GetLuaObject < MOAIFont >( 1, true );
+	if ( font ) {
+	float fontSize = state.GetValue < float >( 2, font->GetDefaultSize () );
+	MOAIDraw::DrawString ( text, x, y, scale, *font, fontSize, shadowOffsetX, shadowOffsetY, 0, 0 );
+	};
+	};
 	return 0;
-}
+};
 
 //================================================================//
 // MOAIDraw
-//================================================================//
-
-//----------------------------------------------------------------//
 void MOAIDraw::Bind () {
 
 	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
@@ -1121,11 +1116,10 @@ void MOAIDraw::DrawTexture ( float left, float top, float right, float bottom, M
 	
 	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
 	
-	if ( texture ) {
-		
+	if ( texture ) {		
 		gfxDevice.Flush ();
-
-		gfxDevice.SetBlendMode ( ZGL_BLEND_FACTOR_ONE, ZGL_BLEND_FACTOR_ZERO );
+		//REMOVE FOR TRANSPARET
+		//gfxDevice.SetBlendMode ( ZGL_BLEND_FACTOR_ONE, ZGL_BLEND_FACTOR_ZERO );
 		gfxDevice.SetTexture ( texture );
 		gfxDevice.SetShaderPreset ( MOAIShaderMgr::DECK2D_SHADER );
 
@@ -1133,18 +1127,26 @@ void MOAIDraw::DrawTexture ( float left, float top, float right, float bottom, M
 		gfxDevice.SetPenColor ( 1, 1, 1, 1 );
 		
 		MOAIQuadBrush::BindVertexFormat ( gfxDevice );
-
 		MOAIQuadBrush quad;
-		quad.SetVerts ( left, top, right, bottom );
+		quad.SetVerts ( left, top, right, bottom );	
+
+		//ZLAffine3D mtx;
+		//mtx.ScRoTr (
+		//	1.0f, 1.0f, 1.0f,
+		//	0.0f, 0.0f, float( 0 * 3.14 ) / 180 ,
+		//	100.0f, 0.0f, 0.0f
+		//);
+		//gfxDevice.SetVertexTransform ( MOAIGfxDevice::VTX_WORLD_TRANSFORM, mtx );
+
+
 		quad.SetUVs ( 0, 0, 1, 1 );		
 		quad.Draw ();
-
-		gfxDevice.Flush ();
-		
+		gfxDevice.Flush ();		
 		gfxDevice.SetBlendMode ();
-		gfxDevice.SetPenColor ( orgColor );
-		
+		gfxDevice.SetPenColor ( orgColor );		
 		MOAIDraw::Bind ();
+
+
 	}
 }
 
