@@ -34,31 +34,29 @@ target_include_directories ( moai-sim PUBLIC ${MOAI_SIM_INCLUDES} ${FREETYPE_INC
 set_target_properties(moai-sim PROPERTIES FOLDER Core)
 
 if (MOAI_FREETYPE)
-	target_link_libraries( moai-sim freetype)
+  target_link_libraries( moai-sim freetype)
 endif (MOAI_FREETYPE)
 
 if (MOAI_CURL)
- 	target_link_libraries( moai-sim curl)
+   target_link_libraries( moai-sim curl)
 endif (MOAI_CURL)
 
 if (MOAI_PNG)
-	target_link_libraries( moai-sim png)
+  target_link_libraries( moai-sim png)
 endif(MOAI_PNG)
 
 if (MOAI_JPG)
-	target_link_libraries (moai-sim jpg)
+  target_link_libraries (moai-sim jpg)
 endif (MOAI_JPG)
 
 if (MOAI_BOX2D)
  target_link_libraries ( moai-sim moai-box2d)
 endif (MOAI_BOX2D)
 
-if (MOAI_BULLET)
- target_link_libraries ( moai-sim moai-bullet)
-endif (MOAI_BULLET)
+
 
 if (MOAI_CHIPMUNK)
-	target_link_libraries ( moai-sim moai-chipmunk)
+  target_link_libraries ( moai-sim moai-chipmunk)
 endif (MOAI_CHIPMUNK)
 
 if (BUILD_WINDOWS)

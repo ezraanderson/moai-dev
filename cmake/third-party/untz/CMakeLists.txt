@@ -9,8 +9,11 @@ set ( UNTZ_INCLUDES
   ${SDL_INCLUDES}
   "${MOAI_ROOT}/3rdparty/untz/include/"
   "${MOAI_ROOT}/3rdparty/untz/src/"
-  "${MOAI_ROOT}/3rdparty/untz/src/native/sdl/" 
+  "${MOAI_ROOT}/3rdparty/untz/src/native/sdl/"      
 )
+
+
+
 file ( GLOB UNTZ_SOURCES
   "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/native/sdl/*.cpp"

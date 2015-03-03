@@ -18,9 +18,7 @@ add_library ( host-modules STATIC ${HOST_MODULES_SRC} )
 set_target_properties( host-modules PROPERTIES FOLDER Modules )
   
   
-if ( MOAI_BULLET )
-  target_link_libraries ( host-modules moai-bullet )
-endif ( MOAI_BULLET )  
+
   
 #BOX2D
 if ( MOAI_BOX2D )
@@ -49,10 +47,10 @@ endif ( MOAI_LUAEXT )
 
 #plugins
 if ( MOAI_PLUGINS )
-	target_link_libraries ( host-modules moai-plugins )
+  target_link_libraries ( host-modules moai-plugins )
 endif ( MOAI_PLUGINS )
 
 #tests
 if ( MOAI_TEST )
-	target_link_libraries ( host-modules moai-test )
+  target_link_libraries ( host-modules moai-test )
 endif (MOAI_TEST)

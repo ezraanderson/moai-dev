@@ -193,7 +193,7 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${VFS_INCLUDE}")
 #
 # Optional modules
 
-option ( MOAI_BULLET         FALSE )     
+
 option ( MOAI_BOX2D          FALSE )
 option ( MOAI_CHIPMUNK       FALSE )
 option ( MOAI_CURL           FALSE )
@@ -237,8 +237,7 @@ macro(SETUP_MODULE module_name flag_name)
   endif(${module_name})
 endmacro(SETUP_MODULE)
 
-SETUP_MODULE(MOAI_BULLET MOAI_WITH_BULLET)
-SETUP_MODULE(MOAI_BULLET AKU_WITH_BULLET)
+
 
 SETUP_MODULE(MOAI_BOX2D MOAI_WITH_BOX2D)
 SETUP_MODULE(MOAI_BOX2D AKU_WITH_BOX2D)
@@ -325,7 +324,6 @@ add_subdirectory ( moai-util )
 add_subdirectory ( moai-sim )
 
 
-add_subdirectory ( moai-bullet )
 add_subdirectory ( moai-box2d )
 
 add_subdirectory ( moai-chipmunk )
