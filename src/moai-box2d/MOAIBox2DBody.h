@@ -80,6 +80,10 @@ public:
 					~MOAIBox2DBody			();
 	void			RegisterLuaClass		( MOAILuaState& state );
 	void			RegisterLuaFuncs		( MOAILuaState& state );
+
+	//EZRA
+	b2Body*			GetBody					();
+
 };
 
 #endif

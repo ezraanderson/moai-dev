@@ -1020,7 +1020,6 @@ MOAIBox2DBody::MOAIBox2DBody () :
 
 //----------------------------------------------------------------//
 MOAIBox2DBody::~MOAIBox2DBody () {
-
 	this->Destroy ();
 }
 
@@ -1138,7 +1137,21 @@ bool MOAIBox2DBody::ApplyAttrOp ( u32 attrID, MOAIAttrOp& attrOp, u32 op ) {
 
 //----------------------------------------------------------------//
 void MOAIBox2DBody::SetBody ( b2Body* body ) {
-
 	this->mBody = body;
 	body->SetUserData ( this );
 }
+
+
+//----------------------------------------------------------------//
+//EZRA
+b2Body* MOAIBox2DBody::GetBody () {	
+	return this->mBody;
+}
+
+
+
+
+
+
+
+
