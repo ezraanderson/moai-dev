@@ -17,8 +17,6 @@
 #include <moai-sim/MOAIBlendMode.h>
 #include <moai-sim/MOAIBoundsDeck.h>
 #include <moai-sim/MOAIButtonSensor.h>
-#include <moai-sim/MOAIBox.h>
-#include <moai-sim/MOAIEzraTask.h>
 #include <moai-sim/MOAICamera.h>
 #include <moai-sim/MOAICameraAnchor2D.h>
 #include <moai-sim/MOAICameraFitter2D.h>
