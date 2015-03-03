@@ -29,8 +29,8 @@ class MOAITransformBase;
 #endif
 
 #ifdef MOAI_OS_WINDOWS
-    #define		OPENGL_PREPROC		"#define LOWP\n #define MEDP\n"
-    #define		OPENGL_ES_PREPROC	"#define LOWP lowp\n #define MEDP mediump\n"
+    #define		OPENGL_PREPROC		"#version 120\n #define LOWP\n #define MEDP\n"
+    #define		OPENGL_ES_PREPROC	"#version 120\n #define LOWP lowp\n #define MEDP mediump\n"
     #define		WEBGL_PREPROC       "precision mediump int;\n precision mediump float;\n"
 #endif
 
