@@ -17,7 +17,7 @@ class MOAIIndexBuffer :
 	public MOAIGfxResource {
 private:
 
-	u32*	mBuffer;
+	u16*	mBuffer;
 	u32		mIndexCount;
 	
 	u32		mGLBufferID;
@@ -37,7 +37,6 @@ private:
 	void		OnDestroy				();
 	void		OnInvalidate			();
 	void		OnLoad					();
-   
 	
 public:
 	
@@ -52,8 +51,7 @@ public:
 	void		RegisterLuaClass		( MOAILuaState& state );
 	void		RegisterLuaFuncs		( MOAILuaState& state );
 	void		ReserveIndices			( u32 indexCount );
-	void		SetIndex				( u32 idx, u32 value );
-    void		Update					();
+	void		SetIndex				( u32 idx, u16 value );
 };
 
 #endif

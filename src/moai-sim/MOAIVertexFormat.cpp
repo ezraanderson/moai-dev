@@ -150,8 +150,6 @@ void MOAIVertexFormat::BindFixed ( void* buffer ) const {
 			}
 			else {
 			
-             
-
 				MOAIVertexAttribute& attr = this->mAttributes [ attrUse.mAttrID ];
 				
 				void* addr = ( void* )(( size_t )buffer + attr.mOffset );
@@ -194,10 +192,6 @@ void MOAIVertexFormat::BindProgrammable ( void* buffer ) const {
 //----------------------------------------------------------------//
 bool MOAIVertexFormat::ComputeBounds ( void* buffer, u32 size, ZLBox& bounds ) {
 
-
-    printf("\n \n --- ComputeBounds -- %d \n\n", this->mVertexSize);
-
-
 	u32 total = this->mVertexSize ? ( size / this->mVertexSize ) : 0;
 	if ( !total ) return false;
 
@@ -236,11 +230,11 @@ void MOAIVertexFormat::DeclareAttribute ( u32 index, u32 type, u32 size, u32 use
 	
 	u32 offset = this->mVertexSize;
 	
-	attr.mIndex         = index;
-	attr.mSize          = size;
-	attr.mType          = type;
-	attr.mNormalized    = normalized;
-	attr.mOffset        = offset;
+	attr.mIndex = index;
+	attr.mSize = size;
+	attr.mType = type;
+	attr.mNormalized = normalized;
+	attr.mOffset = offset;
 	
 	this->mVertexSize += MOAIVertexFormat::GetComponentSize ( size, type );
 	
@@ -263,11 +257,6 @@ u32 MOAIVertexFormat::GetComponentSize ( u32 size, u32 type ) {
 			break;
 		
 		case ZGL_TYPE_SHORT:
-
-            //bytes = 2;
-			//break;
-
-
 		case ZGL_TYPE_UNSIGNED_SHORT:
 			bytes = 2;
 			break;

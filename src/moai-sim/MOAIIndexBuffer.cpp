@@ -52,7 +52,7 @@ int	MOAIIndexBuffer::_setIndex ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIIndexBuffer, "UNN" )
 	
 	u32 idx		= state.GetValue < u32 >( 2, 1 ) - 1;
-	u32 value	= state.GetValue < u16 >( 3, 1 ) - 1;
+	u16 value	= state.GetValue < u16 >( 3, 1 ) - 1;
 	
 	self->SetIndex ( idx, value );
 	
@@ -86,9 +86,7 @@ MOAIIndexBuffer::MOAIIndexBuffer () :
 	mBuffer ( 0 ),
 	mIndexCount ( 0 ),
 	mGLBufferID ( 0 ),
-	//mHint ( ZGL_BUFFER_USAGE_STATIC_DRAW )
-    mHint ( ZGL_BUFFER_USAGE_DYNAMIC_DRAW )    
-    {
+	mHint ( ZGL_BUFFER_USAGE_STATIC_DRAW ) {
 	
 	RTTI_SINGLE ( MOAILuaObject )
 }
@@ -123,42 +121,12 @@ void MOAIIndexBuffer::OnCreate () {
 		
 		this->mGLBufferID = zglCreateBuffer ();
 		if ( this->mGLBufferID ) {
-    
+		
 			zglBindBuffer ( ZGL_BUFFER_TARGET_ELEMENT_ARRAY, this->mGLBufferID );
-			zglBufferData ( ZGL_BUFFER_TARGET_ELEMENT_ARRAY, this->mIndexCount * sizeof ( u32 ), this->mBuffer, this->mHint );
+			zglBufferData ( ZGL_BUFFER_TARGET_ELEMENT_ARRAY, this->mIndexCount * sizeof ( u16 ), this->mBuffer, this->mHint );
 		}
 	}
 }
-
-
-
-//----------------------------------------------------------------//
-void MOAIIndexBuffer::Update () {
-
-   
-        zglBindBuffer ( ZGL_BUFFER_TARGET_ELEMENT_ARRAY, this->mGLBufferID );
-
-        zglBufferDataUpdate ( ZGL_BUFFER_TARGET_ELEMENT_ARRAY, this->mIndexCount * sizeof ( u32 ),this->mIndexCount, this->mBuffer, this->mHint );
-
-       
-
-
-	//if ( this->mBuffer ) {
-		
-		////this->mGLBufferID = zglCreateBuffer ();
-		//if ( this->mGLBufferID ) {
-		
-          //      printf("UPDATING BUFFER \n");
-		//	zglBindBuffer ( ZGL_BUFFER_TARGET_ELEMENT_ARRAY, this->mGLBufferID );
-		//	zglBufferData ( ZGL_BUFFER_TARGET_ELEMENT_ARRAY, this->mIndexCount * sizeof ( u16 ), this->mBuffer, this->mHint );
-		//}
-	//}
-}
-
-
-
-
-
 
 //----------------------------------------------------------------//
 void MOAIIndexBuffer::OnDestroy () {
@@ -203,13 +171,13 @@ void MOAIIndexBuffer::ReserveIndices ( u32 indexCount ) {
 	this->Clear ();
 	
 	this->mIndexCount = indexCount;
-	this->mBuffer = ( u32* )malloc ( indexCount * sizeof ( u32 ));
+	this->mBuffer = ( u16* )malloc ( indexCount * sizeof ( u16 ));
 	
 	this->Load ();
 }
 
 //----------------------------------------------------------------//
-void MOAIIndexBuffer::SetIndex ( u32 idx, u32 value ) {
+void MOAIIndexBuffer::SetIndex ( u32 idx, u16 value ) {
 
 	if ( idx < this->mIndexCount ) {
 		this->mBuffer [ idx ] = value;
