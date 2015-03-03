@@ -5,7 +5,7 @@
 #include <host-modules/aku_modules.h>
 #include <lua-headers/moai_lua.h>
 
-#include <moai-sim/MOAIBox.h>
+//#include <moai-sim/MOAIBox.h>
 
 //#include <stdio.h>
 //#include <stdlib.h>
@@ -42,15 +42,6 @@ void AKUModulesAppFinalize () {
 
     printf("\n ******** AKUModulesAppFinalize ***********\n");
 
-//FINILIZE MY TASKS
-   //PARTICLE_SOUP
-   // MOAIBox::Finalize();
-
-
-	#if AKU_WITH_BULLET
-
-		AKUBulletAppFinalize ();
-	#endif
 
 
 	#if AKU_WITH_BOX2D
@@ -109,11 +100,6 @@ void AKUModulesAppFinalize () {
 //----------------------------------------------------------------//
 void AKUModulesAppInitialize () {
 
-
-	#if AKU_WITH_BULLET
-		AKUBulletAppInitialize ();
-	#endif
-
 	#if AKU_WITH_BOX2D
 		AKUBox2DAppInitialize ();
 	#endif
@@ -169,11 +155,6 @@ void AKUModulesAppInitialize () {
 
 //----------------------------------------------------------------//
 void AKUModulesContextInitialize () {
-
-
-	#if AKU_WITH_BULLET		
-		AKUBulletContextInitialize ();
-	#endif
 
 	#if AKU_WITH_BOX2D
 		AKUBox2DContextInitialize ();
