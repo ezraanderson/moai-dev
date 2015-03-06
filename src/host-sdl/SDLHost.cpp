@@ -102,36 +102,25 @@ void _AKUOpenWindowFunc ( const char* title, int width, int height ) {
 		AKUSetScreenSize ( width, height );
 	}
 }
-
 //================================================================//
 // helpers
 //================================================================//
-
 static void	Finalize			();
 static void	Init				( int argc, char** argv );
 static void	MainLoop			();
 static void	PrintMoaiVersion	();
-
 //----------------------------------------------------------------//
 void Finalize () {
-
 	AKUModulesAppFinalize ();
 	AKUAppFinalize ();
-
 	SDL_Quit ();
 }
-
 //----------------------------------------------------------------//
 void Init ( int argc, char** argv ) {
 
 	SDL_Init ( SDL_INIT_EVERYTHING );
 
-
-
 	PrintMoaiVersion ();
-
-
-
 
 	AKUAppInitialize ();
 	AKUModulesAppInitialize ();
@@ -154,8 +143,6 @@ void Init ( int argc, char** argv ) {
 
 	AKUSetInputDeviceGameAnalog      ( InputDeviceID::DEVICE, InputSensorID::GAMEANALOG,  "gameAnalog" );
 	AKUSetInputDeviceGameButton      ( InputDeviceID::DEVICE, InputSensorID::GAMEBUTTON,  "gameButton" );
-
-
 
 	AKURunString("MOAISim.setTraceback(function() end)");   
 
