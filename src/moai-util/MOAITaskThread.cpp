@@ -33,14 +33,14 @@ void MOAITaskThread::_main ( void* param, MOAIThreadState& threadState ) {
 
 //----------------------------------------------------------------//
 MOAITaskThread::MOAITaskThread () {
-	 RTTI_SINGLE ( MOAITaskQueue )
-     printf("\n \n **** CREATE CREATE MOAITaskThread --> FIRE DESTRUCTOR  \n\n");
+	RTTI_SINGLE ( MOAITaskQueue )
+		//printf("\n \n **** CREATE CREATE MOAITaskThread --> FIRE DESTRUCTOR  \n\n");
 }
 
 //----------------------------------------------------------------//
 MOAITaskThread::~MOAITaskThread () {
-        printf("\n \n ****  MOAITaskThread --> FIRE DESTRUCTOR  **** \n\n");
-	    this->Stop ();
+	// printf("\n \n ****  MOAITaskThread --> FIRE DESTRUCTOR  **** \n\n");
+	this->Stop ();
 }
 
 
