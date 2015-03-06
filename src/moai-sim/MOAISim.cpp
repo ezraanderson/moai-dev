@@ -994,8 +994,9 @@ void MOAISim::Update () {
 	MOAIScopedLuaState state = MOAILuaRuntime::Get ().State ();
 
 	if ( !this->mLuaGCFunc ) {
+		printf(" ------------------------------------------------------------ ");
 		printf(" >> MOAISim::Update --> this->mLuaGCFun *******************\n");
-	//
+		printf(" ------------------------------------------------------------ ");
 		lua_getglobal ( state, LUA_GC_FUNC_NAME );
 		this->mLuaGCFunc.SetRef ( *this, state, -1 );
 		lua_pop ( state, 1 );
@@ -1003,12 +1004,14 @@ void MOAISim::Update () {
 		lua_pushcfunction ( state, _collectgarbage );
 		lua_setglobal ( state, LUA_GC_FUNC_NAME );
 	}
- //       
+      
 
 
 	if ( this->mForceGC ) {   		
 		// force a full cycle
+		printf(" ------------------------------------------------------------ ");
 		printf(" >> MOAISim::Update --> ForceGarbageCollection *******************\n");
+		printf(" ------------------------------------------------------------ ");
 		MOAILuaRuntime::Get ().ForceGarbageCollection ();
 		this->mForceGC = false;
 	}
