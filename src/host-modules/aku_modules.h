@@ -12,7 +12,7 @@
 #endif
 
 #if AKU_WITH_CHIPMUNK
-	#include <moai-chipmunk/host.h>
+//	#include <moai-chipmunk/host.h>
 #endif
 
 #if AKU_WITH_FMOD_DESIGNER

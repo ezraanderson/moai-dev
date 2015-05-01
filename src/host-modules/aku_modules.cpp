@@ -49,7 +49,7 @@ void AKUModulesAppFinalize () {
 	#endif
 
 	#if AKU_WITH_CHIPMUNK
-		AKUChipmunkAppFinalize ();
+		//AKUChipmunkAppFinalize ();
 	#endif
 
 	#if AKU_WITH_FMOD_DESIGNER
@@ -105,7 +105,7 @@ void AKUModulesAppInitialize () {
 	#endif
 
 	#if AKU_WITH_CHIPMUNK
-		AKUChipmunkAppInitialize ();
+		//AKUChipmunkAppInitialize ();
 	#endif
 
 	#if AKU_WITH_FMOD_DESIGNER
@@ -161,7 +161,7 @@ void AKUModulesContextInitialize () {
 	#endif
 
 	#if AKU_WITH_CHIPMUNK
-		AKUChipmunkContextInitialize ();
+		//AKUChipmunkContextInitialize ();
 	#endif
 
 	#if AKU_WITH_FMOD_DESIGNER
