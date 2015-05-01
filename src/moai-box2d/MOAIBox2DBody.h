@@ -63,6 +63,9 @@ private:
 	static int		_setMassData			( lua_State* L );
 	static int		_setTransform			( lua_State* L );
 	static int		_setType				( lua_State* L );
+
+	static int		_moveTo					( lua_State* L );
+	static int		_getDir					( lua_State* L );
 	//----------------------------------------------------------------//
 	bool			ApplyAttrOp				( u32 attrID, MOAIAttrOp& attrOp, u32 op );
 	void			SetBody					( b2Body* body );

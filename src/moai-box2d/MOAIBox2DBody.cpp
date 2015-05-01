@@ -995,6 +995,74 @@ int MOAIBox2DBody::_setType ( lua_State* L ) {
 	return 0;
 }
 
+
+
+//************************************************************************************
+
+int MOAIBox2DBody::_moveTo( lua_State* L ) {
+
+	MOAI_LUA_SETUP ( MOAIBox2DBody, "U" )
+	float unitsToMeters = self->GetUnitsToMeters ();
+
+
+
+		b2Vec2 pos = self->mBody->GetPosition ();
+
+		float x1 = pos.x;
+		float y1 = pos.y; 
+
+		float x2 = state.GetValue < float >( 2, 0 )* unitsToMeters;
+		float y2 = state.GetValue < float >( 3, 0 )* unitsToMeters;
+
+		float angle = atan2(  (y2 - y1) , (x2 - x1) );
+		float dx 	  = cos(angle) * 5.0f;
+		float dy 	  = sin(angle) * 5.0f; 
+	
+		b2Vec2 v;
+		v.x = dx;
+		v.y = dy;	
+
+		self->mBody->SetLinearVelocity ( v );
+
+
+		//float v_mag		   =  cpfclamp(cpvlength(self->mBody->v),0.01,85);
+		//v = cpvmult(v, (v_mag+15)*0.01);
+		//self->mBody->set = angle+90*(PI/180);
+
+
+	MOAIBox2DBody* moaiBody = ( MOAIBox2DBody* )self->mBody->GetUserData ();
+	moaiBody->ScheduleUpdate ();
+	
+	return 0;
+}
+
+//************************************************************************************
+//************************************************************************************
+int MOAIBox2DBody::_getDir( lua_State* L ) {
+
+		MOAI_LUA_SETUP ( MOAIBox2DBody, "U" )
+
+		float x1 =state.GetValue < float >( 2, 0 );
+		float y1 =state.GetValue < float >( 3, 0 );
+
+		float x2 = state.GetValue < float >( 4, 0 );
+		float y2 = state.GetValue < float >( 5, 0 );
+
+		float angle = atan2(  (y2 - y1) , (x2 - x1) );
+		float dx 	  = cos(angle) * 100.0f;
+		float dy 	  = sin(angle) * 100.0f; 
+
+		lua_pushnumber ( state, dx );
+		lua_pushnumber ( state, dy );
+		return 2;
+
+};
+
+
+
+
+
+
 //================================================================//
 // MOAIBox2DBody
 //================================================================//
@@ -1098,6 +1166,10 @@ void MOAIBox2DBody::RegisterLuaFuncs ( MOAILuaState& state ) {
 		{ "setMassData",			_setMassData },
 		{ "setTransform",			_setTransform },
 		{ "setType",				_setType },
+
+		{ "moveTo",				    _moveTo },
+		{ "getDir",				    _getDir },
+
 		{ NULL, NULL }
 	};
 	

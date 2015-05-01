@@ -73,6 +73,12 @@ private:
 
 	u32		mVelocityIterations;
 	u32		mPositionIterations;
+
+	u32     mStep;
+	double     mBench;
+	double     mTime;
+
+
 	
 	float	mUnitsToMeters; // maps world space units to meters
 
@@ -81,6 +87,7 @@ private:
 	MOAIBox2DPrim*		mDestroyJoints;
 
 	//----------------------------------------------------------------//
+	static int		_getProfile					( lua_State* L ) ;
 	static int		_addBody					( lua_State* L );
 	static int		_addDistanceJoint			( lua_State* L );
 	static int		_addFrictionJoint			( lua_State* L );
@@ -107,7 +114,9 @@ private:
 	static int		_setLinearSleepTolerance	( lua_State* L );
 	static int		_setTimeToSleep				( lua_State* L );
 	static int		_setUnitsToMeters			( lua_State* L );
-	static int		_getRayCast				( lua_State* L );
+	static int		_getRayCast					( lua_State* L );
+	static int	    _benchmark					( lua_State* L ); 
+	static int		_drawDebugLua				( lua_State* L );
 	
 	//----------------------------------------------------------------//
 	void			Destroy					();

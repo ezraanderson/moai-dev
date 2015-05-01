@@ -46,6 +46,31 @@ MOAIBox2DPrim::MOAIBox2DPrim () :
 // local
 //================================================================//
 
+
+
+int MOAIBox2DWorld::_getProfile ( lua_State* L ) {
+
+MOAI_LUA_SETUP ( MOAIBox2DWorld, "U" ) 
+b2Profile info = self->mWorld->GetProfile();
+lua_pushnumber ( L,     info.step  );
+lua_pushnumber ( L,     info.collide );
+lua_pushnumber ( L,     info.solve );
+lua_pushnumber ( L,     info.solveInit );
+lua_pushnumber ( L,     info.solvePosition );
+lua_pushnumber ( L,     info.solveTOI );
+lua_pushnumber ( L,     info.solveVelocity );
+lua_pushnumber ( L,     info.broadphase  );         
+
+return 8;
+
+}
+
+ 
+
+
+
+
+
 //----------------------------------------------------------------//
 /**	@name	addBody
 	@text	Create and add a body to the world.
@@ -866,7 +891,7 @@ int MOAIBox2DWorld::_setUnitsToMeters ( lua_State* L ) {
 	self->mUnitsToMeters = state.GetValue ( 2, 1.0f );
 	
 	return 0;
-}
+};
 
 //================================================================//
 // MOAIBox2DWorld
@@ -915,10 +940,9 @@ void MOAIBox2DWorld::DrawDebug () {
 		
 		MOAIDraw::Bind ();
 		
-		MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
-		
+		MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();		
 		gfxDevice.SetVertexMtxMode ( MOAIGfxDevice::VTX_STAGE_WORLD, MOAIGfxDevice::VTX_STAGE_PROJ );
-		gfxDevice.SetVertexTransform ( MOAIGfxDevice::VTX_WORLD_TRANSFORM );
+		//gfxDevice.SetVertexTransform ( MOAIGfxDevice::VTX_WORLD_TRANSFORM );
 		
 		this->mDebugDraw->mScale = 1.0f / this->mUnitsToMeters;
 		this->mWorld->DrawDebugData ();
@@ -948,7 +972,11 @@ MOAIBox2DWorld::MOAIBox2DWorld () :
 	mUnitsToMeters ( 1.0f ),
 	mDestroyBodies ( 0 ),
 	mDestroyFixtures ( 0 ),
-	mDestroyJoints ( 0 ) {
+	mDestroyJoints ( 0 ), 
+	mStep( 0 ),
+	mBench( 0.0 ),
+	mTime (0.0)
+	{
 	
 	RTTI_BEGIN
 		RTTI_EXTEND ( MOAIAction )
@@ -987,23 +1015,58 @@ MOAIBox2DWorld::~MOAIBox2DWorld () {
 	delete ( this->mWorld );
 }
 
+
+
+//***********************************************************************
+int MOAIBox2DWorld::_benchmark ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIBox2DWorld, "U" )   
+	lua_pushnumber ( state, self->mTime);
+	return 1;
+};
+
+
 //----------------------------------------------------------------//
 void MOAIBox2DWorld::OnUpdate ( float step ) {
 	
+
+	mStep = mStep + 1;
+
+
+	double start_time = ZLDeviceTime::GetTimeInSeconds();
+
 	this->mLock = true;
 	this->mWorld->Step ( step, this->mVelocityIterations, this->mPositionIterations );
-	this->mLock = false;
-	
+	this->mLock = false;	
+
+
 	this->Destroy ();
 	
-	b2Body* body = this->mWorld->GetBodyList ();
-	for ( ; body; body = body->GetNext ()) {
-		if ( body->IsActive () && body->IsAwake ()) {
-			MOAIBox2DBody* moaiBody = ( MOAIBox2DBody* )body->GetUserData ();
-			moaiBody->ScheduleUpdate ();
-		}
+	//b2Body* body = this->mWorld->GetBodyList ();
+	//for ( ; body; body = body->GetNext ()) {
+	//	if ( body->IsActive () && body->IsAwake ()) {
+	//		MOAIBox2DBody* moaiBody = ( MOAIBox2DBody* )body->GetUserData ();
+	//		moaiBody->ScheduleUpdate ();
+	//	}
+	//}
+
+
+	mBench = mBench +  ZLDeviceTime::GetTimeInSeconds()-start_time;
+	if (mStep == 60) {		
+		
+		mTime =  mBench / mStep;
+		mStep = 1;
+		mBench = 0;
 	}
+
 }
+
+//----------------------------------------------------------------//
+int MOAIBox2DWorld::_drawDebugLua ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIBox2DWorld, "U" )   
+	self->DrawDebug ();
+	return 0;
+};
+
 
 //----------------------------------------------------------------//
 void MOAIBox2DWorld::RegisterLuaClass ( MOAILuaState& state ) {
@@ -1025,6 +1088,7 @@ void MOAIBox2DWorld::RegisterLuaFuncs ( MOAILuaState& state ) {
 	MOAIAction::RegisterLuaFuncs ( state );
 
 	luaL_Reg regTable [] = {
+		{ "getProfile",					_getProfile },		
 		{ "addBody",					_addBody },
 		{ "addDistanceJoint",			_addDistanceJoint },
 		{ "addFrictionJoint",			_addFrictionJoint },
@@ -1051,7 +1115,9 @@ void MOAIBox2DWorld::RegisterLuaFuncs ( MOAILuaState& state ) {
 		{ "setLinearSleepTolerance",	_setLinearSleepTolerance },
 		{ "setTimeToSleep",				_setTimeToSleep },
 		{ "setUnitsToMeters",			_setUnitsToMeters },
-	  	{ "getRayCast",                                 _getRayCast },
+	  	{ "getRayCast",                 _getRayCast },
+		{ "benchmark",                  _benchmark },
+		{ "drawDebugLua",				_drawDebugLua },
 		{ NULL, NULL }
 	};
 	
