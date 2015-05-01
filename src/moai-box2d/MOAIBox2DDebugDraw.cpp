@@ -32,113 +32,180 @@
 void MOAIBox2DDebugDraw::DrawPolygon ( const b2Vec2* vertices, int32 vertexCount, const b2Color& color ) {
 
 	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
-	
-	gfxDevice.SetPenColor ( color.r, color.g, color.b, 1.0f );
 
-	gfxDevice.BeginPrim ( ZGL_PRIM_LINE_LOOP );
+	const ZLFrustum& viewVolume = gfxDevice.GetViewVolume ();
+   //IF ONE POINT IS INSIDE
+	bool draw = false; 
 	for ( int32 i = 0; i < vertexCount; ++i ) {
-		this->WriteVtx ( gfxDevice, vertices [ i ].x, vertices [ i ].y );
+		if (viewVolume.Cull(ZLVec3D(vertices [ i ].x*this->mScale,vertices [ i ].y*this->mScale,0.0f)) == false){
+			draw = true;
+			break;
+		}		
 	}
-	gfxDevice.EndPrim ();
+
+
+	if (draw == true) {	
+		gfxDevice.SetPenColor ( color.r, color.g, color.b, 1.0f );
+		gfxDevice.BeginPrim ( ZGL_PRIM_LINE_LOOP );
+		for ( int32 i = 0; i < vertexCount; ++i ) {
+			this->WriteVtx ( gfxDevice, vertices [ i ].x, vertices [ i ].y );
+		}
+		gfxDevice.EndPrim ();
+	};
+
+
+
 }
 
 //----------------------------------------------------------------//
 void MOAIBox2DDebugDraw::DrawSolidPolygon ( const b2Vec2* vertices, int32 vertexCount, const b2Color& color ) {
 	
-	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
-	
-	gfxDevice.SetBlendMode ( ZGL_BLEND_FACTOR_SRC_ALPHA, ZGL_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA );
-	
-	gfxDevice.SetPenColor ( 0.5f * color.r, 0.5f * color.g, 0.5f * color.b, 0.5f );
+	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();	
+	const ZLFrustum& viewVolume = gfxDevice.GetViewVolume ();
 
-	gfxDevice.BeginPrim ( ZGL_PRIM_TRIANGLE_FAN );
+   //IF ONE POINT IS INSIDE
+	bool draw = false; 
 	for ( int32 i = 0; i < vertexCount; ++i ) {
-		this->WriteVtx ( gfxDevice, vertices [ i ].x, vertices [ i ].y );
+		if (viewVolume.Cull(ZLVec3D(vertices [ i ].x*this->mScale,vertices [ i ].y*this->mScale,0.0f)) == false){
+			draw = true;
+			break;
+		}		
 	}
-	gfxDevice.EndPrim ();
+
+
+	if (draw == true) {
+
+			gfxDevice.SetBlendMode ( ZGL_BLEND_FACTOR_SRC_ALPHA, ZGL_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA );	
+			gfxDevice.SetPenColor ( 0.5f * color.r, 0.5f * color.g, 0.5f * color.b, 0.5f );
+
+			gfxDevice.BeginPrim ( ZGL_PRIM_TRIANGLE_FAN );
+			for ( int32 i = 0; i < vertexCount; ++i ) {
+				this->WriteVtx ( gfxDevice, vertices [ i ].x, vertices [ i ].y );
+			}
+			gfxDevice.EndPrim ();
 	
-	gfxDevice.SetBlendMode ();
-	gfxDevice.SetPenColor ( color.r, color.g, color.b, 1.0f );
+			gfxDevice.SetBlendMode ();
+			gfxDevice.SetPenColor ( color.r, color.g, color.b, 1.0f );
 	
-	gfxDevice.BeginPrim ( ZGL_PRIM_LINE_LOOP );
-	for (int32 i = 0; i < vertexCount; ++i) {
-		this->WriteVtx ( gfxDevice, vertices [ i ].x, vertices [ i ].y );
-	}
-	gfxDevice.EndPrim ();
+			gfxDevice.BeginPrim ( ZGL_PRIM_LINE_LOOP );
+			for (int32 i = 0; i < vertexCount; ++i) {
+				this->WriteVtx ( gfxDevice, vertices [ i ].x, vertices [ i ].y );
+			}
+			gfxDevice.EndPrim ();
+
+	};
+
 }
 
 //----------------------------------------------------------------//
 void MOAIBox2DDebugDraw::DrawCircle ( const b2Vec2& center, float32 radius, const b2Color& color ) {
 
 	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
-	
-	gfxDevice.SetPenColor ( color.r, color.g, color.b, 1.0f );
+	const ZLFrustum& viewVolume = gfxDevice.GetViewVolume ();	
 
-	const float32 k_segments = 16.0f;
-	const float32 k_increment = 2.0f * b2_pi / k_segments;
+	ZLBox box;	
+	box.mMin.mX = (center.x-radius)*this->mScale;
+	box.mMin.mY = (center.y-radius)*this->mScale;;
+	box.mMin.mZ = 0.0f;
 	
-	gfxDevice.BeginPrim ( ZGL_PRIM_LINE_LOOP );
-	float32 theta = 0.0f;
-	for (int32 i = 0; i < k_segments; ++i) {
-		b2Vec2 v = center + radius * b2Vec2(cosf(theta), sinf(theta));
-		this->WriteVtx ( gfxDevice, v.x, v.y );
-		theta += k_increment;
-	}
-	gfxDevice.EndPrim ();
+	box.mMax.mX = (center.x+radius)*this->mScale;;
+	box.mMax.mY = (center.y+radius)*this->mScale;;
+	box.mMax.mZ = 0.0f;	
+
+	if (viewVolume.Cull(box) == false) {
+
+		gfxDevice.SetPenColor ( color.r, color.g, color.b, 1.0f );
+		const float32 k_segments = 16.0f;
+		const float32 k_increment = 2.0f * b2_pi / k_segments;
+
+		gfxDevice.BeginPrim ( ZGL_PRIM_LINE_LOOP );
+		float32 theta = 0.0f;
+		for (int32 i = 0; i < k_segments; ++i) {
+			b2Vec2 v = center + radius * b2Vec2(cosf(theta), sinf(theta));
+			this->WriteVtx ( gfxDevice, v.x, v.y );
+			theta += k_increment;
+		}
+		gfxDevice.EndPrim ();
+
+	};
+
+	
+
+
 }
 
 //----------------------------------------------------------------//
 void MOAIBox2DDebugDraw::DrawSolidCircle ( const b2Vec2& center, float32 radius, const b2Vec2& axis, const b2Color& color ) {
 
 	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
+	const ZLFrustum& viewVolume = gfxDevice.GetViewVolume ();	
+
+	ZLBox box;	
+	box.mMin.mX = (center.x-radius)*this->mScale;
+	box.mMin.mY = (center.y-radius)*this->mScale;;
+	box.mMin.mZ = 0.0f;
 	
-	gfxDevice.SetBlendMode ( ZGL_BLEND_FACTOR_SRC_ALPHA, ZGL_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA );
-	gfxDevice.SetPenColor ( 0.5f * color.r, 0.5f * color.g, 0.5f * color.b, 0.5f );
+	box.mMax.mX = (center.x+radius)*this->mScale;;
+	box.mMax.mY = (center.y+radius)*this->mScale;;
+	box.mMax.mZ = 0.0f;	
 
-	const float32 k_segments = 16.0f;
-	const float32 k_increment = 2.0f * b2_pi / k_segments;
-	
-	gfxDevice.BeginPrim ( ZGL_PRIM_TRIANGLE_FAN );
-	float32 theta = 0.0f;
-	for (int32 i = 0; i < k_segments; ++i) {
-		b2Vec2 v = center + radius * b2Vec2(cosf(theta), sinf(theta));
-		this->WriteVtx ( gfxDevice, v.x, v.y );
-		theta += k_increment;
-	}
-	gfxDevice.EndPrim ();
+	if (viewVolume.Cull(box) == false) {
 
-	gfxDevice.SetBlendMode ();
-	gfxDevice.SetPenColor ( color.r, color.g, color.b, 1.0f );
+			gfxDevice.SetBlendMode ( ZGL_BLEND_FACTOR_SRC_ALPHA, ZGL_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA );
+			gfxDevice.SetPenColor ( 0.5f * color.r, 0.5f * color.g, 0.5f * color.b, 0.5f );
 
-	gfxDevice.BeginPrim ( ZGL_PRIM_LINE_LOOP );
-	theta = 0.0f;
-	for (int32 i = 0; i < k_segments; ++i)
-	{
-		b2Vec2 v = center + radius * b2Vec2(cosf(theta), sinf(theta));
-		this->WriteVtx ( gfxDevice, v.x, v.y );
-		theta += k_increment;
-	}
+			const float32 k_segments = 16.0f;
+			const float32 k_increment = 2.0f * b2_pi / k_segments;
 
+			gfxDevice.BeginPrim ( ZGL_PRIM_TRIANGLE_FAN );
+			float32 theta = 0.0f;
+			for (int32 i = 0; i < k_segments; ++i) {
+				b2Vec2 v = center + radius * b2Vec2(cosf(theta), sinf(theta));
+				this->WriteVtx ( gfxDevice, v.x, v.y );
+				theta += k_increment;
+			}
+			gfxDevice.EndPrim ();
 
-	gfxDevice.EndPrim ();
-	b2Vec2 p = center + radius * axis;
-	gfxDevice.BeginPrim ( ZGL_PRIM_LINES );
-	this->WriteVtx ( gfxDevice, center.x, center.y );
-	this->WriteVtx ( gfxDevice, p.x, p.y );
-	gfxDevice.EndPrim ();
+			gfxDevice.SetBlendMode ();
+			gfxDevice.SetPenColor ( color.r, color.g, color.b, 1.0f );
+
+			gfxDevice.BeginPrim ( ZGL_PRIM_LINE_LOOP );
+			theta = 0.0f;
+			for (int32 i = 0; i < k_segments; ++i)
+			{
+				b2Vec2 v = center + radius * b2Vec2(cosf(theta), sinf(theta));
+				this->WriteVtx ( gfxDevice, v.x, v.y );
+				theta += k_increment;
+			}
+
+			gfxDevice.EndPrim ();
+			b2Vec2 p = center + radius * axis;
+			gfxDevice.BeginPrim ( ZGL_PRIM_LINES );
+			this->WriteVtx ( gfxDevice, center.x, center.y );
+			this->WriteVtx ( gfxDevice, p.x, p.y );
+			gfxDevice.EndPrim ();
+
+		};
 }
 
 //----------------------------------------------------------------//
 void MOAIBox2DDebugDraw::DrawSegment ( const b2Vec2& p1, const b2Vec2& p2, const b2Color& color ) {
 
 	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
-	
-	gfxDevice.SetPenColor ( color.r, color.g, color.b, 1.0f );
+	const ZLFrustum& viewVolume = gfxDevice.GetViewVolume ();
 
-	gfxDevice.BeginPrim ( ZGL_PRIM_LINES );
-	this->WriteVtx ( gfxDevice, p1.x, p1.y );
-	this->WriteVtx ( gfxDevice, p2.x, p2.y );
-	gfxDevice.EndPrim ();
+	if (
+	(viewVolume.Cull(ZLVec3D(p1.x*this->mScale,p1.y*this->mScale,0.0f)) == false)
+	|| 
+	(viewVolume.Cull(ZLVec3D(p2.x*this->mScale,p2.y*this->mScale,0.0f)) == false)
+	)
+	{
+		gfxDevice.SetPenColor ( color.r, color.g, color.b, 1.0f );
+		gfxDevice.BeginPrim ( ZGL_PRIM_LINES );
+		this->WriteVtx ( gfxDevice, p1.x, p1.y );
+		this->WriteVtx ( gfxDevice, p2.x, p2.y );
+		gfxDevice.EndPrim ();
+	}
 }
 
 //----------------------------------------------------------------//
@@ -174,13 +241,16 @@ void MOAIBox2DDebugDraw::DrawTransform ( const b2Transform& xf ) {
 void MOAIBox2DDebugDraw::DrawPoint ( const b2Vec2& p, float32 size, const b2Color& color ) {
 
 	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
+	const ZLFrustum& viewVolume = gfxDevice.GetViewVolume ();
+	if (viewVolume.Cull(ZLVec3D(p.x*this->mScale,p.y*this->mScale,0.0f)) == false) {
+		gfxDevice.SetPointSize(size);
+		gfxDevice.BeginPrim(ZGL_PRIM_POINTS);
+		gfxDevice.SetPenColor(color.r, color.g, color.b, 1.0f);
+		this->WriteVtx(gfxDevice, p.x, p.y);
+		gfxDevice.EndPrim();
+		gfxDevice.SetPointSize(1.0f);
 
-	gfxDevice.SetPointSize(size);
-	gfxDevice.BeginPrim(ZGL_PRIM_POINTS);
-	gfxDevice.SetPenColor(color.r, color.g, color.b, 1.0f);
-	this->WriteVtx(gfxDevice, p.x, p.y);
-	gfxDevice.EndPrim();
-	gfxDevice.SetPointSize(1.0f);
+	}
 }
 
 //----------------------------------------------------------------//
