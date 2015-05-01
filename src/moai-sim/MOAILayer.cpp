@@ -18,9 +18,9 @@
   #include <moai-box2d/MOAIBox2DWorld.h>
 #endif
 
-#if MOAI_WITH_CHIPMUNK
-  #include <moai-chipmunk/MOAICpSpace.h>
-#endif
+//#if MOAI_WITH_CHIPMUNK
+//  #include <moai-chipmunk/MOAICpSpace.h>
+//#endif
 
 //#if MOAI_WITH_BULLET
 // #include <moai-bullet/MOAIBulletWorld.h>
@@ -264,7 +264,7 @@ int MOAILayer::_setCpSpace ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAILayer, "UU" )
 	
 	#if MOAI_WITH_CHIPMUNK
-		self->mCpSpace.Set ( *self, state.GetLuaObject < MOAICpSpace >( 2, true ));
+		//self->mCpSpace.Set ( *self, state.GetLuaObject < MOAICpSpace >( 2, true ));
 	#endif
 	return 0;
 }
@@ -545,12 +545,12 @@ void MOAILayer::Draw ( int subPrimID ) {
 	
 	if ( this->mShowDebugLines ) {
 		
-		#if MOAI_WITH_CHIPMUNK
-			if ( this->mCpSpace ) {
-				this->mCpSpace->DrawDebug ();
-				gfxDevice.Flush ();
-			}
-		#endif
+		//#if MOAI_WITH_CHIPMUNK
+		//	if ( this->mCpSpace ) {
+		//		this->mCpSpace->DrawDebug ();
+		//		gfxDevice.Flush ();
+		//	}
+		//#endif
 		
 		#if MOAI_WITH_BOX2D
 			if ( this->mBox2DWorld ) {
@@ -748,9 +748,9 @@ MOAILayer::~MOAILayer () {
 	this->mViewport.Set ( *this, 0 );
 	this->mPartition.Set ( *this, 0 );
 
-	#if MOAI_WITH_CHIPMUNK
-		this->mCpSpace.Set ( *this, 0 );
-	#endif
+	//#if MOAI_WITH_CHIPMUNK
+	//	this->mCpSpace.Set ( *this, 0 );
+	//#endif
 	
 	#if MOAI_WITH_BOX2D
 		this->mBox2DWorld.Set ( *this, 0 );
