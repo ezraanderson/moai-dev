@@ -1086,30 +1086,30 @@ void MOAICpSpace::OnUpdate ( float step ) {
 	
 		BENCH_SPACE_STEP( this->mSpace, step );
 
-		//cpBody** bodies = ( cpBody** )this->mSpace->dynamicBodies->arr;
-		//int num = this->mSpace->dynamicBodies->num;
-		//
-		//for ( int i = 0; i < num; ++i ) {
-		//	MOAICpBody* body = ( MOAICpBody* )bodies [ i ]->userData;
+		cpBody** bodies = ( cpBody** )this->mSpace->dynamicBodies->arr;
+		int num = this->mSpace->dynamicBodies->num;
+		
+		for ( int i = 0; i < num; ++i ) {
+			MOAICpBody* body = ( MOAICpBody* )bodies [ i ]->userData;
 
-		//		//b2Body* body = t
-		//	if (cpBodyIsSleeping(bodies[i]) == false) {
-		//		body->ScheduleUpdate ();
-		//	}
-		//	
-		//	if ( body->mRemoveFlag != MOAICpBody::NONE ) {
-		//		body->mLinkInSpace.Remove ();
-		//		removeList.PushBack ( body->mLinkInSpace );
-		//	}
-		//}
-		//
+				//b2Body* body = t
+			if (cpBodyIsSleeping(bodies[i]) == false) {
+				body->ScheduleUpdate ();
+			}
+			
+			if ( body->mRemoveFlag != MOAICpBody::NONE ) {
+				body->mLinkInSpace.Remove ();
+				removeList.PushBack ( body->mLinkInSpace );
+			}
+		}
+		
 
 
-		//while ( removeList.Count ()) {
-		//	MOAICpPrim* prim = removeList.Front ();
-		//	removeList.PopFront ();
-		//	prim->DoRemove ();
-		//}
+		while ( removeList.Count ()) {
+			MOAICpPrim* prim = removeList.Front ();
+			removeList.PopFront ();
+			prim->DoRemove ();
+		}
 
 
 		mBench = mBench +  ZLDeviceTime::GetTimeInSeconds()-start_time;

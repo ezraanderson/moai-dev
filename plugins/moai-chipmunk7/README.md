@@ -1,10 +1,28 @@
-# plugin-moai-bullet
-Moai Bullet Physics Plugin
+# plugin-moai-chimpmunk7
+Moai 
+
+
+Converted a lot of the original moai-chipmunk code to functions before I realized you could include the 
+chipmunk_private.h which exposed private variables
+
+```
+#include "chipmunk/chipmunk_private.h"
+//#include <chipmunk/chipmunk.h>
+```
+
+Converted a lot of the original moai-chipmunk code to functions before I realized you could include the 
+chipmunk_private.h which exposed private variables
+
+If something doesn't work check the function your calling something may have changed, there for I commented them out.
+
+
+
+
 
 
 Add to our builld script
 ```
--DPLUGIN_MOAI-BULLET=TRUE ^
+-DPLUGIN_MOAI-CHIPMUNK=TRUE ^
 -DPLUGIN_DIR=F:/plugins/ ^
 ```
 
@@ -65,7 +83,7 @@ cmake ^
 -DMOAI_LUAJIT=TRUE ^
 -DMOAI_HTTP_CLIENT=TRUE ^
 -DSDL_HOST=TRUE ^
--DPLUGIN_MOAI-BULLET=TRUE ^
+-DPLUGIN_MOAI-CHIPMUNK7=TRUE ^
 -DPLUGIN_DIR=F:/plugins/ ^
 ..\..\
 
@@ -77,24 +95,3 @@ cmake ^
 popd
 ```
 
-
-For debug drawing to work correctly need small modifactions to moai.
-
-MOAIGfxDevice.h
-```
-void						setPrimeSize (long pSize);
-```
-
-MOAIGfxDevice.cpp     
-```C
-void MOAIGfxDevice::setPrimeSize (long pSize) {     
-  this->mPrimSize = pSize;         
-}; 
-```
-
-You might also need to make the default buffer larger
-MOAIGfxDevice.h
-```
-	//static const u32 DEFAULT_BUFFER_SIZE	= 0x8000;
-	static const u32 DEFAULT_BUFFER_SIZE	= 100000000;
-```  
