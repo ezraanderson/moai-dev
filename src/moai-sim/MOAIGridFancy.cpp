@@ -544,10 +544,10 @@ void MOAIGridFancy::Draw ( MOAIDeck *deck, MOAIDeckRemapper *remapper, const MOA
 		for ( int x = c0.mX; x <= c1.mX; ++x ) {
 			
 			MOAICellCoord wrap = this->WrapCellCoord ( x, y );
-			u32 idx = this->GetTile ( wrap.mX, wrap.mY );
-			u32 color = this->GetColor ( wrap.mX, wrap.mY );
-			float alpha = this->GetAlpha ( wrap.mX, wrap.mY );
-			float scale = this->GetScale ( wrap.mX, wrap.mY );
+			u32 idx			= this->GetTile ( wrap.mX, wrap.mY );
+			u32 color		= this->GetColor ( wrap.mX, wrap.mY );
+			float alpha		= this->GetAlpha ( wrap.mX, wrap.mY );
+			float scale		= this->GetScale ( wrap.mX, wrap.mY );
 			
 			MOAICellCoord coord ( x, y );
 			USVec2D loc = this->GetTilePoint ( coord, MOAIGridSpace::TILE_CENTER );

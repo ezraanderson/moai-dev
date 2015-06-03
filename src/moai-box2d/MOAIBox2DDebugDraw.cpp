@@ -63,6 +63,8 @@ void MOAIBox2DDebugDraw::DrawSolidPolygon ( const b2Vec2* vertices, int32 vertex
 	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();	
 	const ZLFrustum& viewVolume = gfxDevice.GetViewVolume ();
 
+
+
    //IF ONE POINT IS INSIDE
 	bool draw = false; 
 	for ( int32 i = 0; i < vertexCount; ++i ) {

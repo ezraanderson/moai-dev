@@ -8,7 +8,9 @@
 
 static cc8* _deck2DShaderVSH = SHADER (
 
-	attribute vec4 position;
+//precision highp float;
+
+	attribute MEDP vec4 position;
 	attribute vec2 uv;
 	attribute vec4 color;
 

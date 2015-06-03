@@ -160,7 +160,20 @@ void Init ( int argc, char** argv ) {
 
 	AKUModulesParseArgs ( argc, argv );
 
+
+
+
+
 	atexit ( Finalize ); // do this *after* SDL_Init
+
+
+
+	//RUN
+	
+	//AKUSetWorkingDirectory("F://moai//MOAI_GAMES//games//deaddark//game//lua//");
+	//AKURunScript("F://moai//MOAI_GAMES//games//deaddark//game//lua//main.lua");
+
+
 }
 
 //----------------------------------------------------------------//
@@ -265,12 +278,13 @@ void MainLoop () {
 		AKUModulesUpdate ();	
 		SDL_GL_SwapWindow ( sWindow );
 
-		Uint32 frameDelta = ( Uint32 )( AKUGetSimStep () * 1000.0 );
-		Uint32 currentFrame = SDL_GetTicks ();
-		Uint32 delta = currentFrame - lastFrame;
+		Uint32 frameDelta			= ( Uint32 )( AKUGetSimStep () * 1000.0 );
+		Uint32 currentFrame			= SDL_GetTicks ();
+		Uint32 delta				= currentFrame - lastFrame;
 
 		if ( delta < frameDelta ) {
-			SDL_Delay ( frameDelta - delta );
+			//printf("DELAY %d \n ",frameDelta - delta);
+		//	SDL_Delay ( frameDelta - delta );
 		}
 		lastFrame = SDL_GetTicks();
 

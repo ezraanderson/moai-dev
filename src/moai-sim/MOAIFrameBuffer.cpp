@@ -86,6 +86,18 @@ int MOAIClearableView::_setClearDepth ( lua_State* L ) {
 	return 0;
 }
 
+
+//********************************************
+int MOAIClearableView::_clearDepth ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIClearableView, "U" )
+	zglClear ( ZGL_CLEAR_DEPTH_BUFFER_BIT);
+	return 0;
+};
+
+
+
+
+
 //================================================================//
 // MOAIFrameBuffer
 //================================================================//
@@ -118,6 +130,9 @@ void MOAIClearableView::ClearSurface () {
 	}
 }
 
+
+
+
 //----------------------------------------------------------------//
 MOAIClearableView::MOAIClearableView () :
 	mClearFlags ( ZGL_CLEAR_COLOR_BUFFER_BIT ),
@@ -146,6 +161,7 @@ void MOAIClearableView::RegisterLuaFuncs ( MOAILuaState& state ) {
 	luaL_Reg regTable [] = {
 		{ "setClearColor",				_setClearColor },
 		{ "setClearDepth",				_setClearDepth },
+		{ "clearDepth",					_clearDepth },
 		{ NULL, NULL }
 	};
 
@@ -333,7 +349,7 @@ void MOAIFrameBuffer::Render () {
 	
 	//disable scissor rect for clear
 	gfxDevice.SetScissorRect ();
-	this->ClearSurface ();
+	this->ClearSurface ();	
 	
 	if ( this->mRenderTable ) {
 		MOAIScopedLuaState state = MOAILuaRuntime::Get ().State ();

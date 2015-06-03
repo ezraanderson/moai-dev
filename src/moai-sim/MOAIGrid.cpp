@@ -398,6 +398,7 @@ size_t MOAIGrid::StreamTilesOut ( ZLStream* stream ) {
 void MOAIGrid::Draw ( MOAIDeck *deck, MOAIDeckRemapper *remapper, const MOAICellCoord &c0, const MOAICellCoord &c1 ) {
 	float tileWidth = this->GetTileWidth ();
 	float tileHeight = this->GetTileHeight ();
+
 	for ( int y = c0.mY; y <= c1.mY; ++y ) {
 		for ( int x = c0.mX; x <= c1.mX; ++x ) {
 			

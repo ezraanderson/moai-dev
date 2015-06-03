@@ -57,8 +57,6 @@ void MOAIDraw::BeginDrawString ( float scale, MOAIFont& font, float fontSize, fl
 	
 	assert ( g_CurrentTextDrawContext == 0 );
 
-
-
 	g_CurrentTextDrawContext                    = &g_TextDrawContext;
 	g_CurrentTextDrawContext->mFont             = &font;
 	g_CurrentTextDrawContext->mFontSize         = fontSize;
@@ -80,9 +78,8 @@ void MOAIDraw::DrawString ( cc8* text, float x, float y, float width, float heig
 	// Transform the center into 'world' space
 	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
 
-
     //gfxDevice.SetBlendMode ( ZGL_BLEND_FACTOR_SRC_ALPHA, ZGL_BLEND_FACTOR_ONE );
-    	gfxDevice.SetShaderPreset ( MOAIShaderMgr::FONT_SHADER );
+    gfxDevice.SetShaderPreset ( MOAIShaderMgr::FONT_SHADER );
 
 
 	const ZLMatrix4x4& orgWorldTransform = gfxDevice.GetVertexTransform ( MOAIGfxDevice::VTX_WORLD_TRANSFORM );
@@ -102,16 +99,13 @@ void MOAIDraw::DrawString ( cc8* text, float x, float y, float width, float heig
 	// Let's draw the string!
 	float cursorX = x;
 	float cursorY = y + glyphSet->GetAscent() * scale;
-	MOAIGlyph* prevGlyph = 0;
-	
-   
+	MOAIGlyph* prevGlyph = 0;   
 
 	// Update the glyph cache
 	for ( size_t i = 0; i < textLength; i++ ) {
 
 		cc8 c = text [ i ];
 		if ( c != '\n' ) {
-
 			font.AffirmGlyph ( fontSize, c );
 		}
 	}
@@ -181,8 +175,6 @@ void MOAIDraw::EndDrawString () {
 
 	// Setup for drawing
 	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
-
-
 
 	// Get current state
 	const ZLMatrix4x4& orgWorldTransform = gfxDevice.GetVertexTransform ( MOAIGfxDevice::VTX_WORLD_TRANSFORM );
@@ -392,6 +384,18 @@ int MOAIDraw::_drawLine ( lua_State* L ) {
 	}
 	return 0;
 }
+
+
+int MOAIDraw::_drawVertics ( lua_State* L ) {
+
+	if ( lua_istable ( L, -1 ) ) {
+		MOAIDraw::DrawLuaArray ( L, ZGL_PRIM_TRIANGLE_STRIP );
+	} else {
+		MOAIDraw::DrawLuaParams ( L, ZGL_PRIM_TRIANGLE_STRIP );
+	}
+	return 0;
+}
+
 
 //----------------------------------------------------------------//
 /**	@name	drawPoints
@@ -1111,41 +1115,124 @@ void MOAIDraw::DrawRectOutline ( float left, float top, float right, float botto
 	gfxDevice.EndPrim ();
 }
 
+
+
+
+
 //----------------------------------------------------------------//
-void MOAIDraw::DrawTexture ( float left, float top, float right, float bottom, MOAITexture* texture ) {
-	
-	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
-	
+void MOAIDraw::DrawTextureUV (MOAITexture* texture,
+							  float left, float top, float right, float bottom, 
+							  float sclX,float sclY,float rot,
+							  float u0,float v0,float u1,float v1) {
+
+MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
+
 	if ( texture ) {		
 		gfxDevice.Flush ();
+
+		
+
 		//REMOVE FOR TRANSPARET
 		//gfxDevice.SetBlendMode ( ZGL_BLEND_FACTOR_ONE, ZGL_BLEND_FACTOR_ZERO );
+
 		gfxDevice.SetTexture ( texture );
 		gfxDevice.SetShaderPreset ( MOAIShaderMgr::DECK2D_SHADER );
 
 		const ZLColorVec& orgColor = gfxDevice.GetPenColor ();
-		gfxDevice.SetPenColor ( 1, 1, 1, 1 );
-		
+
+		gfxDevice.SetPenColor ( 1, 1, 1, 1 );		
 		MOAIQuadBrush::BindVertexFormat ( gfxDevice );
-		MOAIQuadBrush quad;
-		quad.SetVerts ( left, top, right, bottom );	
+	
+		MOAIQuadBrush quad;		
+		ZLAffine3D mtx;
 
-		//ZLAffine3D mtx;
 		//mtx.ScRoTr (
-		//	1.0f, 1.0f, 1.0f,
-		//	0.0f, 0.0f, float( 0 * 3.14 ) / 180 ,
-		//	100.0f, 0.0f, 0.0f
-		//);
-		//gfxDevice.SetVertexTransform ( MOAIGfxDevice::VTX_WORLD_TRANSFORM, mtx );
+		//		2.0f, 2.0f, 0.0f,
+		//		0.0f, 0.0f, 0.2f,
+		//		0.0f, 0.0f, 0.0f
+		//	);
+		//printf("SCALE %f %f \n",sclX,sclY);
+		//printf("ROT %f \n",rot);
+		//printf("UV %f %f %F %F \n",u0,v0,u1,v1);
 
+		quad.SetVerts ( left, top, right, bottom );	
+		quad.SetUVs ( u0, v0, u1, v1 );
+		mtx.Scale(10.0f,10.0,50.0f);	
+		mtx.RotateZ(rot);			
 
-		quad.SetUVs ( 0, 0, 1, 1 );		
+	
+		quad.TransformVerts(mtx);		
+
+		//UV ??
+			
 		quad.Draw ();
+
+
 		gfxDevice.Flush ();		
 		gfxDevice.SetBlendMode ();
 		gfxDevice.SetPenColor ( orgColor );		
 		MOAIDraw::Bind ();
 
+	}
+}
+
+int MOAIDraw::_drawTextureUV ( lua_State* L ) {
+
+	MOAILuaState state ( L );
+	
+	MOAITexture* texture = (MOAITexture*)MOAITexture::AffirmTexture ( state, 1 );
+
+	float x0 = state.GetValue < float >( 2, 0.0f );
+	float y0 = state.GetValue < float >( 3, 0.0f );
+	float x1 = state.GetValue < float >( 4, 0.0f );
+	float y1 = state.GetValue < float >( 5, 0.0f );
+
+	float sclX = state.GetValue < float >( 6, 0.0f );
+	float sclY = state.GetValue < float >( 7, 0.0f );
+	float rot = state.GetValue < float >( 8, 0.0f );
+
+	float u0 = state.GetValue < float >( 9, 0.0f );
+	float v0 = state.GetValue < float >( 10, 0.0f );
+	float u1 = state.GetValue < float >( 11, 0.0f );
+	float v1 = state.GetValue < float >( 12, 0.0f );
+
+
+	MOAIDraw::DrawTextureUV (texture, 
+							x0, y0, x1, y1, 
+							sclX,sclY,rot,
+							u0,v0,u1,v1 
+							);
+	return 0;
+}
+
+
+
+
+
+
+//----------------------------------------------------------------//
+void MOAIDraw::DrawTexture ( float left, float top, float right, float bottom, MOAITexture* texture ) {
+	
+	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
+	
+	if ( texture ) {	
+
+	
+		//gfxDevice.SetBlendMode ( ZGL_BLEND_FACTOR_ONE, ZGL_BLEND_FACTOR_ZERO );
+		gfxDevice.SetBlendMode ( ZGL_BLEND_FACTOR_ONE, ZGL_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA ); //DEFUALT
+
+		gfxDevice.SetTexture ( texture );
+		gfxDevice.SetShaderPreset ( MOAIShaderMgr::DECK2D_SHADER );	
+		
+		MOAIQuadBrush::BindVertexFormat ( gfxDevice );
+
+		MOAIQuadBrush quad;
+		quad.SetVerts ( left, top, right, bottom );
+		quad.SetUVs ( 0, 0, 1, 1 );		
+		quad.Draw ();	
+
+		//THIS JUST RESETESTS NOR NEEDED
+		//MOAIDraw::Bind ();
 
 	}
 }
@@ -1790,9 +1877,291 @@ int MOAIDraw::_rectDraw ( lua_State* L ) {
 }
 
 
+
+
+//
+//
+//int MOAIDraw::_textureStart ( lua_State* L ) {
+//MOAILuaState state ( L );
+//MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
+//gfxDevice.SetPrimType (  ZGL_PRIM_TRIANGLE_STRIP );
+//// glShadeModel(GL_FLAT);
+//gfxDevice.BeginPrim ();
+//return 0;
+//};
+//
+//int MOAIDraw::_textureColor ( lua_State* L ) {
+//MOAILuaState state ( L );
+//float red = state.GetValue < float >( 1, 0.0f );
+//float green = state.GetValue < float >( 2, 0.0f );
+//float blue = state.GetValue < float >( 3, 0.0f );
+//float alpha = state.GetValue < float >( 4, 0.0f );
+//MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
+//gfxDevice.SetPenColor (red,green,blue,alpha ); 
+//return 0;
+//};
+//
+//
+//int MOAIDraw::_shadowEnd ( lua_State* L ) {
+//MOAILuaState state ( L );
+//MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
+//gfxDevice.EndPrim ();
+//return 0;
+//};
+
+
+//***********************************************************************************
+//***********************************************************************************
+//***********************************************************************************
+//***********************************************************************************
+
+int MOAIDraw::_shadowStart ( lua_State* L ) {
+MOAILuaState state ( L );
+	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
+	gfxDevice.SetPrimType (  ZGL_PRIM_TRIANGLE_STRIP );
+	gfxDevice.BeginPrim ();
+return 0;
+};
+
+int MOAIDraw::_shadowColor ( lua_State* L ) {
+MOAILuaState state ( L );
+float red = state.GetValue < float >( 1, 0.0f );
+float green = state.GetValue < float >( 2, 0.0f );
+float blue = state.GetValue < float >( 3, 0.0f );
+float alpha = state.GetValue < float >( 4, 0.0f );
+MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
+gfxDevice.SetPenColor (red,green,blue,alpha ); 
+return 0;
+};
+
+
+int MOAIDraw::_shadowVtx ( lua_State* L ) {
+MOAILuaState state ( L );
+float x = state.GetValue < float >( 1, 0.0f );
+float y = state.GetValue < float >( 2, 0.0f );
+	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
+	//printf("%f %f",x,y);
+	gfxDevice.WriteVtx ( x,y );
+	gfxDevice.WriteFinalColor4b ();
+return 0;
+};
+
+
+
+int MOAIDraw::_shadowEnd ( lua_State* L ) {
+MOAILuaState state ( L );
+	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
+	gfxDevice.EndPrim ();
+return 0;
+};
+
+
+//***********************************************************************************
+//***********************************************************************************
+//***********************************************************************************
+
+int MOAIDraw::_shadowFan( lua_State* L ) {
+MOAILuaState state ( L );
+	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
+
+	MOAITexture* texture = (MOAITexture*)MOAITexture::AffirmTexture ( state, 2 );
+	gfxDevice.SetShaderPreset ( MOAIShaderMgr::DECK2D_SHADER );	//SHADER		
+	gfxDevice.SetTexture ( texture );							//TEXTURE	
+	gfxDevice.SetVertexPreset ( MOAIVertexFormatMgr::XYZWUVC ); //VERTEX_FORMATE
+
+
+
+	float x = 0.0f;
+	float y = 0.0f;
+	
+	gfxDevice.BeginPrim ( ZGL_PRIM_TRIANGLE_FAN );
+
+
+	u32 counter = 0;
+	lua_pushnil ( L );
+
+	printf("\n");
+
+    while ( lua_next ( L, 1 ) != 0 ) {
+
+		if ( counter % 2 == 0 ) {
+			x = state.GetValue < float >( -1, 0.0f );
+		} else {
+			y = state.GetValue < float >( -1, 0.0f );
+			gfxDevice.WriteVtx ( x, y );
+			//printf("%f %f \n",x,y);
+			gfxDevice.WriteUV(0.0f,1.0f);	
+			gfxDevice.WriteFinalColor4b ();
+
+						
+				
+
+		}
+		++counter;
+		lua_pop ( L, 1 );
+	}
+
+	gfxDevice.EndPrim ();
+
+return 0;
+};
+
+
+
+
+
+
+//**********************************************************************
+
+
+int MOAIDraw::_drawLight ( lua_State* L ) {
+
+	MOAILuaState state ( L );
+	
+	float x		 = state.GetValue < float >( 1, 0.0f );
+	float y		 = state.GetValue < float >( 2, 0.0f );
+	float radius = state.GetValue < float >( 3, 0.0f );
+
+	MOAITexture* texture = (MOAITexture*)MOAITexture::AffirmTexture ( state, 4 );
+
+	float step = state.GetValue < float >( 5, 0.0f );
+	radius = radius - (step*0.5);
+	//float mod = (step*0.5);
+
+	if ( texture ) {	
+	
+		MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
+
+						//printf("2\n");
+						//gfxDevice.ResetState();
+						//gfxDevice.SetVertexMtxMode ( MOAIGfxDevice::VTX_STAGE_MODEL, MOAIGfxDevice::VTX_STAGE_PROJ ); //TO VIEWPORT ?? NOT SURE
+						//gfxDevice.SetVertexMtxMode ( MOAIGfxDevice::VTX_STAGE_MODEL, MOAIGfxDevice::VTX_STAGE_MODEL );
+						//gfxDevice.SetUVMtxMode ( MOAIGfxDevice::UV_STAGE_MODEL, MOAIGfxDevice::UV_STAGE_TEXTURE );
+
+
+
+
+
+		gfxDevice.SetShaderPreset ( MOAIShaderMgr::DECK2D_SHADER );	//SHADER		
+		gfxDevice.SetTexture ( texture );							//TEXTURE	
+		gfxDevice.SetVertexPreset ( MOAIVertexFormatMgr::XYZWUVC ); //VERTEX_FORMATE
+
+							//gfxDevice.SetDepthMask(true);	
+							//gfxDevice.SetDepthFunc ( ( u32 )ZGL_DEPTH_LEQUAL );	
+							//gfxDevice.SetDepthFunc ( ( u32 )ZGL_DEPTH_NEVER );
+
+		gfxDevice.BeginPrim (ZGL_PRIM_TRIANGLE_STRIP ); //PRIME
+
+	
+		//CONVERT TO TOP LEFT ??
+
+
+		
+			
+					
+			//****************************************************************************
+			//DRAW STRIPS OVER LIGHT
+					gfxDevice.SetPenColor (0,0,0,1 );
+
+				//TRI-ANGLE
+					gfxDevice.WriteVtx ( x-50, y-50, step );
+					gfxDevice.WriteUV(0.0f,1.0f);			
+					gfxDevice.WriteFinalColor4b ();
+
+					gfxDevice.WriteVtx ( x+50, y-50, step );	
+					gfxDevice.WriteUV(1.0f,1.0f);					
+					gfxDevice.WriteFinalColor4b ();
+
+					gfxDevice.WriteVtx (x-50, y+50, step);
+					gfxDevice.WriteUV(0.0f,0.0f);			
+					gfxDevice.WriteFinalColor4b ();
+
+	
+//***************************************************************************************************
+//DEGEN
+
+					gfxDevice.SetPenColor (0,0,0,0 );
+					gfxDevice.WriteVtx (x-50, y+50, step);
+					gfxDevice.WriteUV(0.0f,0.0f);			
+					gfxDevice.WriteFinalColor4b ();
+
+					gfxDevice.WriteVtx (x-radius, y-radius, step-0.1 );
+					gfxDevice.WriteUV(0.0f,0.0);			
+					gfxDevice.WriteFinalColor4b ();	
+
+
+//***************************************************************************************
+
+					gfxDevice.SetPenColor (1,0,1,1 );
+
+				//TRI-ANGLE
+					gfxDevice.WriteVtx ( x-radius, y-radius, step-0.1 );
+					gfxDevice.WriteUV(0.0f,1.0f);			
+					gfxDevice.WriteFinalColor4b ();
+
+					gfxDevice.WriteVtx ( x+radius, y-radius, step-0.1);	
+					gfxDevice.WriteUV(1.0f,1.0f);					
+					gfxDevice.WriteFinalColor4b ();
+
+					gfxDevice.WriteVtx (x-radius, y+radius, step-0.1 );
+					gfxDevice.WriteUV(0.0f,0.0f);			
+					gfxDevice.WriteFinalColor4b ();
+
+					gfxDevice.WriteVtx (x+radius, y+radius,step-0.1 );
+					gfxDevice.WriteUV(1.0f,0.0f);			
+					gfxDevice.WriteFinalColor4b ();
+
+//***************************************************************************************************
+//DEGEN
+//
+//					gfxDevice.WriteVtx (x+radius, y+radius, -1 );
+//					gfxDevice.WriteUV(1.0f,0.0f);			
+//					gfxDevice.WriteFinalColor4b ();
+//
+//					gfxDevice.WriteVtx ( x-50, y-50, 1 );
+//					gfxDevice.WriteUV(0.0f,1.0f);			
+//					gfxDevice.WriteFinalColor4b ();
+//
+//
+//
+////***************************************************************************************************
+//					gfxDevice.SetPenColor (0,0,1,1 );
+//
+//					gfxDevice.WriteVtx ( x-50, y-50, 1 );
+//					gfxDevice.WriteUV(1.0f,0.0f);			
+//					gfxDevice.WriteFinalColor4b ();
+//
+//					gfxDevice.WriteVtx ( x+50, y-50, 1 );	
+//					gfxDevice.WriteUV(1.0f,1.0f);				
+//					gfxDevice.WriteFinalColor4b ();
+//
+//					gfxDevice.WriteVtx (x-50, y+50, 1 );
+//					gfxDevice.WriteUV(1.0f,0.0f);		
+//					gfxDevice.WriteFinalColor4b ();
+//
+
+
+
+
+	gfxDevice.EndPrim (); //END
+
+
+	//gfxDevice.Flush();
+	//gfxDevice.ResetState();
+
+	//RESET PEN TO WHIE
+	//gfxDevice.SetPenColor (0,0,0,1 );
+
+	} //IF TEXTURE & SHADER
+
+	return 0;
+
+};
+
+
+
 //----------------------------------------------------------------//
 MOAIDraw::MOAIDraw () {
-
 	RTTI_SINGLE ( MOAILuaObject )
 }
 
@@ -1821,7 +2190,7 @@ void MOAIDraw::RegisterLuaClass ( MOAILuaState& state ) {
 		{ "fillRect",				_fillRect },
 		{ "drawText",				_drawText },
 		{ "drawTexture",			_drawTexture },
-
+		{ "drawTextureUV",			_drawTextureUV },
         ///
         { "drawRectList",		    _drawRectList },
         { "drawLineList",		    _drawLineList },
@@ -1831,7 +2200,18 @@ void MOAIDraw::RegisterLuaClass ( MOAILuaState& state ) {
         { "rectEnd"  ,             _rectEnd},
         { "rectDraw" ,             _rectDraw},
 
+
+        { "drawVertics" ,          _drawVertics},
+		{ "drawLight",			   _drawLight },
+		
+
         { "setShader",		    _setShader },
+
+		{ "shadowStart",	    _shadowStart },
+		{ "shadowEnd",			_shadowEnd },
+		{ "shadowColor",		_shadowColor },
+		{ "shadowVtx",			_shadowVtx },
+		{ "shadowFan",			_shadowFan },
 
 		{ NULL, NULL }
 	};

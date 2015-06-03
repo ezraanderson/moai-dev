@@ -24,7 +24,7 @@ void ZLLog::Print ( cc8* format, ... ) {
 	va_list args;
 	va_start ( args, format );	
 	
-#ifdef ANDROID
+    #ifdef ANDROID
 		__android_log_vprint(ANDROID_LOG_INFO,"MoaiLog", format, args);
 	#else
 		vprintf ( format, args );

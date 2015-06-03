@@ -167,6 +167,25 @@ int MOAIGfxDevice::_setPenColor ( lua_State* L ) {
 
 
 
+
+
+
+//**************************************************************************************************
+//**************************************************************************************************
+//**************************************************************************************************
+int	MOAIGfxDevice::_setAmbient				( lua_State* L ) {
+	MOAILuaState state ( L );
+	float r = state.GetValue < float >( 1, 1.0f );
+	float g = state.GetValue < float >( 2, 1.0f );
+	float b = state.GetValue < float >( 3, 1.0f );
+	float a = state.GetValue < float >( 4, 1.0f );
+	MOAIGfxDevice::Get ().SetAmbientColor ( r, g, b, a );
+	
+	return 0;
+
+
+};
+
 //**************************************************************************************************
 //EZRA: SHADER
 int	MOAIGfxDevice::_newShader ( lua_State* L ) {
@@ -203,6 +222,21 @@ int MOAIGfxDevice::_setPenWidth ( lua_State* L ) {
 	MOAIGfxDevice::Get ().SetPenWidth ( width );
 	return 0;
 }
+
+
+
+
+int MOAIGfxDevice::_setBlendMode ( lua_State* L ) {
+
+	MOAILuaState state ( L );
+	int src = state.GetValue < float >( 1, 1.0f );
+	int dst = state.GetValue < float >( 1, 1.0f );
+	MOAIGfxDevice::Get ().SetBlendMode ( src,dst );
+	return 0;
+}
+
+
+
 
 //----------------------------------------------------------------//
 /**	@name	setPointSize
@@ -674,6 +708,13 @@ void MOAIGfxDevice::PushDeleter ( u32 type, u32 id ) {
 
 
 
+
+
+
+
+
+
+
 //----------------------------------------------------------------//
 void MOAIGfxDevice::RegisterLuaClass ( MOAILuaState& state ) {
 
@@ -690,8 +731,11 @@ void MOAIGfxDevice::RegisterLuaClass ( MOAILuaState& state ) {
 		{ "setListener",				&MOAIGlobalEventSource::_setListener < MOAIGfxDevice > },
 		{ "setPenColor",				_setPenColor },
 		{ "setPenWidth",				_setPenWidth },
+		{ "setBlendMode",				_setBlendMode },
 		{ "setPointSize",				_setPointSize },
         { "newShader",				    _newShader },
+        { "setAmbient",				    _setAmbient },
+
 		{ NULL, NULL }
 	};
 
@@ -967,7 +1011,7 @@ void MOAIGfxDevice::SetDepthFunc ( int depthFunc ) {
 		this->Flush ();
 		this->mDepthFunc = depthFunc;
 	
-		if ( depthFunc ) {
+		if ( depthFunc ) {			
 			zglEnable ( ZGL_PIPELINE_DEPTH );
 			zglDepthFunc ( this->mDepthFunc );
 		}

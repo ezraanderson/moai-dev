@@ -812,10 +812,11 @@ int MOAITransform::_setPiv ( lua_State* L ) {
 	@out	nil
 */
 int MOAITransform::_setRot ( lua_State* L ) {
-	MOAI_LUA_SETUP ( MOAITransform, "U" )
-	
+	MOAI_LUA_SETUP ( MOAITransform, "U" )	
 	ZLVec3D rot;
 	
+//	printf("SHIT \n");
+
 	rot.mX = state.GetValue < float >( 2, 0.0f );
 	rot.mY = state.GetValue < float >( 3, 0.0f );
 	rot.mZ = state.GetValue < float >( 4, 0.0f );

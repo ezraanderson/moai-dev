@@ -985,6 +985,14 @@ MOAIBox2DWorld::MOAIBox2DWorld () :
 	this->mArbiter.Set ( *this, new MOAIBox2DArbiter ( *this ));
 	
 	b2Vec2 gravity ( 0.0f, 0.0f );
+
+	this->mQueryList = new MOAIBox2DQueryCallback();	
+
+	this->mRayList = new MOAIBox2DRayCastCallback();
+
+
+
+
 	this->mWorld = new b2World ( gravity);
 	this->mWorld->SetContactListener ( this->mArbiter );
 	this->mWorld->SetDestructionListener ( this );
@@ -994,6 +1002,13 @@ MOAIBox2DWorld::MOAIBox2DWorld () :
 	
 	this->mDebugDraw->SetFlags ( DEBUG_DRAW_DEFAULT );
 }
+
+
+
+
+
+
+
 
 //----------------------------------------------------------------//
 MOAIBox2DWorld::~MOAIBox2DWorld () {
@@ -1011,6 +1026,8 @@ MOAIBox2DWorld::~MOAIBox2DWorld () {
 	
 	this->mArbiter.Set ( *this, 0 );
 	
+	delete ( this->mQueryList );
+	delete ( this->mRayList );
 	delete ( this->mDebugDraw );
 	delete ( this->mWorld );
 }
@@ -1023,6 +1040,10 @@ int MOAIBox2DWorld::_benchmark ( lua_State* L ) {
 	lua_pushnumber ( state, self->mTime);
 	return 1;
 };
+
+
+
+
 
 
 //----------------------------------------------------------------//
@@ -1041,13 +1062,13 @@ void MOAIBox2DWorld::OnUpdate ( float step ) {
 
 	this->Destroy ();
 	
-	//b2Body* body = this->mWorld->GetBodyList ();
-	//for ( ; body; body = body->GetNext ()) {
-	//	if ( body->IsActive () && body->IsAwake ()) {
-	//		MOAIBox2DBody* moaiBody = ( MOAIBox2DBody* )body->GetUserData ();
-	//		moaiBody->ScheduleUpdate ();
-	//	}
-	//}
+	b2Body* body = this->mWorld->GetBodyList ();
+	for ( ; body; body = body->GetNext ()) {
+		if ( body->IsActive () && body->IsAwake ()) {
+			MOAIBox2DBody* moaiBody = ( MOAIBox2DBody* )body->GetUserData ();
+			moaiBody->ScheduleUpdate ();
+		}
+	}
 
 
 	mBench = mBench +  ZLDeviceTime::GetTimeInSeconds()-start_time;
@@ -1067,6 +1088,17 @@ int MOAIBox2DWorld::_drawDebugLua ( lua_State* L ) {
 	return 0;
 };
 
+
+
+//----------------------------------------------------------------//
+b2World* MOAIBox2DWorld::getWorld () {
+	return this->mWorld;
+};
+
+//----------------------------------------------------------------//
+float MOAIBox2DWorld::getUnitsToMeters () {
+	return this->mUnitsToMeters;
+};
 
 //----------------------------------------------------------------//
 void MOAIBox2DWorld::RegisterLuaClass ( MOAILuaState& state ) {
@@ -1115,7 +1147,11 @@ void MOAIBox2DWorld::RegisterLuaFuncs ( MOAILuaState& state ) {
 		{ "setLinearSleepTolerance",	_setLinearSleepTolerance },
 		{ "setTimeToSleep",				_setTimeToSleep },
 		{ "setUnitsToMeters",			_setUnitsToMeters },
+
 	  	{ "getRayCast",                 _getRayCast },
+  	    { "getQuery",               _getQuery },
+
+
 		{ "benchmark",                  _benchmark },
 		{ "drawDebugLua",				_drawDebugLua },
 		{ NULL, NULL }
@@ -1179,6 +1215,94 @@ void MOAIBox2DWorld::ScheduleDestruction ( MOAIBox2DJoint& joint ) {
 	this->Destroy ();
 }
 
+
+
+
+//************************************************************************************************************************************
+float32 MOAIBox2DRayCastCallback::ReportFixture(b2Fixture* fixture, const b2Vec2& point, const b2Vec2& normal, float32 fraction){
+
+++mTotal;
+if 	(mTotal == 1) {
+	lua_newtable(mState);
+	mHit = true;
+};
+	
+lua_pushnumber(mState, mTotal); 
+//NEW_TABLE
+lua_newtable(mState);		
+//
+MOAIBox2DFixture* moaiFixture = ( MOAIBox2DFixture* ) fixture->GetUserData ();
+moaiFixture->PushLuaUserdata ( mState );			
+lua_setfield(mState, -2, "obj");
+
+//
+lua_pushnumber(mState, fraction * 100000);
+lua_setfield(mState, -2, "d");
+//
+lua_pushnumber(mState,point.x / mUnitsToMeters);
+lua_setfield(mState, -2, "x");
+//	
+lua_pushnumber(mState, point.y / mUnitsToMeters);
+lua_setfield(mState, -2, "y");
+
+//CLOSE CHILD
+
+//lua_pushnumber(mState, 4); // number of cells
+//CHILD
+lua_settable(mState, -3);
+
+return 1;
+};
+
+
+
+
+
+
+//************************************************************************
+bool MOAIBox2DQueryCallback::ReportFixture(b2Fixture* fixture) {
+	//printf("BANG\n");
+	++mTotal;
+	MOAIBox2DFixture* moaiFixture = ( MOAIBox2DFixture* ) fixture->GetUserData ();
+	moaiFixture->PushLuaUserdata ( mState );			
+
+
+   return true;
+}
+
+
+
+//*****************************************************************************************
+int MOAIBox2DWorld::_getQuery ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIBox2DWorld, "U" )
+
+ 	float x=state.GetValue   < float >( 2, 0 )* self->mUnitsToMeters;
+	float y=state.GetValue   < float >( 3, 0 )* self->mUnitsToMeters;
+	float r=(state.GetValue  < float >( 4, 0 ) +32) * self->mUnitsToMeters;//+ BUFFER
+
+  	MOAIBox2DQueryCallback*   query = ( MOAIBox2DQueryCallback*) self->mQueryList;
+	query->mState		      = state;
+	query->mHit				  = false;
+	query->mTotal			  = 0;
+	query->mReturn			  = true;
+	query->mUnitsToMeters	  = self->mUnitsToMeters;
+
+	b2Vec2 lower( (x-r), (y-r) );
+    b2Vec2 upper( (x+r), (y+r) );
+
+    b2AABB aabb;
+    aabb.lowerBound = lower;
+    aabb.upperBound = upper;
+	self->mWorld->QueryAABB( query, aabb );
+
+	return query->mTotal;
+}
+
+
+
+
+
+
 //----------------------------------------------------------------//
 /**     @name   getRayCast
         @text   return RayCast 1st point hit
@@ -1195,37 +1319,74 @@ void MOAIBox2DWorld::ScheduleDestruction ( MOAIBox2DJoint& joint ) {
 */
 int MOAIBox2DWorld::_getRayCast ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBox2DWorld, "U" )
-	float p1x=state.GetValue < float >( 2, 0 );
-	float p1y=state.GetValue < float >( 3, 0 );
-	float p2x=state.GetValue < float >( 4, 0 );
-	float p2y=state.GetValue < float >( 5, 0 );
+
+	int	  r=state.GetValue < int >( 2, 0 );
+
+	float p1x=state.GetValue < float >( 3, 0 )* self->mUnitsToMeters;
+	float p1y=state.GetValue < float >( 4, 0 )* self->mUnitsToMeters;
+	float p2x=state.GetValue < float >( 5, 0 )* self->mUnitsToMeters;
+	float p2y=state.GetValue < float >( 6, 0 )* self->mUnitsToMeters;
  
 	b2Vec2 p1(p1x,p1y);
-	b2Vec2 p2(p2x,p2y);
-   
-	MOAIBox2DRayCastCallback callback;
-	self->mWorld->RayCast(&callback, p1, p2);
- 
-	if (NULL != callback.m_fixture) {
-		b2Vec2 hitpoint = callback.m_point;
+	b2Vec2 p2(p2x,p2y);   	
 
-		lua_pushboolean ( state, true );
-		lua_pushnumber ( state, hitpoint.x / self->mUnitsToMeters );
-		lua_pushnumber ( state, hitpoint.y / self->mUnitsToMeters );
+	MOAIBox2DRayCastCallback*   ray = ( MOAIBox2DRayCastCallback*) self->mRayList;
+	ray->mState			= state;
+	ray->mHit			= false;
+	ray->mTotal			= 0;
+	ray->mReturn		= r;
+	ray->mUnitsToMeters = self->mUnitsToMeters;
 
-		// Raycast hit a fixture
-		MOAIBox2DFixture* moaiFixture = ( MOAIBox2DFixture* ) callback.m_fixture->GetUserData ();
-		if ( moaiFixture ) {
-			moaiFixture->PushLuaUserdata ( state );
-			return 4;
-		} else {
-			return 3;
-		}
+	self->mWorld->RayCast(ray, p1, p2); 
 
-	} else {
-
-		// Raycast did not hit a fixture
-		lua_pushboolean( state, false );
+	if (ray->mHit == true) {
 		return 1;
+	} else {
+		return 0;
 	}
+
+
+//lua_pushnumber(state, 100);
+//
+//
+//	return 1;
+
+
+
+	//return 0;
+
+
+	//lua_close(state);
+
+
+	//if (NULL != callback.m_fixture) {
+	//	//lua_pushboolean ( state, true );
+	//	//lua_pushnumber ( state, hitpoint.x / self->mUnitsToMeters );
+	//	//lua_pushnumber ( state, hitpoint.y / self->mUnitsToMeters );
+	//	//// Raycast hit a fixture
+	//	//MOAIBox2DFixture* moaiFixture = ( MOAIBox2DFixture* ) callback.m_fixture->GetUserData ();
+	//	//if ( moaiFixture ) {
+	//	//	moaiFixture->PushLuaUserdata ( state );
+	//	//	//return 4;
+	//	//} else {
+	//	//	//return 3;
+	//	//}
+
+
+
+
+
+	//} else {
+
+	//	// Raycast did not hit a fixture
+	//	//lua_pushboolean( state, false );
+	//	//return 1;
+	//}
+
+
+
+
 }
+
+
+

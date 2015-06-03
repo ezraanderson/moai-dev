@@ -37,6 +37,8 @@ private:
 	static int				_fillFan			( lua_State* L );
 	static int				_fillRect			( lua_State* L );
 	static int				_drawTexture		( lua_State* L );
+	static int				_drawTextureUV		( lua_State* L );
+
 	static int				_drawText			( lua_State* L );
 
     //EZRA
@@ -44,12 +46,22 @@ private:
     static int			 _drawLineList			( lua_State* L);
     static int			 _drawRingList			( lua_State* L);
     static int			 _drawCircleList		( lua_State* L);
+	static int			 _drawVertics			( lua_State* L);
+	static int			 _drawLight				( lua_State* L);
 
     static int			 _rectStart		( lua_State* L);
     static int			 _rectEnd		( lua_State* L);
     static int			 _rectDraw		( lua_State* L);
 
 	static int			 _setShader			    ( lua_State* L);
+
+
+	static int			 _shadowStart 	       ( lua_State* L);
+	static int			 _shadowEnd			   ( lua_State* L);
+	static int			 _shadowVtx			   ( lua_State* L);
+	static int			 _shadowColor		   ( lua_State* L);
+
+	static int			 _shadowFan		   ( lua_State* L);
 
 	//----------------------------------------------------------------//
 	static void			DrawLuaParams			( lua_State* L, u32 primType );
@@ -86,6 +98,12 @@ public:
 	static void			DrawString				( cc8* text, float x, float y, float width, float height );
 	static void			DrawString				( cc8* text, float x, float y, float scale, MOAIFont& font, float fontSize, float shadowOffsetX, float shadowOffsetY, float width, float height );
 	static void			DrawTexture				( float left, float top, float right, float bottom, MOAITexture* texture );
+	static void			DrawTextureUV			(MOAITexture* texture, 
+												float left, float top, float right, float bottom, 
+												float sclX,float sclY,float rot,
+												float u0,float v0,float u1,float v1 
+												);
+
 	static void			DrawVertexArray			( const ZLVec3D* verts, u32 count, u32 color, u32 primType );
 	static void			DrawVertexArray2D		( const float* verts, u32 count, u32 color, u32 primType );
 	static void			EndDrawString			();

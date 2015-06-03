@@ -30,15 +30,19 @@ int MOAIFrameBufferTexture::_init ( lua_State* L ) {
 	// TODO: fix me
 	#if defined ( MOAI_OS_ANDROID ) || defined ( MOAI_OS_HTML )
 		u32 colorFormat		= state.GetValue < u32 >( 4, ZGL_PIXEL_FORMAT_RGB565 );
-
+		//colorFormat         = ZGL_PIXEL_FORMAT_RGB565
 	#else
 		u32 colorFormat		= state.GetValue < u32 >( 4, ZGL_PIXEL_FORMAT_RGBA8 );
-        //	u32 colorFormat		= state.GetValue < u32 >( 4, ZGL_PIXEL_FORMAT_RGBA );
+		//u32 colorFormat		= ZGL_PIXEL_FORMAT_RGBA8;
 	#endif
+
+
 	
 	u32 depthFormat		= state.GetValue < u32 >( 5, 0 );
 	u32 stencilFormat	= state.GetValue < u32 >( 6, 0 );
 	
+	printf("%d %d %d\n",colorFormat, depthFormat, stencilFormat);
+
 	self->Init ( width, height, colorFormat, depthFormat, stencilFormat );
 	
 	return 0;
@@ -106,87 +110,16 @@ MOAIFrameBufferTexture::~MOAIFrameBufferTexture () {
 //----------------------------------------------------------------//
 void MOAIFrameBufferTexture::OnCreate () {
 	
+//
+//printf("****************** Creat buffer ********************************************************\n");
+//printf("****************** Creat buffer ********************************************************\n");
+//printf("****************** Creat buffer ********************************************************\n");
+//
+//	this->mWidth =20;
+//    this->mHeight=20;
 
-printf("****************** Creat buffer ********************************************************\n");
-printf("****************** Creat buffer ********************************************************\n");
-printf("****************** Creat buffer ********************************************************\n");
-
-	//this->mWidth =20;
-    //this->mHeight=20;
-
-
-
-if ( !( this->mWidth && this->mHeight && ( this->mColorFormat || this->mDepthFormat || this->mStencilFormat ))) {
-return;
-}
-this->mBufferWidth = this->mWidth;
-this->mBufferHeight = this->mHeight;
-// bail and retry (no error) if GL cannot generate buffer ID
-this->mGLFrameBufferID = zglCreateFramebuffer ();
-if ( !this->mGLFrameBufferID ) return;
-if ( this->mColorFormat ) {
-this->mGLColorBufferID = zglCreateRenderbuffer ();
-zglBindRenderbuffer ( this->mGLColorBufferID );
-zglRenderbufferStorage ( this->mColorFormat, this->mWidth, this->mHeight );
-}
-if ( this->mDepthFormat ) {
-this->mGLDepthBufferID = zglCreateRenderbuffer ();
-zglBindRenderbuffer ( this->mGLDepthBufferID );
-zglRenderbufferStorage ( this->mDepthFormat, this->mWidth, this->mHeight );
-}
-if ( this->mStencilFormat ) {
-this->mGLStencilBufferID = zglCreateRenderbuffer ();
-zglBindRenderbuffer ( this->mGLStencilBufferID );
-zglRenderbufferStorage ( this->mStencilFormat, this->mWidth, this->mHeight );
-}
-zglBindFramebuffer ( ZGL_FRAMEBUFFER_TARGET_DRAW_READ, this->mGLFrameBufferID );
-if ( this->mGLColorBufferID ) {
-zglFramebufferRenderbuffer ( ZGL_FRAMEBUFFER_TARGET_DRAW_READ, ZGL_FRAMEBUFFER_ATTACHMENT_COLOR, this->mGLColorBufferID );
-}
-if ( this->mGLDepthBufferID ) {
-zglFramebufferRenderbuffer ( ZGL_FRAMEBUFFER_TARGET_DRAW_READ, ZGL_FRAMEBUFFER_ATTACHMENT_DEPTH, this->mGLDepthBufferID );
-}
-if ( this->mGLStencilBufferID ) {
-zglFramebufferRenderbuffer ( ZGL_FRAMEBUFFER_TARGET_DRAW_READ, ZGL_FRAMEBUFFER_ATTACHMENT_STENCIL, this->mGLStencilBufferID );
-}
-// TODO: handle error; clear
-u32 status = zglCheckFramebufferStatus ( ZGL_FRAMEBUFFER_TARGET_DRAW_READ );
-if ( status == ZGL_FRAMEBUFFER_STATUS_COMPLETE ) {
-this->mGLTexID = zglCreateTexture ();
-zglBindTexture ( this->mGLTexID );
-
-zglTexImage2D ( 0, ZGL_PIXEL_FORMAT_RGBA, this->mWidth, this->mHeight, ZGL_PIXEL_FORMAT_RGBA, ZGL_PIXEL_TYPE_UNSIGNED_BYTE, 0 );
-
-//zglTexImage2D ( 0, ZGL_PIXEL_FORMAT_RGBA, this->mWidth, this->mHeight, ZGL_PIXEL_FORMAT_RGB565, ZGL_PIXEL_TYPE_UNSIGNED_BYTE, 0 );
-
-
-
-
-
-
-zglTexParameteri (ZGL_TEXTURE_WRAP_S, ZGL_WRAP_MODE_CLAMP);
-zglTexParameteri (ZGL_TEXTURE_WRAP_T, ZGL_WRAP_MODE_CLAMP);
-zglTexParameteri (ZGL_TEXTURE_MIN_FILTER, ZGL_SAMPLE_LINEAR);
-zglTexParameteri (ZGL_TEXTURE_MAG_FILTER, ZGL_SAMPLE_LINEAR);
-this->mIsDirty = false;
-
-
-    zglFramebufferTexture2D ( ZGL_FRAMEBUFFER_TARGET_DRAW_READ, ZGL_FRAMEBUFFER_ATTACHMENT_COLOR, this->mGLTexID, 0 );
-    // refresh tex params on next bind
-//    this->mIsDirty = true;
-}
-else {
-        this->Clear ();
-}
-
-
-
-
-
-
-
-
-
+//
+//
 //if ( !( this->mWidth && this->mHeight && ( this->mColorFormat || this->mDepthFormat || this->mStencilFormat ))) {
 //		return;
 //	}
@@ -215,18 +148,15 @@ else {
 //		zglBindRenderbuffer ( this->mGLStencilBufferID );
 //		zglRenderbufferStorage ( this->mStencilFormat, this->mWidth, this->mHeight );
 //	}
-//
-//
 //	
 //	zglBindFramebuffer ( ZGL_FRAMEBUFFER_TARGET_DRAW_READ, this->mGLFrameBufferID );
-//
-//
 //	
 //	if ( this->mGLColorBufferID ) {
 //		zglFramebufferRenderbuffer ( ZGL_FRAMEBUFFER_TARGET_DRAW_READ, ZGL_FRAMEBUFFER_ATTACHMENT_COLOR, this->mGLColorBufferID );
 //	}
 //	
 //	if ( this->mGLDepthBufferID ) {
+//		printf("DEPTH DOUBLE CHECK\n");
 //		zglFramebufferRenderbuffer ( ZGL_FRAMEBUFFER_TARGET_DRAW_READ, ZGL_FRAMEBUFFER_ATTACHMENT_DEPTH, this->mGLDepthBufferID );
 //	}
 //	
@@ -241,56 +171,227 @@ else {
 //	
 //		this->mGLTexID = zglCreateTexture ();
 //		zglBindTexture ( this->mGLTexID );
-//
-// 
-//
-//
 //		zglTexImage2D ( 0, ZGL_PIXEL_FORMAT_RGBA, this->mWidth, this->mHeight, ZGL_PIXEL_FORMAT_RGBA, ZGL_PIXEL_TYPE_UNSIGNED_BYTE, 0 );
-//         zglFramebufferTexture2D ( ZGL_FRAMEBUFFER_TARGET_DRAW_READ, ZGL_FRAMEBUFFER_ATTACHMENT_COLOR, this->mGLTexID, 0 );
+//		zglFramebufferTexture2D ( ZGL_FRAMEBUFFER_TARGET_DRAW_READ, ZGL_FRAMEBUFFER_ATTACHMENT_COLOR, this->mGLTexID, 0 );
 //
-//
-//// zglTexImage2D ( 0, ZGL_PIXEL_FORMAT_RGBA, this->mWidth, this->mHeight, ZGL_PIXEL_FORMAT_RGBA, ZGL_PIXEL_TYPE_UNSIGNED_BYTE, 0 );
-////GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
-////GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
-////GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
-////GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);   
-//
-//
-////zglTexParameteri (ZGL_TEXTURE_WRAP_S, ZGL_WRAP_MODE_CLAMP);
-////zglTexParameteri (ZGL_TEXTURE_WRAP_T, ZGL_WRAP_MODE_CLAMP);
-////zglTexParameteri (ZGL_TEXTURE_MIN_FILTER, ZGL_SAMPLE_LINEAR);
-////zglTexParameteri (ZGL_TEXTURE_MAG_FILTER, ZGL_SAMPLE_LINEAR);
-//
-//
-////zglTexParameteri ( ZGL_TEXTURE_WRAP_S, this->mWrap );
-////zglTexParameteri ( ZGL_TEXTURE_WRAP_T, this->mWrap );		
-////zglTexParameteri ( ZGL_TEXTURE_MIN_FILTER, this->mMinFilter );
-////zglTexParameteri ( ZGL_TEXTURE_MAG_FILTER, this->mMagFilter );
-////zglTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
-////zglTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
-//
-//
-//           
-//
-//
-//
+//			//zglTexParameteri( ZGL_TEXTURE_COMPARE_FUNC, ZGL_DEPTH_LEQUAL);
+//			//zglTexParameteri ( ZGL_TEXTURE_COMPARE_MODE, ZGL_BLEND_FACTOR_ONE);
 //
 //
 //				
 //		// refresh tex params on next bind
-//
-//        //THIS FUCKS SHIT UP
-//
-//         // this->mIsDirty = true; DEFAULT
-//
 //		this->mIsDirty = true;
-//
-//
-//
 //	}
 //	else {
 //		this->Clear ();
 //	}
+//
+//
+
+
+
+//
+//
+//if ( !( this->mWidth && this->mHeight && ( this->mColorFormat || this->mDepthFormat || this->mStencilFormat ))) {
+//return;
+//}
+//this->mBufferWidth = this->mWidth;
+//this->mBufferHeight = this->mHeight;
+//// bail and retry (no error) if GL cannot generate buffer ID
+//this->mGLFrameBufferID = zglCreateFramebuffer ();
+//if ( !this->mGLFrameBufferID ) return;
+//
+//
+//printf("%d %d %d\n",this->mColorFormat, this->mDepthFormat, this->mStencilFormat);
+//
+//if ( this->mColorFormat ) {
+//	printf("MOAIFrameBufferTexture->mColorFormat %d\n",this->mColorFormat);
+//	this->mGLColorBufferID = zglCreateRenderbuffer ();
+//	zglBindRenderbuffer ( this->mGLColorBufferID );
+//	zglRenderbufferStorage ( this->mColorFormat, this->mWidth, this->mHeight );
+//}
+//
+//if ( this->mDepthFormat ) {
+//
+//	printf("MOAIFrameBufferTexture->mDepthFormat %d\n",this->mDepthFormat);
+//
+//	this->mGLDepthBufferID = zglCreateRenderbuffer ();
+//	zglBindRenderbuffer ( this->mGLDepthBufferID );
+//	printf("CRASH-HERE --> %d\n",this->mGLDepthBufferID );
+//	zglRenderbufferStorage ( this->mDepthFormat, this->mWidth, this->mHeight );
+//	printf("CRASH-DONE\n");
+//}
+//
+//if ( this->mStencilFormat ) {
+//	printf("MOAIFrameBufferTexture->mStencilFormat %d\n",this->mStencilFormat);
+//	this->mGLStencilBufferID = zglCreateRenderbuffer ();
+//	zglBindRenderbuffer ( this->mGLStencilBufferID );
+//	zglRenderbufferStorage ( this->mStencilFormat, this->mWidth, this->mHeight );
+//}
+//
+//
+//
+//zglBindFramebuffer ( ZGL_FRAMEBUFFER_TARGET_DRAW_READ, this->mGLFrameBufferID );
+//
+//if ( this->mGLColorBufferID ) {
+//zglFramebufferRenderbuffer ( ZGL_FRAMEBUFFER_TARGET_DRAW_READ, ZGL_FRAMEBUFFER_ATTACHMENT_COLOR, this->mGLColorBufferID );
+//}
+//
+//
+//
+//
+//
+//if ( this->mGLDepthBufferID ) {
+//	printf("DEPTH DOUBLE CHECK\n");
+//zglFramebufferRenderbuffer ( ZGL_FRAMEBUFFER_TARGET_DRAW_READ, ZGL_FRAMEBUFFER_ATTACHMENT_DEPTH, this->mGLDepthBufferID );
+//}
+//if ( this->mGLStencilBufferID ) {
+//zglFramebufferRenderbuffer ( ZGL_FRAMEBUFFER_TARGET_DRAW_READ, ZGL_FRAMEBUFFER_ATTACHMENT_STENCIL, this->mGLStencilBufferID );
+//}
+//// TODO: handle error; clear
+//u32 status = zglCheckFramebufferStatus ( ZGL_FRAMEBUFFER_TARGET_DRAW_READ );
+//if ( status == ZGL_FRAMEBUFFER_STATUS_COMPLETE ) {
+//this->mGLTexID = zglCreateTexture ();
+//zglBindTexture ( this->mGLTexID );
+//
+//zglTexImage2D ( 0, ZGL_PIXEL_FORMAT_RGBA, this->mWidth, this->mHeight, ZGL_PIXEL_FORMAT_RGBA, ZGL_PIXEL_TYPE_UNSIGNED_BYTE, 0 );
+//
+////zglTexImage2D ( 0, ZGL_PIXEL_FORMAT_RGBA, this->mWidth, this->mHeight, ZGL_PIXEL_FORMAT_RGB565, ZGL_PIXEL_TYPE_UNSIGNED_BYTE, 0 );
+//
+//
+//
+//
+//
+//
+//zglTexParameteri (ZGL_TEXTURE_WRAP_S, ZGL_WRAP_MODE_CLAMP);
+//zglTexParameteri (ZGL_TEXTURE_WRAP_T, ZGL_WRAP_MODE_CLAMP);
+//zglTexParameteri (ZGL_TEXTURE_MIN_FILTER, ZGL_SAMPLE_LINEAR);
+//zglTexParameteri (ZGL_TEXTURE_MAG_FILTER, ZGL_SAMPLE_LINEAR);
+//this->mIsDirty = false;
+//
+//
+//    zglFramebufferTexture2D ( ZGL_FRAMEBUFFER_TARGET_DRAW_READ, ZGL_FRAMEBUFFER_ATTACHMENT_COLOR, this->mGLTexID, 0 );
+//    // refresh tex params on next bind
+////    this->mIsDirty = true;
+//}
+//else {
+//        this->Clear ();
+//}
+//
+//
+
+
+
+
+
+
+
+if ( !( this->mWidth && this->mHeight && ( this->mColorFormat || this->mDepthFormat || this->mStencilFormat ))) {
+		return;
+	}
+	
+	this->mBufferWidth = this->mWidth;
+	this->mBufferHeight = this->mHeight;
+	
+	// bail and retry (no error) if GL cannot generate buffer ID
+	this->mGLFrameBufferID = zglCreateFramebuffer ();
+	if ( !this->mGLFrameBufferID ) return;
+	
+	if ( this->mColorFormat ) {
+		this->mGLColorBufferID = zglCreateRenderbuffer ();
+		zglBindRenderbuffer ( this->mGLColorBufferID );
+		zglRenderbufferStorage ( this->mColorFormat, this->mWidth, this->mHeight );
+	}
+	
+	if ( this->mDepthFormat ) {
+		this->mGLDepthBufferID = zglCreateRenderbuffer ();
+		zglBindRenderbuffer ( this->mGLDepthBufferID );
+		zglRenderbufferStorage ( this->mDepthFormat, this->mWidth, this->mHeight );
+	}
+	
+	if ( this->mStencilFormat ) {
+		this->mGLStencilBufferID = zglCreateRenderbuffer ();
+		zglBindRenderbuffer ( this->mGLStencilBufferID );
+		zglRenderbufferStorage ( this->mStencilFormat, this->mWidth, this->mHeight );
+	}
+
+
+	
+	zglBindFramebuffer ( ZGL_FRAMEBUFFER_TARGET_DRAW_READ, this->mGLFrameBufferID );
+
+
+	
+	if ( this->mGLColorBufferID ) {
+		zglFramebufferRenderbuffer ( ZGL_FRAMEBUFFER_TARGET_DRAW_READ, ZGL_FRAMEBUFFER_ATTACHMENT_COLOR, this->mGLColorBufferID );
+	}
+	
+	if ( this->mGLDepthBufferID ) {
+		zglFramebufferRenderbuffer ( ZGL_FRAMEBUFFER_TARGET_DRAW_READ, ZGL_FRAMEBUFFER_ATTACHMENT_DEPTH, this->mGLDepthBufferID );
+	}
+	
+	if ( this->mGLStencilBufferID ) {
+		zglFramebufferRenderbuffer ( ZGL_FRAMEBUFFER_TARGET_DRAW_READ, ZGL_FRAMEBUFFER_ATTACHMENT_STENCIL, this->mGLStencilBufferID );
+	}
+	
+	// TODO: handle error; clear
+	u32 status = zglCheckFramebufferStatus ( ZGL_FRAMEBUFFER_TARGET_DRAW_READ );
+	
+	if ( status == ZGL_FRAMEBUFFER_STATUS_COMPLETE ) {
+	
+		this->mGLTexID = zglCreateTexture ();
+		zglBindTexture ( this->mGLTexID );
+
+ 
+
+
+		zglTexImage2D ( 0, ZGL_PIXEL_FORMAT_RGBA, this->mWidth, this->mHeight, ZGL_PIXEL_FORMAT_RGBA, ZGL_PIXEL_TYPE_UNSIGNED_BYTE, 0 );
+         zglFramebufferTexture2D ( ZGL_FRAMEBUFFER_TARGET_DRAW_READ, ZGL_FRAMEBUFFER_ATTACHMENT_COLOR, this->mGLTexID, 0 );
+
+
+// zglTexImage2D ( 0, ZGL_PIXEL_FORMAT_RGBA, this->mWidth, this->mHeight, ZGL_PIXEL_FORMAT_RGBA, ZGL_PIXEL_TYPE_UNSIGNED_BYTE, 0 );
+//GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
+//GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+//GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+//GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);   
+
+
+zglTexParameteri (ZGL_TEXTURE_WRAP_S, ZGL_WRAP_MODE_CLAMP);
+zglTexParameteri (ZGL_TEXTURE_WRAP_T, ZGL_WRAP_MODE_CLAMP);
+zglTexParameteri (ZGL_TEXTURE_MIN_FILTER, ZGL_SAMPLE_LINEAR);
+zglTexParameteri (ZGL_TEXTURE_MAG_FILTER, ZGL_SAMPLE_LINEAR);
+
+
+//zglTexParameteri ( ZGL_TEXTURE_WRAP_S, this->mWrap );
+//zglTexParameteri ( ZGL_TEXTURE_WRAP_T, this->mWrap );		
+//zglTexParameteri ( ZGL_TEXTURE_MIN_FILTER, this->mMinFilter );
+//zglTexParameteri ( ZGL_TEXTURE_MAG_FILTER, this->mMagFilter );
+
+
+//zglTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+//zglTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+
+
+           
+
+
+
+
+
+				
+		// refresh tex params on next bind
+
+        //THIS FUCKS SHIT UP
+
+         // this->mIsDirty = true; DEFAULT
+
+		this->mIsDirty = false;
+
+
+
+	}
+	else {
+		this->Clear ();
+	}
 }
 
 //----------------------------------------------------------------//

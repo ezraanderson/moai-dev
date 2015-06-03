@@ -138,6 +138,7 @@ void MOAIDeck::Draw ( u32 idx, MOAIDeckRemapper* remapper, float xOff, float yOf
 
 //----------------------------------------------------------------//
 void MOAIDeck::DrawIndex ( u32 idx, float xOff, float yOff, float zOff, float xScl, float yScl, float zScl ) {
+
 	UNUSED ( idx );
 	UNUSED ( xOff );
 	UNUSED ( yOff );

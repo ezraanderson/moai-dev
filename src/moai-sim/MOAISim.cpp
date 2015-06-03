@@ -981,7 +981,7 @@ int MOAISim::_title ( lua_State* L ) {
 
 
 
-
+//
 //----------------------------------------------------------------//
 void MOAISim::Update () {
 
@@ -994,9 +994,9 @@ void MOAISim::Update () {
 	MOAIScopedLuaState state = MOAILuaRuntime::Get ().State ();
 
 	if ( !this->mLuaGCFunc ) {
-		printf(" ------------------------------------------------------------ ");
-		printf(" >> MOAISim::Update --> this->mLuaGCFun *******************\n");
-		printf(" ------------------------------------------------------------ ");
+		//printf(" \n------------------------------------------------------------ ");
+		//printf(" \n>> MOAISim::Update --> this->mLuaGCFun ");
+		//printf(" \n------------------------------------------------------------ \n ");
 		lua_getglobal ( state, LUA_GC_FUNC_NAME );
 		this->mLuaGCFunc.SetRef ( *this, state, -1 );
 		lua_pop ( state, 1 );
@@ -1009,9 +1009,9 @@ void MOAISim::Update () {
 
 	if ( this->mForceGC ) {   		
 		// force a full cycle
-		printf(" ------------------------------------------------------------ ");
-		printf(" >> MOAISim::Update --> ForceGarbageCollection *******************\n");
-		printf(" ------------------------------------------------------------ ");
+		//printf("\n ------------------------------------------------------------ ");
+		//printf("\n >> MOAISim::Update --> ForceGarbageCollection ");
+		//printf("\n ------------------------------------------------------------ \n ");
 		MOAILuaRuntime::Get ().ForceGarbageCollection ();
 		this->mForceGC = false;
 	}
@@ -1057,12 +1057,12 @@ void MOAISim::Update () {
                 timerStep = this->mStep;
 
 
-				//#ifndef MOAI_OS_WINDOWS
-				//	usleep ( 1000 );
-				//#else
+				#ifndef MOAI_OS_WINDOWS
+					//usleep ( 1000 );
+				#else
 					// WARNING: sleep on windows is not quite as precise
-				//	Sleep ( 1 );
-				//#endif
+					//Sleep ( 1 );
+				#endif
 		
 
 	

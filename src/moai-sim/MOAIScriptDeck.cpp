@@ -126,7 +126,7 @@ void MOAIScriptDeck::DrawIndex ( u32 idx, float xOff, float yOff, float zOff, fl
 	
 		MOAIScopedLuaState state = MOAILuaRuntime::Get ().State ();
 		if ( this->mOnDraw.PushRef ( state )) {
-	
+
 			MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
 			gfxDevice.SetVertexPreset ( MOAIVertexFormatMgr::XYZWC );
 			

@@ -511,10 +511,11 @@ void MOAICameraFitter2D::OnDepNodeUpdate () {
 		
 		loc.mX += ( this->mTargetLoc.mX - loc.mX ) * d;
 		loc.mY += ( this->mTargetLoc.mY - loc.mY ) * d;
-		scale += ( this->mTargetScale - scale ) * d;
+		scale +=  ( this->mTargetScale - scale ) * d;
 		
 		ZLVec3D scaleVec;
 		scaleVec.Init ( scale, scale, 1.0f );
+
 		this->mCamera->SetScl ( scaleVec );
 		this->mCamera->SetLoc ( loc );
 		this->mCamera->ScheduleUpdate ();
@@ -599,6 +600,8 @@ void MOAICameraFitter2D::UpdateFit () {
 //----------------------------------------------------------------//
 void MOAICameraFitter2D::UpdateTarget () {
 
+
+
 	if ( !this->mViewport ) return;
 
 	// reset the fitter
@@ -622,8 +625,13 @@ void MOAICameraFitter2D::UpdateTarget () {
 		// get the camera's target position and scale
 		ZLAffine3D cameraMtx;
 		float rot = this->mCamera ? this->mCamera->GetRot ().mZ : 0.0f;
+
 		cameraMtx.ScRoTr ( this->mFitScale, this->mFitScale, 1.0f, 0.0f, 0.0f, rot * ( float )D2R, this->mFitLoc.mX, this->mFitLoc.mY, 0.0f );
-		
+
+		//printf("%f %f\n",this->mFitLoc.mX,this->mFitLoc.mY);
+		//cameraMtx.ScRoTr ( this->mFitScale, this->mFitScale, 1.0f, 0.0f, 0.0f, rot * ( float )D2R, floor(this->mFitLoc.mX), floor(this->mFitLoc.mY), 0.0f );
+
+
 		// get the camera rect
 		ZLRect cameraRect = worldViewRect;
 		cameraMtx.Transform ( cameraRect );

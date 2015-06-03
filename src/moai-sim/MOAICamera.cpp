@@ -157,9 +157,9 @@ ZLMatrix4x4 MOAICamera::GetProjMtx ( const MOAIViewport& viewport ) const {
 	
 	if ( this->mOrtho ) {
 		
-		float xs = ( 2.0f / viewport.Width ()) * viewScale.mX;
-		float ys = ( 2.0f / viewport.Height ()) * viewScale.mY;
-		
+		float xs = ( 2.0f / viewport.Width ())  * viewScale.mX;
+		float ys = ( 2.0f / viewport.Height ()) * viewScale.mY;	
+	
 		mtx.Ortho ( xs, ys, this->mNearPlane, this->mFarPlane );
 	}
 	else {
@@ -173,9 +173,10 @@ ZLMatrix4x4 MOAICamera::GetProjMtx ( const MOAIViewport& viewport ) const {
 		mtx.Perspective ( xs, ys, this->mNearPlane, this->mFarPlane );
 	}
 	
-	proj.Append ( mtx );
-	
+
+	proj.Append ( mtx );	
 	// offset
+
 	mtx.Translate ( viewport.mOffset.mX, viewport.mOffset.mY, 0.0f );
 	proj.Append ( mtx );
 	

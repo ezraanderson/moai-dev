@@ -14,6 +14,70 @@ class MOAIBox2DFixture;
 class MOAIBox2DJoint;
 class MOAIBox2DWorld;
 class MOAIBox2DRayCastCallback;
+class MOAIBox2DQueryCallback;
+
+
+//================================================================//
+// MOAIBox2DRayCastCallback
+//================================================================//
+class MOAIBox2DRayCastCallback : public b2RayCastCallback
+{
+public:
+  MOAILuaState mState;
+  int		mTotal;
+  int		mReturn;
+  float		mUnitsToMeters;
+  bool		mHit;
+
+  friend class MOAIBox2DWorld;
+ 
+  MOAIBox2DRayCastCallback():
+   mState			( 0 ),
+   mTotal			( 0 ),
+   mHit				( false ),
+   mReturn			( 1 ),
+   mUnitsToMeters	( 0 )
+   {
+   }
+
+  ~MOAIBox2DRayCastCallback	(){} ;
+
+  float32 ReportFixture(b2Fixture* fixture, const b2Vec2& point, const b2Vec2& normal, float32 fraction);
+};
+
+//================================================================//
+// QUERRY CAST
+//================================================================//
+
+class MOAIBox2DQueryCallback : public b2QueryCallback {
+public:
+	  MOAILuaState mState;
+
+	  int		mTotal;
+	  int		mReturn;
+	  float		mUnitsToMeters;
+	  bool		mHit;
+
+	  friend class MOAIBox2DWorld;
+
+	  MOAIBox2DQueryCallback():
+	   mState			( 0 ),
+	   mTotal			( 0 ),
+	   mHit				( false ),
+	   mReturn			( 1 ),
+	   mUnitsToMeters	( 0 )
+	   {
+	   }
+   
+     ~MOAIBox2DQueryCallback	(){} ;
+
+      bool ReportFixture(b2Fixture* fixture);
+  };
+
+
+
+
+
 
 //================================================================//
 // MOAIBox2DPrim
@@ -46,6 +110,19 @@ public:
 	}
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 //================================================================//
 // MOAIBox2DWorld
 //================================================================//
@@ -65,6 +142,12 @@ class MOAIBox2DWorld :
 private:
 
 	bool						mLock;
+
+
+
+	MOAIBox2DRayCastCallback*   mRayList;
+	MOAIBox2DQueryCallback*     mQueryList;
+
 
 	b2World*					mWorld;
 	MOAIBox2DDebugDraw*			mDebugDraw;
@@ -115,6 +198,11 @@ private:
 	static int		_setTimeToSleep				( lua_State* L );
 	static int		_setUnitsToMeters			( lua_State* L );
 	static int		_getRayCast					( lua_State* L );
+	static int		_getQuery				   ( lua_State* L );
+
+
+
+
 	static int	    _benchmark					( lua_State* L ); 
 	static int		_drawDebugLua				( lua_State* L );
 	
@@ -131,7 +219,11 @@ public:
 	friend class MOAIBox2DBody;
 	friend class MOAIBox2DFixture;
 	friend class MOAIBox2DJoint;
-	
+	friend class MOAIBox2DRayCastCallback;
+	friend class MOAIBox2DQueryCallback;
+
+
+
 	DECL_LUA_FACTORY ( MOAIBox2DWorld )
 	
 	GET_SET ( float, UnitsToMeters, mUnitsToMeters )
@@ -149,6 +241,8 @@ public:
 	//----------------------------------------------------------------//
 	void			DrawDebug				();
 	bool			IsDone					();
+	b2World*		getWorld				();
+	float				getUnitsToMeters		();
 	bool			IsLocked				();
 					MOAIBox2DWorld			();
 					~MOAIBox2DWorld			();
@@ -157,29 +251,10 @@ public:
 	void			RegisterLuaFuncs		( MOAILuaState& state );
 };
 
-//================================================================//
-// MOAIBox2DRayCastCallback
-//================================================================//
-class MOAIBox2DRayCastCallback : public b2RayCastCallback
-{
-public:
-  MOAIBox2DRayCastCallback() {
-     m_fixture = NULL;
-     m_point.SetZero();
-     m_normal.SetZero();
-  }
- 
-  float32 ReportFixture(b2Fixture* fixture, const b2Vec2& point, const b2Vec2& normal, float32 fraction) {
-     m_fixture = fixture;
-     m_point = point;
-     m_normal = normal;
-     
-     return fraction;
-  }
- 
-  b2Fixture* m_fixture;
-  b2Vec2 m_point;
-  b2Vec2 m_normal;
-};
+
+
+
+
+
 
 #endif

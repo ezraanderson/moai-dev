@@ -170,7 +170,9 @@ private:
 	static int				_setPenWidth			( lua_State* L );
 	static int				_setPointSize			( lua_State* L );
     static int				_newShader	    		( lua_State* L );
-
+    static int				_setBlendMode	    	( lua_State* L );
+	static int				_setAmbient				( lua_State* L );
+	
 	//----------------------------------------------------------------//
 	void					Clear					();
 	void					DisableTextureUnits		( u32 activeTextures );

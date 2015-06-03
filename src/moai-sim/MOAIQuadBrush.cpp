@@ -41,6 +41,27 @@ void MOAIQuadBrush::Draw ( float xOff, float yOff, float zOff, float xScale, flo
 void MOAIQuadBrush::Draw ( float xOff, float yOff, float zOff, float xScale, float yScale, float uOff, float vOff, float uScale, float vScale ) {
 	
 	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
+
+
+	//ZLAffine3D mtx;
+	//mtx.Transform ( this->mUV [ 0 ]);
+	//mtx.Transform ( this->mUV [ 1 ]);
+	//mtx.Transform ( this->mUV [ 2 ]);
+	//mtx.Transform ( this->mUV [ 3 ]);
+	//MOAIQuadBrush quad;		
+	//ZLAffine3D mtx;
+	//quad.SetVerts ( 0, 0, 0, 0 );	
+	//quad.SetUVs ( 1, 1, 1, 1 );
+	//mtx.Scale(10.0f,10.0,50.0f);	
+	//mtx.RotateZ(this->mUV);	
+	//quad.TransformVerts(mtx);	
+	//	ZLAffine3D mtx;
+	//	mtx.ScRoTr (this->mVtx[1],this->mVtx[2],this->mVtx[3],this->mVtx[4],);
+	//gfxDevice.WriteQuad ( this->mVtx, this->mUV, xOff, yOff, zOff, xScale, yScale, uOff, vOff, uScale, vScale ); 
+
+
+
+
 	gfxDevice.WriteQuad ( this->mVtx, this->mUV, xOff, yOff, zOff, xScale, yScale, uOff, vOff, uScale, vScale ); 
 }
 

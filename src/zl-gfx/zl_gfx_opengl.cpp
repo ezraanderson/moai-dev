@@ -133,44 +133,49 @@ GLenum _remapEnum ( u32 zglEnum ) {
 
 		case ZGL_BLEND_MODE_ADD:						return GL_FUNC_ADD;
 
-		#if !defined ( MOAI_OS_NACL ) && !defined ( MOAI_OS_IPHONE ) && !defined ( MOAI_OS_BLACKBERRY ) && !defined ( MOAI_OS_ANDROID )
+
+
+	#if !defined ( MOAI_OS_NACL ) && !defined ( MOAI_OS_IPHONE ) && !defined ( MOAI_OS_BLACKBERRY ) && !defined ( MOAI_OS_ANDROID )
+
   		case ZGL_BLEND_MODE_MAX:						return GL_MAX;
   		case ZGL_BLEND_MODE_MIN:						return GL_MIN;
-		#endif
+	#endif
 
 		case ZGL_BLEND_MODE_REVERSE_SUBTRACT:			return GL_FUNC_REVERSE_SUBTRACT;
 		case ZGL_BLEND_MODE_SUBTRACT:					return GL_FUNC_SUBTRACT;
 
 		case ZGL_BUFFER_TARGET_ELEMENT_ARRAY:			return GL_ELEMENT_ARRAY_BUFFER;
 
-		#if !defined ( MOAI_OS_NACL ) && !defined ( MOAI_OS_IPHONE ) && !defined ( MOAI_OS_BLACKBERRY ) && !defined ( MOAI_OS_ANDROID )
+	#if !defined ( MOAI_OS_NACL ) && !defined ( MOAI_OS_IPHONE ) && !defined ( MOAI_OS_BLACKBERRY ) && !defined ( MOAI_OS_ANDROID )
 		case ZGL_BUFFER_USAGE_DYNAMIC_COPY:				return GL_DYNAMIC_COPY;
     #endif 
     
 		case ZGL_BUFFER_USAGE_DYNAMIC_DRAW:				return GL_DYNAMIC_DRAW;
 
-		#if !defined ( MOAI_OS_NACL ) && !defined ( MOAI_OS_IPHONE ) && !defined ( MOAI_OS_BLACKBERRY ) && !defined ( MOAI_OS_ANDROID )
+	#if !defined ( MOAI_OS_NACL ) && !defined ( MOAI_OS_IPHONE ) && !defined ( MOAI_OS_BLACKBERRY ) && !defined ( MOAI_OS_ANDROID )
   		case ZGL_BUFFER_USAGE_DYNAMIC_READ:				return GL_DYNAMIC_READ;
   		case ZGL_BUFFER_USAGE_STATIC_COPY:				return GL_STATIC_COPY;
     #endif
     
 		case ZGL_BUFFER_USAGE_STATIC_DRAW:				return GL_STATIC_DRAW;
 
-		#if !defined ( MOAI_OS_NACL ) && !defined ( MOAI_OS_IPHONE ) && !defined ( MOAI_OS_BLACKBERRY ) && !defined ( MOAI_OS_ANDROID )
+	#if !defined ( MOAI_OS_NACL ) && !defined ( MOAI_OS_IPHONE ) && !defined ( MOAI_OS_BLACKBERRY ) && !defined ( MOAI_OS_ANDROID )
   		case ZGL_BUFFER_USAGE_STATIC_READ:				return GL_STATIC_READ;
   		case ZGL_BUFFER_USAGE_STREAM_COPY:				return GL_STREAM_COPY;
-		#endif
+	#endif
 		
 		case ZGL_BUFFER_USAGE_STREAM_DRAW:				return GL_STREAM_DRAW;
 		
-		#if !defined ( MOAI_OS_NACL ) && !defined ( MOAI_OS_IPHONE ) && !defined ( MOAI_OS_BLACKBERRY ) && !defined ( MOAI_OS_ANDROID )
+	#if !defined ( MOAI_OS_NACL ) && !defined ( MOAI_OS_IPHONE ) && !defined ( MOAI_OS_BLACKBERRY ) && !defined ( MOAI_OS_ANDROID )
 		  case ZGL_BUFFER_USAGE_STREAM_READ:				return GL_STREAM_READ;
-		#endif
+	#endif
 
-		#if !defined ( MOAI_OS_NACL ) && !defined ( MOAI_OS_BLACKBERRY )
+	#if !defined ( MOAI_OS_NACL ) && !defined ( MOAI_OS_BLACKBERRY )
 		  case ZGL_COMPOSE_MODULATE:						return GL_MODULATE;
     #endif
-    
+
+   
+
 		case ZGL_CULL_ALL:								return GL_FRONT_AND_BACK;
 		case ZGL_CULL_BACK:								return GL_BACK;
 		case ZGL_CULL_FRONT:							return GL_FRONT;
@@ -188,10 +193,10 @@ GLenum _remapEnum ( u32 zglEnum ) {
 		case ZGL_FRAMEBUFFER_ATTACHMENT_DEPTH:			return GL_DEPTH_ATTACHMENT;
 		case ZGL_FRAMEBUFFER_ATTACHMENT_STENCIL:		return GL_STENCIL_ATTACHMENT;
 
-		#if !defined ( MOAI_OS_NACL ) && !defined ( MOAI_OS_IPHONE ) && !defined ( MOAI_OS_BLACKBERRY ) && !defined ( MOAI_OS_ANDROID )
+	#if !defined ( MOAI_OS_NACL ) && !defined ( MOAI_OS_IPHONE ) && !defined ( MOAI_OS_BLACKBERRY ) && !defined ( MOAI_OS_ANDROID )
   		case ZGL_FRAMEBUFFER_TARGET_DRAW:				return GL_DRAW_FRAMEBUFFER;
   		case ZGL_FRAMEBUFFER_TARGET_READ:				return GL_READ_FRAMEBUFFER;
-		#endif
+	#endif
 
 		case ZGL_FRAMEBUFFER_TARGET_DRAW_READ:			return GL_FRAMEBUFFER;
 
@@ -199,26 +204,26 @@ GLenum _remapEnum ( u32 zglEnum ) {
   		case ZGL_MATRIX_COLOR:							return GL_COLOR;
   		case ZGL_MATRIX_MODELVIEW:						return GL_MODELVIEW;
   		case ZGL_MATRIX_PROJECTION:						return GL_PROJECTION;
-		#endif
+	#endif
 		
 		case ZGL_MATRIX_TEXTURE:						return GL_TEXTURE;
 
 		case ZGL_PIPELINE_BLEND:						return GL_BLEND;
 		
-		#if !defined ( MOAI_OS_NACL )
+	#if !defined ( MOAI_OS_NACL )
 		  case ZGL_PIPELINE_COLOR_ARRAY:					return GL_COLOR_ARRAY;
-		#endif
+	#endif
 		case ZGL_PIPELINE_CULL:							return GL_CULL_FACE;
 		case ZGL_PIPELINE_DEPTH:						return GL_DEPTH_TEST;
 
-		#if !defined ( MOAI_OS_NACL )
+	#if !defined ( MOAI_OS_NACL )
 		  case ZGL_PIPELINE_NORMAL_ARRAY:					return GL_NORMAL_ARRAY;
     #endif
     
 		case ZGL_PIPELINE_SCISSOR:						return GL_SCISSOR_TEST;
 		case ZGL_PIPELINE_TEXTURE_2D:					return GL_TEXTURE_2D;
 
-		#if !defined ( MOAI_OS_NACL )
+	#if !defined ( MOAI_OS_NACL )
   		case ZGL_PIPELINE_TEXTURE_COORD_ARRAY:			return GL_TEXTURE_COORD_ARRAY;
   		case ZGL_PIPELINE_VERTEX_ARRAY:					return GL_VERTEX_ARRAY;
     #endif
@@ -232,7 +237,10 @@ GLenum _remapEnum ( u32 zglEnum ) {
 		  case ZGL_PIXEL_FORMAT_RG:							return GL_RG;
 		#endif
 		
-		case ZGL_PIXEL_FORMAT_RGB:							return GL_RGB;
+		case ZGL_PIXEL_FORMAT_RGB:							return GL_RGB;			
+		case ZGL_PIXEL_FORMAT_DEPTH_COMPONENT16:			return GL_DEPTH_COMPONENT16;
+		case ZGL_PIXEL_FORMAT_DEPTH_COMPONENT24:			return GL_DEPTH_COMPONENT24;
+		case ZGL_PIXEL_FORMAT_DEPTH_COMPONENT32:			return GL_DEPTH_COMPONENT32;
 		
 		#if !defined ( MOAI_OS_NACL ) && !defined ( MOAI_OS_IPHONE ) && !defined ( MOAI_OS_BLACKBERRY ) && !defined ( MOAI_OS_ANDROID )
 		  case ZGL_PIXEL_FORMAT_RGB4:							return GL_RGB4;
@@ -244,11 +252,17 @@ GLenum _remapEnum ( u32 zglEnum ) {
 			case ZGL_PIXEL_FORMAT_RGB565:							return GL_RGB565;
 		#endif
 		
+
+		
+
+
 		#if !defined ( MOAI_OS_NACL ) && !defined ( MOAI_OS_IPHONE ) && !defined ( MOAI_OS_BLACKBERRY ) && !defined ( MOAI_OS_ANDROID )
 		  case ZGL_PIXEL_FORMAT_RGB8:							return GL_RGB8;
 		  case ZGL_PIXEL_FORMAT_BGR:							return GL_BGR;
 		#endif
 		
+
+
 		case ZGL_PIXEL_FORMAT_RGBA:							return GL_RGBA;
 		case ZGL_PIXEL_FORMAT_RGBA4:						return GL_RGBA4;
 
@@ -541,6 +555,9 @@ void zglActiveTexture ( u32 textureUnit ) {
 //----------------------------------------------------------------//
 void zglBlendFunc ( u32 sourceFactor, u32 destFactor ) {
 	glBlendFunc ( _remapEnum ( sourceFactor ), _remapEnum ( destFactor ));
+
+	//glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
+
 }
 
 //----------------------------------------------------------------//

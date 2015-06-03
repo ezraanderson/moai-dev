@@ -128,6 +128,10 @@ void MOAITextureBase::CreateTextureFromImage ( MOAIImage& image ) {
 		( this->mMinFilter == ZGL_SAMPLE_NEAREST_MIPMAP_NEAREST )
 	);
 
+
+	//bool genMipMaps = false;
+
+
 	// GL_ALPHA
 	// GL_RGB
 	// GL_RGBA
@@ -447,7 +451,14 @@ void MOAITextureBase::OnBind () {
 		
 		zglTexParameteri ( ZGL_TEXTURE_MIN_FILTER, this->mMinFilter );
 		zglTexParameteri ( ZGL_TEXTURE_MAG_FILTER, this->mMagFilter );
+
+		//zglTexParameteri ( ZGL_TEXTURE_MIN_FILTER, ZGL_SAMPLE_NEAREST_MIPMAP_LINEAR );
+		//zglTexParameteri ( ZGL_TEXTURE_MAG_FILTER, ZGL_SAMPLE_NEAREST);
 		
+		//EZRA TEXURE LEVEL
+		//zglTexParameteri(ZGL_TEXTURE_MAX_LEVEL, 7);
+
+
 		this->mIsDirty = false;
 	}
 }
@@ -492,7 +503,9 @@ void MOAITextureBase::RegisterLuaClass ( MOAILuaState& state ) {
 	state.SetField ( -1, "GL_RGBA4",					( u32 )ZGL_PIXEL_FORMAT_RGBA4 );
 	state.SetField ( -1, "GL_RGB5_A1",					( u32 )ZGL_PIXEL_FORMAT_RGB5_A1 );
 	state.SetField ( -1, "GL_DEPTH_COMPONENT16",		( u32 )ZGL_PIXEL_FORMAT_DEPTH_COMPONENT16 );
-	//***state.SetField ( -1, "GL_DEPTH_COMPONENT24",	( u32 )GL_DEPTH_COMPONENT24 );
+	state.SetField ( -1, "GL_DEPTH_COMPONENT24",		( u32 )ZGL_PIXEL_FORMAT_DEPTH_COMPONENT24 );
+	state.SetField ( -1, "GL_DEPTH_COMPONENT32",		( u32 )ZGL_PIXEL_FORMAT_DEPTH_COMPONENT32 );
+
 	//***state.SetField ( -1, "GL_STENCIL_INDEX1",		( u32 )GL_STENCIL_INDEX1 );
 	//***state.SetField ( -1, "GL_STENCIL_INDEX4",		( u32 )GL_STENCIL_INDEX4 );
 	state.SetField ( -1, "GL_STENCIL_INDEX8",			( u32 )ZGL_PIXEL_FORMAT_STENCIL_INDEX8 );

@@ -251,13 +251,37 @@ void MOAITileDeck2D::DrawIndex ( u32 idx, float xOff, float yOff, float zOff, fl
 	MOAICellCoord coord = this->GetCellCoord ( idx );
 	ZLRect uvRect = this->GetTileRect ( coord );
 	
-	float uScale = ( uvRect.mXMax - uvRect.mXMin );
+	float uScale =  ( uvRect.mXMax - uvRect.mXMin );
 	float vScale = -( uvRect.mYMax - uvRect.mYMin );
 	
 	float uOff = uvRect.mXMin + ( 0.5f * uScale );
 	float vOff = uvRect.mYMin - ( 0.5f * vScale );
+
+
+	//ZLAffine3D mtx;
+
+
+	//	mtx.ScRoTr (
+	//			0.0f, 0.0f, 1.0f,
+	//			0.0f, 0.0f, 0.0f,
+	//			1.0f, 1.0f, 1.0f
+	//		);
+
+	////mtx.RotateZ(1*180/3.14);
+	////mtx.RotateX(1*180/3.14);
+	////mtx.RotateY(1*180/3.14);
+	////this->mQuad.
+	//this->mQuad.TransformVerts(mtx);
+	//this->mQuad.Draw ( xOff, yOff, 0, xScl, yScl, uOff, vOff, uScale, vScale );
+
 	
+
+
 	this->mQuad.Draw ( xOff, yOff, zOff, xScl, yScl, uOff, vOff, uScale, vScale );
+
+
+
+
 }
 
 //----------------------------------------------------------------//

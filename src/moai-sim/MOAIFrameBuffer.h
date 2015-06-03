@@ -21,6 +21,8 @@ private:
 	//----------------------------------------------------------------//
 	static int		_setClearColor			( lua_State* L );
 	static int		_setClearDepth			( lua_State* L );
+	static int		_clearDepth				( lua_State* L );
+
 
 	//----------------------------------------------------------------//
 	

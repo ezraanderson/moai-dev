@@ -18,6 +18,10 @@
 #include <moai-sim/shaders/MOAIMeshShader-fsh.h>
 #include <moai-sim/shaders/MOAIMeshShader-vsh.h>
 
+
+#include <moai-sim/shaders/MOAIDeck2DShaderDiscard-fsh.h>
+#include <moai-sim/shaders/MOAIDeck2DShaderDiscard-vsh.h>
+
 //================================================================//
 // local
 //================================================================//
@@ -76,6 +80,14 @@ MOAIShader& MOAIShaderMgr::GetShader ( u32 shaderID ) {
 			case DECK2D_SHADER:
 				
 				shader->SetSource ( _deck2DShaderVSH, _deck2DShaderFSH );
+				shader->SetVertexAttribute ( MOAIVertexFormatMgr::XYZWUVC_POSITION, "position" );
+				shader->SetVertexAttribute ( MOAIVertexFormatMgr::XYZWUVC_TEXCOORD, "uv" );
+				shader->SetVertexAttribute ( MOAIVertexFormatMgr::XYZWUVC_COLOR, "color" );
+				break;
+
+			case DISCARD_SHADER:
+				
+				shader->SetSource ( _discardShaderVSH, _discardShaderFSH );
 				shader->SetVertexAttribute ( MOAIVertexFormatMgr::XYZWUVC_POSITION, "position" );
 				shader->SetVertexAttribute ( MOAIVertexFormatMgr::XYZWUVC_TEXCOORD, "uv" );
 				shader->SetVertexAttribute ( MOAIVertexFormatMgr::XYZWUVC_COLOR, "color" );

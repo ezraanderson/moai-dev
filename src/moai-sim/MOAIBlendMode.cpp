@@ -14,6 +14,9 @@ void MOAIBlendMode::Bind () {
 	zglEnable ( ZGL_PIPELINE_BLEND );
 	zglBlendMode ( this->mEquation );
 	zglBlendFunc ( this->mSourceFactor, this->mDestFactor );
+
+
+
 }
 
 //----------------------------------------------------------------//
