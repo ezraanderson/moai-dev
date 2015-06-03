@@ -95,39 +95,9 @@ static const int springVAR_count = sizeof(springVAR)/sizeof(float)/3;
 //----------------------------------------------------------------//
 static void draw_shape_verts ( const float* verts, u32 count, u32 color, bool drawFilled ) {
 
-	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
-	gfxDevice.SetVertexMtxMode ( MOAIGfxDevice::VTX_STAGE_MODEL, MOAIGfxDevice::VTX_STAGE_PROJ );
-	const ZLFrustum& viewVolume = gfxDevice.GetViewVolume ();
-
-
-
-	bool draw = false;
-	//***************************************************
-	for ( u32 i = 0; i < count; ++i ) {
-		u32 v = i << 1;
-		if (viewVolume.Cull(ZLVec3D(verts [ v ],verts [ v + 1 ],0.0f)) == false){
-			draw = true;
-			break;
-		};
-	}
-
-
-	//***************************************************
-	if (draw == true) {
-		if ( drawFilled ) {
-
-			MOAIDraw::DrawVertexArray2D ( verts, count, color, ZGL_PRIM_TRIANGLE_FAN );			
-			color = ZLColor::PackRGBA ( LINE_COLOR, 1.0f );
-			MOAIDraw::DrawVertexArray2D ( verts, count, color, ZGL_PRIM_LINE_LOOP );
-		}
-	
-	};
-
-
-			//MOAIDraw::DrawVertexArray2D ( verts, count, color, ZGL_PRIM_TRIANGLE_FAN );			
-			//color = ZLColor::PackRGBA ( LINE_COLOR, 1.0f );
-			//MOAIDraw::DrawVertexArray2D ( verts, count, color, ZGL_PRIM_LINE_LOOP );
-
+	MOAIDraw::DrawVertexArray2D ( verts, count, color, ZGL_PRIM_TRIANGLE_FAN );			
+	color = ZLColor::PackRGBA ( LINE_COLOR, 1.0f );
+	MOAIDraw::DrawVertexArray2D ( verts, count, color, ZGL_PRIM_LINE_LOOP );
 
 }
 
@@ -183,42 +153,25 @@ static void drawCircleShape(cpBody *body, cpCircleShape *circle, cpSpace *space)
 
 	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
 	gfxDevice.SetVertexMtxMode ( MOAIGfxDevice::VTX_STAGE_MODEL, MOAIGfxDevice::VTX_STAGE_PROJ );
-
-	//printf("DRAW CIRCLE\n");
 	const ZLFrustum& viewVolume = gfxDevice.GetViewVolume ();
-	cpVect center = circle->tc;
+
+	cpShape *tempShap = ( cpShape* )circle;
 
 	ZLBox box;	
-	box.mMin.mX =center.x-( float )circle->r;
-	box.mMin.mY =center.y-( float )circle->r;
+	box.mMin.mX =tempShap->bb.l;;
+	box.mMin.mY =tempShap->bb.t;
 	box.mMin.mZ = 0.0f;
 	
-	box.mMax.mX =center.x+( float )circle->r;
-	box.mMax.mY =center.y+( float )circle->r;
+	box.mMax.mX =tempShap->bb.r;
+	box.mMax.mY =tempShap->bb.b;
 	box.mMax.mZ = 0.0f;
 
 	if (viewVolume.Cull(box) == false) {
+		cpVect center = circle->tc;
 	   u32 color = color_for_shape (( cpShape* )circle, space );
 	   MOAIDraw::DrawEllipseOutline ( center.x, center.y, ( float )circle->r, ( float )circle->r, 32 );	
 	};
 
-
-
-	
-	
-	
-   	
-	//ZLAffine3D mtx;
-	//mtx.ScRoTr (
-	//	( float )circle->r, ( float )circle->r, 1.0f,
-	//	0.0f, 0.0f, ( float )( body->a * 180.0 / M_PI ),
-	//	( float )center.x, ( float )center.y, 0.0f
-	//);
-	//draw_shape_verts ( circleVAR, circleVAR_count, color, ( circle->shape.sensor == 0 ));
-	//MOAIDraw::DrawVertexArray2D ( verts, count, color, ZGL_PRIM_LINE_LOOP );
-	
-	//gfxDevice.SetVertexTransform ( MOAIGfxDevice::VTX_WORLD_TRANSFORM, mtx );
-	//gfxDevice.SetVertexTransform ( MOAIGfxDevice::VTX_WORLD_TRANSFORM );
 }
 
 //----------------------------------------------------------------//
@@ -286,20 +239,30 @@ static void drawPolyShape ( cpBody* body, cpPolyShape* poly, cpSpace* space ) {
 	UNUSED ( body );
 
 	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
-	gfxDevice.SetVertexMtxMode ( MOAIGfxDevice::VTX_STAGE_WORLD, MOAIGfxDevice::VTX_STAGE_PROJ );
+	gfxDevice.SetVertexMtxMode ( MOAIGfxDevice::VTX_STAGE_MODEL, MOAIGfxDevice::VTX_STAGE_PROJ );
+	const ZLFrustum& viewVolume = gfxDevice.GetViewVolume ();
 
+	cpShape *tempShap = ( cpShape* )poly;
 
-	// https://github.com/moai/moai-beta/blob/master/src/moaicore/MOAICpDebugDraw.cpp
+	ZLBox box;	
+	box.mMin.mX =tempShap->bb.l;;
+	box.mMin.mY =tempShap->bb.t;
+	box.mMin.mZ = 0.0f;
+	
+	box.mMax.mX =tempShap->bb.r;
+	box.mMax.mY =tempShap->bb.b;
+	box.mMax.mZ = 0.0f;
 
+	if (viewVolume.Cull(box) == false) {	
 
 		static const u32 MAX = 2048;
 		float verts [ MAX ];
 		
 		int cnt = 0;
+		bool draw = false;
 		int unsigned  count = cpPolyShapeGetCount(( cpShape* )poly);
 		for ( u32 i = 0; i < count; ++i ) {
-				cpVect vec = cpBodyLocalToWorld(body,cpPolyShapeGetVert(( cpShape* )poly,i));
-				//printf("x %f y %f \n",vec.x,vec.y);			
+				cpVect vec = cpBodyLocalToWorld(body,cpPolyShapeGetVert(( cpShape* )poly,i));					
 				verts[cnt] =  ( float )vec.x;	
 				cnt = cnt+ 1;
 				verts[cnt] =  ( float )vec.y;
@@ -307,20 +270,12 @@ static void drawPolyShape ( cpBody* body, cpPolyShape* poly, cpSpace* space ) {
 			
 		};
 
+		u32 color = color_for_shape (( cpShape* )poly, space );
+		draw_shape_verts (( float* )verts, count, color, ( poly->shape.sensor == 0 ));
 
-	u32 color = color_for_shape (( cpShape* )poly, space );
-	draw_shape_verts (( float* )verts, count, color, ( poly->shape.sensor == 0 ));
+	};
+
 }
-
-
-
-
-
-
-
-
-
-
 
 
 //----------------------------------------------------------------//
@@ -586,14 +541,6 @@ void MOAICpDebugDraw::DrawSpace ( cpSpace *space, MOAICpDebugDrawOptions *option
 	// clear out model to world transform
 	gfxDevice.SetVertexTransform ( MOAIGfxDevice::VTX_WORLD_TRANSFORM );
 
-	// TODO
-	//if ( options->drawHash ) {
-	//	glColorMask ( GL_FALSE, GL_TRUE, GL_FALSE, GL_TRUE );
-	//	drawSpatialHash ( space->activeShapes );
-	//	glColorMask ( GL_TRUE, GL_FALSE, GL_FALSE, GL_FALSE );
-	//	drawSpatialHash ( space->staticShapes );
-	//	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
-	//}
 	
 	gfxDevice.SetPenWidth ( options->lineThickness );
 	if ( options->drawShapes ) {
@@ -637,10 +584,10 @@ void MOAICpDebugDraw::DrawSpace ( cpSpace *space, MOAICpDebugDrawOptions *option
 		gfxDevice.SetPenColor ( COLLISION_COLOR, 1.0f );
 		
 		cpArray *arbiters = space->arbiters;
-		for ( int i = 0; i < arbiters->num; i++ ) {
-			
+		for ( int i = 0; i < arbiters->num; i++ ) {			
 			cpArbiter* arb = ( cpArbiter* )arbiters->arr [ i ];
 			for ( int j = 0; j < arb->count; j++ ){
+				//WHY IS THIS AN ERROR
 				//cpVect v = arb->contacts [ j ].r1;
 				//MOAIDraw::DrawPoint (( float )v.x, ( float )v.y );
 			}

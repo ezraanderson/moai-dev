@@ -127,7 +127,7 @@ mBody ( 0 )
 
 	RTTI_BEGIN
 		RTTI_EXTEND ( MOAILuaObject )	
-		RTTI_END
+	RTTI_END
 }
 
 //----------------------------------------------------------------//
@@ -140,9 +140,6 @@ void BOXVehicle::RegisterLuaClass ( MOAILuaState& state ) {
 
 //----------------------------------------------------------------//
 void BOXVehicle::RegisterLuaFuncs ( MOAILuaState& state ) {
-
-	// call any initializers for base classes here:
-	// MOAIFooBase::RegisterLuaFuncs ( state );
 
 	luaL_Reg regTable [] = {
 		{ "updateFriction",	_updateFriction },

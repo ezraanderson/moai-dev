@@ -12,13 +12,8 @@
 #include "chipmunk/chipmunk.h"
 #include "chipmunk/chipmunk_unsafe.h"
 
+int		   mTotal; //WHERE THE FUCK DO I PUT THIS
 
-
-
-
-
-
-//|| defined(MOAI_OS_IPHONE) || defined(MOAI_OS_LINUX) || defined(MOAI_OS_OSX)
 
 #if defined(MOAI_OS_ANDROID) || defined(MOAI_OS_IPHONE) || defined(MOAI_OS_LINUX) || defined(MOAI_OS_OSX)
 
@@ -44,56 +39,6 @@ extern "C" {
   #define BENCH_SPACE_FREE cpSpaceFree
   #define BENCH_SPACE_STEP cpSpaceStep
 #endif
-
-
-//#ifdef MOAI_OS_IPHONE
-//#include "chipmunk/cpHastySpace.h"
-//  
-//  static cpSpace *MakeHastySpace(){
-//    cpSpace *space = cpHastySpaceNew();
-//    cpHastySpaceSetThreads(space, 0);
-//    return space;
-//  }
-//  
-//  #define BENCH_SPACE_NEW MakeHastySpace
-//  #define BENCH_SPACE_FREE cpHastySpaceFree
-//  #define BENCH_SPACE_STEP cpHastySpaceStep
-//#endif
-
-
-
-//
-//#ifdef MOAI_OS_OSX    
-//
-//#endif
-//
-//#ifdef MOAI_OS_WINDOWS
-//
-//#endif
-//
-//
-//
-//#ifdef MOAI_OS_HTML
-//
-//#endif
-//
-//#ifdef MOAI_OS_IPHONE
-//
-//#endif
-//
-//
-//#ifdef MOAI_OS_ANDROID
-//
-//
-//#endif
-//
-
-#ifdef MOAI_OS_LINUX
-
-#endif
-
-
-
 
 
 
@@ -254,39 +199,18 @@ static void _cpCollisionSeparateFunc ( cpArbiter* arb, cpSpace* space, void *dat
 
 //----------------------------------------------------------------//
 //static void _shapeListForPointCallback ( cpShape *shape, void *data ) {
+
 static void _shapeListForPointCallback(cpShape *shape, cpVect p, cpFloat d, cpVect g, void *data) {
-
 	MOAILuaState& state = *( MOAILuaState* )data;
-
-	MOAICpShape *shapeGet = (MOAICpShape *)cpShapeGetUserData(shape);
-	shapeGet->PushLuaUserdata(state);
-
-	//(( MOAICpShape* )shape->data )->PushLuaUserdata ( state );
+	(( MOAICpShape* )shape->userData )->PushLuaUserdata ( state );
 }
 
 //----------------------------------------------------------------//
 static void _shapeListForRectCallback ( cpShape *shape, void *data ) {
 
-	MOAILuaState& state = *( MOAILuaState* )data;	
-
-	MOAICpShape *shapeGet = (MOAICpShape *)cpShapeGetUserData(shape);
-	shapeGet->PushLuaUserdata(state);
-
-	//(( MOAICpShape* )shape->data )->PushLuaUserdata ( state );
-}
-
-//----------------------------------------------------------------//
-static void _shapeListForSegmentCallback ( cpShape *shape, cpVect p, cpVect n, cpFloat t, void *data ) {
-
 	MOAILuaState& state = *( MOAILuaState* )data;
 	(( MOAICpShape* )shape->userData )->PushLuaUserdata ( state );
-	
-	lua_pushnumber ( state, t );
-	lua_pushnumber ( state, n.x );
-	lua_pushnumber ( state, n.y );
 }
-
-
 
 
 
@@ -406,9 +330,9 @@ int MOAICpSpace::_getStaticBody ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAICpSpace, "U" )
 	
 	if ( !self->mStaticBody ) {
-	//	self->mStaticBody.Set ( *self, new MOAICpBody ());
-	//	self->mStaticBody->mBody = &self->mSpace->staticBody;
-	//	self->mStaticBody->mBody->userData = self->mStaticBody;
+		self->mStaticBody.Set ( *self, new MOAICpBody ());
+		//self->mStaticBody->mBody = &self->mSpace->staticBody;
+		self->mStaticBody->mBody->userData = self->mStaticBody;
 	}
 	
 	self->mStaticBody->PushLuaUserdata ( state );
@@ -724,15 +648,6 @@ int MOAICpSpace::_shapeForPoint ( lua_State* L ) {
 			(( MOAICpShape* )shape->userData )->PushLuaUserdata ( state );
 			return 1;
 	};
-	
-
-
-
-	//if ( shape ) {
-	//	(( MOAICpShape* )shape->userData )->PushLuaUserdata ( state );
-	//	return 1;
-	//}
-
 
 	return 0;
 }
@@ -780,8 +695,7 @@ int MOAICpSpace::_shapeForSegment ( lua_State* L ) {
 	);
 	
 	if ( shape ) {
-		(( MOAICpShape* )shape->userData )->PushLuaUserdata ( state );
-		//MOAICpShape *shapeGet = (MOAICpShape *)cpShapeGetUserData(shape);
+		(( MOAICpShape* )shape->userData )->PushLuaUserdata ( state );	
 		//EZRA
 		//lua_pushnumber ( state, info.t );
 		//lua_pushnumber ( state, info.n.x );
@@ -826,23 +740,128 @@ int MOAICpSpace::_shapeListForPoint ( lua_State* L ) {
 	cpShapeFilter GRAB_FILTER = cpShapeFilterNew(1, layers, group);
 
 
-	int base = state.GetTop ();
-	
-	cpSpacePointQuery (
-		self->mSpace,
-		point,
-		0.0,
-		GRAB_FILTER,
-		_shapeListForPointCallback,
-		&state
-	);
+//int base = state.GetTop ();
 
-	//(cpSpacePointQueryFunc)PointQueryIteratorFunc
+//mTotal = 0;
+//lua_newtable(state);
+//
+//	cpSpacePointQuery (
+//		self->mSpace,
+//		point,
+//		0.0,
+//		GRAB_FILTER,
+//		_shapeListForPointCallback,
+//		&state
+//	);
 
 
-	int results = state.GetTop () - base;
-	return results;
+
+
+
+
+	return 1;
 }
+
+
+
+
+//----------------------------------------------------------------//
+static void _shapeListForSegmentCallback ( cpShape *shape, cpVect p, cpVect n, cpFloat t, void *data ) {
+
+MOAILuaState& state = *( MOAILuaState* )data;
+
+++mTotal;
+lua_pushnumber(state, mTotal); 
+
+//printf("mTotal %d \n",mTotal);
+
+		
+			lua_newtable(state);		
+
+			(( MOAICpShape* )shape->userData )->PushLuaUserdata ( state );	
+			lua_setfield(state, -2, "obj");
+
+			lua_pushnumber(state, t);
+			lua_setfield(state, -2, "d");
+
+			lua_pushnumber(state, p.x);
+			lua_setfield(state, -2, "x");
+	
+			lua_pushnumber(state, p.y);
+			lua_setfield(state, -2, "y");
+
+			//CHILD
+			lua_settable(state, -3);
+
+
+}
+
+
+//----------------------------------------------------------------//
+/**	@name	shapeListForSegment
+	@text	Retrieves a list of shapes that overlap the segment specified, that exists
+			on the specified layer (or any layer if nil) and is part of the
+			specified group (or any group if nil).
+			
+	@in		MOAICpSpace self
+	@in		number x1
+	@in		number y1
+	@in		number x2
+	@in		number y2
+	@opt	number layers
+	@opt	number group
+	@out	MOAICpShape shapes		The shapes that were matched as multiple return values.
+*/
+int MOAICpSpace::_shapeListForSegment ( lua_State* L ) {
+
+		MOAI_LUA_SETUP ( MOAICpSpace, "UNNNN" )
+
+		cpVect start;
+		start.x = state.GetValue < cpFloat >( 2, 0 );
+		start.y = state.GetValue < cpFloat >( 3, 0 );
+	
+		cpVect end;
+		end.x = state.GetValue < cpFloat >( 4, 0 );
+		end.y = state.GetValue < cpFloat >( 5, 0 );
+
+
+		cpBitmask layers = state.GetValue < cpBitmask >( 4, CP_ALL_CATEGORIES );
+		cpGroup  group	 = state.GetValue < cpGroup >( 5, CP_NO_GROUP );		
+
+		//cpShapeFilter GRAB_FILTER = cpShapeFilterNew(1, layers, group);		
+
+		mTotal = 0;
+		lua_newtable(state);
+
+		cpSpaceSegmentQuery (
+		self->mSpace,
+		start,
+		end,
+		100.0f,
+		CP_SHAPE_FILTER_ALL,
+		_shapeListForSegmentCallback,
+		&state
+		);	
+
+		return 1;
+
+		//int results = state.GetTop () - base;
+		//return results;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //----------------------------------------------------------------//
 /**	@name	shapeListForRect
@@ -887,57 +906,6 @@ int MOAICpSpace::_shapeListForRect ( lua_State* L ) {
 		bb,	
 		GRAB_FILTER,
 		_shapeListForRectCallback,
-		&state
-	);
-	
-	int results = state.GetTop () - base;
-	return results;
-}
-
-//----------------------------------------------------------------//
-/**	@name	shapeListForSegment
-	@text	Retrieves a list of shapes that overlap the segment specified, that exists
-			on the specified layer (or any layer if nil) and is part of the
-			specified group (or any group if nil).
-			
-	@in		MOAICpSpace self
-	@in		number x1
-	@in		number y1
-	@in		number x2
-	@in		number y2
-	@opt	number layers
-	@opt	number group
-	@out	MOAICpShape shapes		The shapes that were matched as multiple return values.
-*/
-int MOAICpSpace::_shapeListForSegment ( lua_State* L ) {
-	MOAI_LUA_SETUP ( MOAICpSpace, "UNNNN" )
-	
-	cpVect start;
-	start.x = state.GetValue < cpFloat >( 2, 0 );
-	start.y = state.GetValue < cpFloat >( 3, 0 );
-	
-	cpVect end;
-	end.x = state.GetValue < cpFloat >( 4, 0 );
-	end.y = state.GetValue < cpFloat >( 5, 0 );
-	
-//	cpLayers layers = state.GetValue < cpLayers >( 6, CP_ALL_LAYERS );
-//	cpLayers group = state.GetValue < cpGroup >( 7, CP_NO_GROUP );
-
-	cpBitmask layers = state.GetValue < cpBitmask >( 4, CP_ALL_CATEGORIES );
-	cpGroup group	 = state.GetValue < cpGroup >( 5, CP_NO_GROUP );
-
-	cpShapeFilter GRAB_FILTER = cpShapeFilterNew(1, layers, group);
-
-		
-	int base = state.GetTop ();
-	
-	cpSpaceSegmentQuery (
-		self->mSpace,
-		start,
-		end,
-		0.0f,
-		GRAB_FILTER,
-		_shapeListForSegmentCallback,
 		&state
 	);
 	
@@ -1014,16 +982,15 @@ MOAICpSpace::MOAICpSpace () :
 		RTTI_EXTEND ( MOAIAction )
 	RTTI_END
 
-	 this->mSpace = BENCH_SPACE_NEW();
+	this->mSpace = BENCH_SPACE_NEW();
 	
 
- cpSpaceSetIterations(this->mSpace,1);
+	cpSpaceSetIterations(this->mSpace,1);
 
-  //cpSpaceSetSleepTimeThreshold(this->mSpace, 0.5f);
-  //cpSpaceSetCollisionSlop(this->mSpace, 0.5f);
-  //cpSpaceSetDamping(this->mSpace, 0.5f);
-
-   // cpSpaceUseSpatialHash(this->mSpace,32, 90000);
+	//cpSpaceSetSleepTimeThreshold(this->mSpace, 0.5f);
+	//cpSpaceSetCollisionSlop(this->mSpace, 0.5f);
+	//cpSpaceSetDamping(this->mSpace, 0.5f);
+	//cpSpaceUseSpatialHash(this->mSpace,32, 90000);
 		
 }
 
@@ -1089,27 +1056,27 @@ void MOAICpSpace::OnUpdate ( float step ) {
 		cpBody** bodies = ( cpBody** )this->mSpace->dynamicBodies->arr;
 		int num = this->mSpace->dynamicBodies->num;
 		
-		for ( int i = 0; i < num; ++i ) {
-			MOAICpBody* body = ( MOAICpBody* )bodies [ i ]->userData;
+		//for ( int i = 0; i < num; ++i ) {
+		//	MOAICpBody* body = ( MOAICpBody* )bodies [ i ]->userData;
 
-				//b2Body* body = t
-			if (cpBodyIsSleeping(bodies[i]) == false) {
-				body->ScheduleUpdate ();
-			}
-			
-			if ( body->mRemoveFlag != MOAICpBody::NONE ) {
-				body->mLinkInSpace.Remove ();
-				removeList.PushBack ( body->mLinkInSpace );
-			}
-		}
-		
+		//		//b2Body* body = t
+		//	if (cpBodyIsSleeping(bodies[i]) == false) {
+		//		body->ScheduleUpdate ();
+		//	}
+		//	
+		//	if ( body->mRemoveFlag != MOAICpBody::NONE ) {
+		//		body->mLinkInSpace.Remove ();
+		//		removeList.PushBack ( body->mLinkInSpace );
+		//	}
+		//}
+		//
 
 
-		while ( removeList.Count ()) {
-			MOAICpPrim* prim = removeList.Front ();
-			removeList.PopFront ();
-			prim->DoRemove ();
-		}
+		//while ( removeList.Count ()) {
+		//	MOAICpPrim* prim = removeList.Front ();
+		//	removeList.PopFront ();
+		//	prim->DoRemove ();
+		//}
 
 
 		mBench = mBench +  ZLDeviceTime::GetTimeInSeconds()-start_time;

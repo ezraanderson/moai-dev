@@ -20,9 +20,7 @@ int MOAIShell::_shellWeb ( lua_State* L ) {
 	return 0;
 }
 
-//================================================================//
-// MOAIFoo
-//================================================================//
+
 
 //----------------------------------------------------------------//
 MOAIShell::MOAIShell () {
@@ -30,7 +28,7 @@ MOAIShell::MOAIShell () {
 	RTTI_BEGIN
 		RTTI_EXTEND ( MOAILuaObject )
 		// and any other objects from multiple inheritance...
-		// RTTI_EXTEND ( MOAIFooBase )
+	
 		RTTI_END
 }
 
@@ -41,11 +39,6 @@ MOAIShell::~MOAIShell () {
 //----------------------------------------------------------------//
 void MOAIShell::RegisterLuaClass ( MOAILuaState& state ) {
 
-	// call any initializers for base classes here:
-	// MOAIFooBase::RegisterLuaClass ( state );
-
-	// also register constants:
-	// state.SetField ( -1, "FOO_CONST", ( u32 )FOO_CONST );
 
 	// here are the class methods:
 	luaL_Reg regTable [] = {
@@ -59,8 +52,7 @@ void MOAIShell::RegisterLuaClass ( MOAILuaState& state ) {
 //----------------------------------------------------------------//
 void MOAIShell::RegisterLuaFuncs ( MOAILuaState& state ) {
 
-	// call any initializers for base classes here:
-	// MOAIFooBase::RegisterLuaFuncs ( state );
+
 
 	// here are the instance methods:
 	luaL_Reg regTable [] = {

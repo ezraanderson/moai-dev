@@ -49,8 +49,8 @@ int MOAICpBody::_addCircle ( lua_State* L ) {
 	
 	MOAICpShape* shape = new MOAICpShape ();
 	shape->mShape	= cpCircleShapeNew ( 0, radius, offset );
-	//shape->mShape->cpDataPointer = shape;
-	 cpShapeSetUserData(shape->mShape, &shape);
+	shape->mShape->userData = shape;
+	 //cpShapeSetUserData(shape->mShape, &shape);
 
 	self->AttachShape ( *shape );
 	shape->PushLuaUserdata ( state );
@@ -79,8 +79,8 @@ int MOAICpBody::_addPolygon ( lua_State* L ) {
 		
 		MOAICpShape* shape = new MOAICpShape ();
 		shape->mShape	= cpPolyShapeNew ( 0, numVerts, verts, cpTransformIdentity, 0.0 );
-		//shape->mShape->data = shape;
-	   cpShapeSetUserData(shape->mShape, &shape);
+		shape->mShape->userData = shape;
+	 
 
 
 		self->AttachShape ( *shape );
@@ -132,8 +132,8 @@ int MOAICpBody::_addRect ( lua_State* L ) {
 
 	MOAICpShape* shape = new MOAICpShape ();
 	shape->mShape	= cpPolyShapeNew ( 0, 4, verts, cpTransformIdentity,0.0 );
-	//shape->mShape->userData = shape;
-	cpShapeSetUserData(shape->mShape, &shape);
+	shape->mShape->userData = shape;
+	//cpShapeSetUserData(shape->mShape, &shape);
 
 	self->AttachShape ( *shape );
 	shape->PushLuaUserdata ( state );
@@ -167,8 +167,8 @@ int MOAICpBody::_addSegment ( lua_State* L ) {
 	
 	MOAICpShape* shape = new MOAICpShape ();
 	shape->mShape	= cpSegmentShapeNew ( 0, a, b, radius );
-	//shape->mShape->data = shape;
-	cpShapeSetUserData(shape->mShape, &shape);
+	shape->mShape->userData = shape;
+	//cpShapeSetUserData(shape->mShape, &shape);
 
 	
 	self->AttachShape ( *shape );
@@ -753,10 +753,6 @@ MOAI_LUA_SETUP ( MOAICpBody, "UNN" )
   float x1 = pos.x;
   float y1 = pos.y;
 
-  // X
-  // Y
-  // MAX
-  // OFFSET ANGLE
 
 	float x2 = state.GetValue < cpFloat >( 2, 0 );
 	float y2 = state.GetValue < cpFloat >( 3, 0 );
@@ -769,8 +765,8 @@ MOAI_LUA_SETUP ( MOAICpBody, "UNN" )
 	v.x = dx;
 	v.y = dy;	
 
-	cpFloat v_mag		   =  cpfclamp(cpvlength(self->mBody->v),0.01,85);
-	v = cpvmult(v, (v_mag+15)*0.01);
+	cpFloat v_mag		   =  cpfclamp(cpvlength(self->mBody->v),0.01,100);
+	v = cpvmult(v, (v_mag+20)*0.01);
 	self->mBody->a = angle+90*(PI/180);
 
 

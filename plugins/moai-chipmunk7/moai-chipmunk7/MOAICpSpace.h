@@ -22,6 +22,9 @@ class MOAICpPrim :
 	public virtual MOAILuaObject  {
 protected:
 
+
+
+
 	ZLLeanLink < MOAICpPrim* > mLinkInSpace;
 	MOAICpSpace* mSpace;
 
@@ -59,7 +62,8 @@ private:
 	u32        mStep;
 	double     mBench;
 	double     mTime;
-	
+
+
 	MOAILuaSharedPtr < MOAICpBody >		mStaticBody;
 	MOAILuaSharedPtr < MOAICpArbiter >	mArbiter;
 	

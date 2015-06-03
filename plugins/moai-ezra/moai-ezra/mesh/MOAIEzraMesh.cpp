@@ -15,8 +15,7 @@
 
 #include <moai-sim/MOAIVertexFormat.h>
 
-
- #include <moai-ezra/mesh/MOAIEzraMesh.h>
+#include <moai-ezra/mesh/MOAIEzraMesh.h>
 #include <moai-ezra/mesh/MOAIEzraVertexBuffer.h>
 
 //================================================================//
