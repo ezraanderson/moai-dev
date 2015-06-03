@@ -10,19 +10,25 @@
 # Check moai-dev/cmake/CMakeLists.txt for all the available options.
 #
 
+export PATH=$PATH:/home/ezra/cmake/bin
+
 cd `dirname $0`/..
 
-if [$1 = "--fast"]; then
+if [[ $1 = "--fast" ]]; then
 
     echo "FAST_________________"       
     cd cmake     
+    cd /home/ezra/Desktop/build-drive/
     cd build-linux
 
 else     
 
 echo "REBUILDING_________________"     
 
+moai_root=$(pwd)
+
 cd cmake
+cd /home/ezra/Desktop/build-drive/
 rm -rf build-linux
 mkdir build-linux
 cd build-linux
@@ -30,7 +36,6 @@ cmake \
 -DBUILD_LINUX=TRUE \
 -DSDL_HOST=TRUE \
 -DMOAI_BOX2D=TRUE \
--DMOAI_BULLET=TRUE \
 -DMOAI_CHIPMUNK=TRUE \
 -DMOAI_CURL=TRUE \
 -DMOAI_CRYPTO=TRUE \
@@ -50,12 +55,15 @@ cmake \
 -DMOAI_UNTZ=TRUE \
 -DMOAI_LUAJIT=TRUE \
 -DMOAI_HTTP_CLIENT=TRUE \
+-DPLUGIN_MOAI-CHIPMUNK7=TRUE \
+-DPLUGIN_MOAI-MATH=TRUE \
+-DPLUGIN_DIR=$moai_root/plugins \
 -DCMAKE_BUILD_TYPE=Release \
-../
+/media/sf_moai-dev/cmake//
 
 fi
 
-make -j8
+#make -j8
 if [[ $? -ne 0 ]]; then
     exit 1
 fi
@@ -63,16 +71,16 @@ fi
 #
 # Copy libs to lib
 #
-rm -rf ../../release/linux/host-sdl/x64/
-mkdir -p ../../release/linux/host-sdl/x64/lib/
-mkdir -p ../../release/linux/host-sdl/x64/bin/
-for i in * ; do
-  if [ -d "$i" ]; then
-    if [ -f $i/lib$i.a ]; then
-      echo "Copying $i/lib$i.a to release/linux/host-sdl/x64/lib"
-      cp $i/lib$i.a ../../release/linux/host-sdl/x64/lib/
-    fi
-  fi
-done
-pwd
-cp host-sdl/moai ../../release/linux/host-sdl/x64/bin/
+#rm -rf ../../release/linux/host-sdl/x64/
+#mkdir -p ../../release/linux/host-sdl/x64/lib/
+#mkdir -p ../../release/linux/host-sdl/x64/bin/
+#for i in * ; do
+#  if [ -d "$i" ]; then
+#    if [ -f $i/lib$i.a ]; then
+#      echo "Copying $i/lib$i.a to release/linux/host-sdl/x64/lib"
+#      cp $i/lib$i.a ../../release/linux/host-sdl/x64/lib/
+#    fi
+#  fi
+#done
+#pwd
+#cp host-sdl/moai ../../release/linux/host-sdl/x64/bin/

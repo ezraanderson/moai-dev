@@ -18,6 +18,9 @@ if "%generator%"=="" (
 	@echo Unknown argument "%1". Valid values are vs2008, vs2010, vs2012, vs2013. Exiting.
 	goto end
 )
+
+   
+::generator=Visual Studio 10
 set targetDir=projects\%arg1%
 
 @echo on
@@ -32,7 +35,7 @@ cmake ^
 -G "%generator%" ^
 -DBUILD_WINDOWS=TRUE ^
 -DMOAI_BOX2D=TRUE ^
--DMOAI_CHIPMUNK=FALSE ^
+#-DMOAI_CHIPMUNK=FALSE ^
 -DMOAI_CURL=TRUE ^
 -DMOAI_CRYPTO=TRUE ^
 -DMOAI_EXPAT=TRUE ^
@@ -53,8 +56,10 @@ cmake ^
 -DSDL_HOST=TRUE ^
 -DMOAI_HTTP_CLIENT=TRUE ^
 -DPLUGIN_MOAI-BULLET=FALSE ^
+-DPLUGIN_MOAI-CHIPMUNK7=TRUE ^
+-DPLUGIN_MOAI-MATHUTIL=TRUE ^
 -DPLUGIN_MOAI-EZRA=TRUE ^
--DPLUGIN_DIR=F:/plugins/ ^
+-DPLUGIN_DIR=F:/moai/pull/moai-dev/plugins ^
 ..\..\
 
 ::cmake --build . --config Release  
@@ -68,3 +73,4 @@ cmake ^
 
 :: Restore original working directory
 popd
+pause
