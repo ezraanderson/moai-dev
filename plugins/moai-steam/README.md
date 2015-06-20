@@ -12,7 +12,7 @@ plugin-moai-steam
 
 1. Make a system varible -> (STEAM_SDK) -> point to download steam files ->  steam path(F:\steam_sdk\steamworks_sdk_133b\sdk) 
 
-2. copy files from root dir -> (F:\steam_sdk\steamworks_sdk_133b\sdk\redistributable_bin\) -> steam_api.dll & steam_api. -> to new folder ->  (F:\steam_sdk\steamworks_sdk_133b\sdk\redistributable_bin\win32\)
+2. move -> (steam_api.dll & steam_api.lib) -> from -> (F:\steam_sdk\steamworks_sdk_133b\sdk\redistributable_bin\) ->  to new folder ->  (F:\steam_sdk\steamworks_sdk_133b\sdk\redistributable_bin\win32\)
 
 3. Add plugins to build scripts
 
@@ -54,6 +54,7 @@ endif ( BUILD_OSX  )
 
 
 5. Copy "steam_api.dll" into the directory with moai.exe
+
 6. Make file called "steam_appid.txt" and add the game id. --> http://forums.steampowered.com/forums/showthread.php?t=1290008
 
 7. SteamAPI_Init();	 --> is called from --> MOAISteamAppInitialize () ->   F:\moai\pull\moai-dev\plugins\moai-steam\moai-steam\host.cpp
