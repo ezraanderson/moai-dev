@@ -29,6 +29,7 @@ build-linux-sdl.sh
 ```
 
 4. All setting are for 32bit, replace 32 with 64 for 64 bit builds 
+
    *F:\moai\pull\moai-dev\plugins\moai-steam\cmake\moai-steam\
 
 ````
