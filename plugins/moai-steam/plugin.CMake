@@ -1,0 +1,5 @@
+# Bullet plugin taken from github.com/ezraanderson/moai-dev @ development branch
+SET(PLUGIN_INFO "MOAI Steam: A MOAI interface for steam")
+SET(PLUGIN_TARGET "moai-steam")
+SET(PLUGIN_PREFIX "MOAISteam")
+SET(PLUGIN_NEEDS_UPDATE FALSE )
