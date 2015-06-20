@@ -10,7 +10,7 @@ plugin-moai-steam
 ----------------------------------------------------------------------------------------
 
 
-1. Make a system varible -> (STEAM_SDK) -> point to download steam files ->  steam path(F:\steam_sdk\steamworks_sdk_133b\sdk) 
+1. Make a system-varible/environment-variable -> (STEAM_SDK) -> point to download steam files ->  steam path(F:\steam_sdk\steamworks_sdk_133b\sdk) 
 
 2. move -> (steam_api.dll & steam_api.lib) -> from -> (F:\steam_sdk\steamworks_sdk_133b\sdk\redistributable_bin\) ->  to new folder ->  (F:\steam_sdk\steamworks_sdk_133b\sdk\redistributable_bin\win32\)
 
