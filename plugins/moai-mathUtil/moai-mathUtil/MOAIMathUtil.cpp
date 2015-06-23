@@ -1610,6 +1610,50 @@ shadow[0] << IntPoint(240,210); //3
 
 };
 
+
+
+
+//***********************************************************************
+//*******************************************************************************
+int MOAIMathUtil::_AABB ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIMathUtil, "U" )
+
+	//GFX
+	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
+	const ZLFrustum& viewVolume = gfxDevice.GetViewVolume ();	
+
+	//TYPE
+	float x1=state.GetValue   < float >( 2, 0 );	
+	float y1=state.GetValue   < float >( 3, 0 );
+	float x2=state.GetValue   < float >( 4, 0 );
+	float y2=state.GetValue   < float >( 5, 0 );	
+
+	//printf("%f %f %f %f",x1,y1,x2,y2);
+
+	ZLBox box;	
+	box.mMin.mX = x1;
+	box.mMin.mY = y1;
+	box.mMin.mZ = 0.0f;
+	
+	box.mMax.mX = x2;
+	box.mMax.mY = y2;
+	box.mMax.mZ = 0.0f;
+
+	if (viewVolume.Cull(box) == false) {
+			lua_pushboolean ( state, false);
+	} else {
+			lua_pushboolean ( state, true);
+	};
+
+
+
+	return 1;
+}
+
+
+
+
+
 //*****************************************************************************************************************************
 //*****************************************************************************************************************************
 //*****************************************************************************************************************************
@@ -1697,7 +1741,7 @@ void MOAIMathUtil::RegisterLuaFuncs ( MOAILuaState& state ) {
 		{ "clipLight",	_clipLight},
 		{ "clipShadow",	_clipShadow},
 		{ "clipExecute",_clipExecute},
-
+		{ "AABB",	  _AABB },
 		{ NULL, NULL }
 	};
 

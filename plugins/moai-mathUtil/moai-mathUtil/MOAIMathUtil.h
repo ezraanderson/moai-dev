@@ -57,7 +57,7 @@ private:
 
 	static int		_mid_point			( lua_State* L );
 
-
+	static int		_AABB			( lua_State* L );
 
 
 //****************************************************
