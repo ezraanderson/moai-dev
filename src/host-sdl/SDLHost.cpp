@@ -284,7 +284,7 @@ void MainLoop () {
 
 		if ( delta < frameDelta ) {
 			//printf("DELAY %d \n ",frameDelta - delta);
-		//	SDL_Delay ( frameDelta - delta );
+			SDL_Delay ( frameDelta - delta );
 		}
 		lastFrame = SDL_GetTicks();
 

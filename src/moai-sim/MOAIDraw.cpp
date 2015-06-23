@@ -66,7 +66,7 @@ void MOAIDraw::BeginDrawString ( float scale, MOAIFont& font, float fontSize, fl
 }
 
 //----------------------------------------------------------------//
-void MOAIDraw::DrawString ( cc8* text, float x, float y, float width, float height ) {
+void MOAIDraw::DrawString ( cc8* text, float x, float y, float width, float height,int align ) {
 
 	// Sanity check
 	size_t textLength = strlen ( text );
@@ -109,10 +109,15 @@ void MOAIDraw::DrawString ( cc8* text, float x, float y, float width, float heig
 			font.AffirmGlyph ( fontSize, c );
 		}
 	}
-
+	
 	font.ProcessGlyphs ();
 	glyphSet = font.GetGlyphSet ( fontSize );
 	assert ( glyphSet );
+
+
+//************************************************************************************************************
+//LEFT
+if (align == 1) {
 
 	for ( size_t i = 0; i < textLength; i++ ) {
 
@@ -159,16 +164,87 @@ void MOAIDraw::DrawString ( cc8* text, float x, float y, float width, float heig
 
 			prevGlyph = glyph;
 		}
-	}
+	} //I
+
+} //LEFT
+
+
+//************************************************************************************************************
+//RIGHT
+if (align == 2) {
+
+for (int i = textLength; i --> 0; ) {
+
+		cc8 c = text [ i ];
+		if ( c == '\n' ) {
+
+			// Move to the next line
+			cursorX = x;
+			cursorY += glyphSet->GetHeight () * scale;
+			prevGlyph = 0;
+
+			if ( height > 0 && (cursorY - y) > height ) {
+				break;
+			}
+		}
+		else {
+			
+			// Move the cursor
+		// Get the glyph for the current character
+			MOAIGlyph* glyph = glyphSet->GetGlyph ( c );
+
+			cursorX -= glyph->GetAdvanceX () * scale;
+
+
+			if ( width > 0 && (cursorX - x) > width ) {
+				continue;
+			}
+
+	
+			if ( glyph ) {
+
+				// Draw the current glyph
+				MOAITextureBase* glyphTexture = font.GetGlyphTexture ( *glyph );
+				if ( glyphTexture ) {
+
+					GlyphPlacement placement = { glyph, cursorX, cursorY };
+					g_CurrentTextDrawContext->mGlyphs.push_back( placement );
+				}
+
+				// Apply kerning
+				if ( prevGlyph ) {
+
+					MOAIKernVec kern = prevGlyph->GetKerning ( glyph->GetCode () );
+					cursorX += kern.mX * scale;
+				}
+
+			}
+
+			prevGlyph = glyph;
+		}
+	} //I
+
+} //LEFT
+
+
+
+
+
+
+
+
 }
 
 //----------------------------------------------------------------//
-void MOAIDraw::DrawString	( cc8* text, float x, float y, float scale, MOAIFont& font, float fontSize, float shadowOffsetX, float shadowOffsetY, float width, float height ) {
+void MOAIDraw::DrawString	( cc8* text, float x, float y, float scale, MOAIFont& font, float fontSize, float shadowOffsetX, float shadowOffsetY, float width, float height,int align ) {
 
 	BeginDrawString ( scale, font, fontSize, shadowOffsetX, shadowOffsetY );
-	DrawString ( text, x, y, width, height );
+	DrawString ( text, x, y, width, height, align);
 	EndDrawString ();
 }
+
+
+
 
 //----------------------------------------------------------------//
 void MOAIDraw::EndDrawString () {
@@ -594,20 +670,33 @@ int MOAIDraw::_drawText ( lua_State* L ) {
 
 	MOAILuaState state ( L );
 	cc8* text = lua_tostring ( state, 3 );
+
 	if ( text ) {
+
 	float x = state.GetValue < float >( 4, 0.0f );
 	float y = state.GetValue < float >( 5, 0.0f );
 	float scale = state.GetValue < float >( 6, 1.0f );
+
 	float shadowOffsetX = state.GetValue < float >( 7, 0.0f );
 	float shadowOffsetY = state.GetValue < float >( 8, 0.0f );
+
+
+
+	int align = state.GetValue < int >( 9, 1 );
+
 	MOAIFont* font = state.GetLuaObject < MOAIFont >( 1, true );
-	if ( font ) {
-	float fontSize = state.GetValue < float >( 2, font->GetDefaultSize () );
-	MOAIDraw::DrawString ( text, x, y, scale, *font, fontSize, shadowOffsetX, shadowOffsetY, 0, 0 );
-	};
+		if ( font ) {
+			float fontSize = state.GetValue < float >( 2, font->GetDefaultSize () );
+			MOAIDraw::DrawString ( text, x, y, scale, *font, fontSize, shadowOffsetX, shadowOffsetY, 0, 0,align );
+		};
 	};
 	return 0;
 };
+
+
+
+
+
 
 //================================================================//
 // MOAIDraw

@@ -1013,10 +1013,11 @@ int MOAIBox2DBody::_moveTo( lua_State* L ) {
 
 		float x2 = state.GetValue < float >( 2, 0 )* unitsToMeters;
 		float y2 = state.GetValue < float >( 3, 0 )* unitsToMeters;
+		float speed = state.GetValue < float >( 4, 1.0f );
 
-		float angle = atan2(  (y2 - y1) , (x2 - x1) );
-		float dx 	  = cos(angle) * 5.0f;
-		float dy 	  = sin(angle) * 5.0f; 
+		float angle   = atan2(  (y2 - y1) , (x2 - x1) );
+		float dx 	  = cos(angle) * speed;
+		float dy 	  = sin(angle) * speed; 
 	
 		b2Vec2 v;
 		v.x = dx;
@@ -1029,11 +1030,18 @@ int MOAIBox2DBody::_moveTo( lua_State* L ) {
 		//v = cpvmult(v, (v_mag+15)*0.01);
 		//self->mBody->set = angle+90*(PI/180);
 
+//radians = degrees * (pi/180)
+//degrees = radians * (180/pi)
 
-	MOAIBox2DBody* moaiBody = ( MOAIBox2DBody* )self->mBody->GetUserData ();
-	moaiBody->ScheduleUpdate ();
+
+		MOAIBox2DBody* moaiBody = ( MOAIBox2DBody* )self->mBody->GetUserData ();
+		moaiBody->ScheduleUpdate ();
+
+		float degree = (angle * (180/M_PI))+90;
+
+		lua_pushnumber ( state, degree );
 	
-	return 0;
+	return 1;
 }
 
 //************************************************************************************
@@ -1049,8 +1057,8 @@ int MOAIBox2DBody::_getDir( lua_State* L ) {
 		float y2 = state.GetValue < float >( 5, 0 );
 
 		float angle = atan2(  (y2 - y1) , (x2 - x1) );
-		float dx 	  = cos(angle) * 100.0f;
-		float dy 	  = sin(angle) * 100.0f; 
+		float dx 	  = cos(angle) * 20.0f;
+		float dy 	  = sin(angle) * 20.0f; 
 
 		lua_pushnumber ( state, dx );
 		lua_pushnumber ( state, dy );
@@ -1059,8 +1067,12 @@ int MOAIBox2DBody::_getDir( lua_State* L ) {
 };
 
 
-
-
+int MOAIBox2DBody::_update( lua_State* L ) {	
+MOAI_LUA_SETUP ( MOAIBox2DBody, "U" )
+	MOAIBox2DBody* moaiBody = ( MOAIBox2DBody* )self->mBody->GetUserData ();
+	moaiBody->ScheduleUpdate ();
+return 0;
+}
 
 
 //================================================================//
@@ -1169,6 +1181,7 @@ void MOAIBox2DBody::RegisterLuaFuncs ( MOAILuaState& state ) {
 
 		{ "moveTo",				    _moveTo },
 		{ "getDir",				    _getDir },
+		{ "update",				    _update },
 
 		{ NULL, NULL }
 	};

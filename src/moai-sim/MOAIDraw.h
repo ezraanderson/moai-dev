@@ -95,8 +95,9 @@ public:
 	static void			DrawRectFill			( float left, float top, float right, float bottom, bool asTriStrip = true );
 	static void			DrawRectOutline			( const ZLRect& rect );
 	static void			DrawRectOutline			( float left, float top, float right, float bottom );
-	static void			DrawString				( cc8* text, float x, float y, float width, float height );
-	static void			DrawString				( cc8* text, float x, float y, float scale, MOAIFont& font, float fontSize, float shadowOffsetX, float shadowOffsetY, float width, float height );
+	static void			DrawString				( cc8* text, float x, float y, float width, float height, int align );
+	static void			DrawString				( cc8* text, float x, float y, float scale, MOAIFont& font, float fontSize, float shadowOffsetX, float shadowOffsetY, float width, float height,int align );
+
 	static void			DrawTexture				( float left, float top, float right, float bottom, MOAITexture* texture );
 	static void			DrawTextureUV			(MOAITexture* texture, 
 												float left, float top, float right, float bottom, 

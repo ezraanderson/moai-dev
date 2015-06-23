@@ -1062,13 +1062,13 @@ void MOAIBox2DWorld::OnUpdate ( float step ) {
 
 	this->Destroy ();
 	
-	b2Body* body = this->mWorld->GetBodyList ();
-	for ( ; body; body = body->GetNext ()) {
-		if ( body->IsActive () && body->IsAwake ()) {
-			MOAIBox2DBody* moaiBody = ( MOAIBox2DBody* )body->GetUserData ();
-			moaiBody->ScheduleUpdate ();
-		}
-	}
+	//b2Body* body = this->mWorld->GetBodyList ();
+	//for ( ; body; body = body->GetNext ()) {
+	//	if ( body->IsActive () && body->IsAwake ()) {
+	//		MOAIBox2DBody* moaiBody = ( MOAIBox2DBody* )body->GetUserData ();
+	//		moaiBody->ScheduleUpdate ();
+	//	}
+	//}
 
 
 	mBench = mBench +  ZLDeviceTime::GetTimeInSeconds()-start_time;

@@ -516,17 +516,17 @@ void MOAIProfilerReportBox::Draw ( int subPrimID ) {
 	MOAIDraw::BeginDrawString ( 1, *mFont, mFontSize, 0, 0 );
 	
 	sprintf ( mTemp, "Perf - sim:%.1fms rnd:%.1fms", simRate, renderRate );
-	MOAIDraw::DrawString ( mTemp, mOverviewXRange.mX + 3, mSummaryYRange.mX, 0, 0 );
+	MOAIDraw::DrawString ( mTemp, mOverviewXRange.mX + 3, mSummaryYRange.mX, 0, 0,1 );
 
 	sprintf ( mTemp, "Mem - lua:%ukb tex:%umb usr:%ukb used:%umb avail:%umb", (u32) (luaMem / 1024), (u32) (texMem / (1024 * 1024)),(mUserMemory / 1024), usedMainMem, availableMainMem );
-	MOAIDraw::DrawString ( mTemp, mMemoryXRange.mX + 3, mSummaryYRange.mX, 0, 0 );
+	MOAIDraw::DrawString ( mTemp, mMemoryXRange.mX + 3, mSummaryYRange.mX, 0, 0,1 );
 
-	MOAIDraw::DrawString ( kCloumn_Names [ COLUMN_NAME ], mColumns [ COLUMN_NAME ].mX + 3, mHeaderYRange.mX, 0, 0 );
+	MOAIDraw::DrawString ( kCloumn_Names [ COLUMN_NAME ], mColumns [ COLUMN_NAME ].mX + 3, mHeaderYRange.mX, 0, 0,1 );
 
 	// Draw the header first
 	for ( u32 i = 1; i < COLUMN_COUNT; i++ ) {
 		
-		MOAIDraw::DrawString ( kCloumn_Names [ i ], mColumns [ i ].mX + 3, mHeaderYRange.mX, 0, 0 );
+		MOAIDraw::DrawString ( kCloumn_Names [ i ], mColumns [ i ].mX + 3, mHeaderYRange.mX, 0, 0,1 );
 	}
 
 	MOAIDraw::EndDrawString ();
@@ -585,7 +585,7 @@ void MOAIProfilerReportBox::Draw ( int subPrimID ) {
 	MOAIDraw::DrawRectFill ( memStatX, memStatY, memStatX + memStatWidth, memStatY + memStatHeight, false );
 	gfxDevice.SetPenColor ( mTextColor );
 	sprintf ( mTemp, "Mem - lua:%ukb usr:%ukb used:%umb avail:%umb", (u32) (luaMem / 1024), (mUserMemory / 1024), usedMainMem, availableMainMem );
-	MOAIDraw::DrawString ( mTemp, memStatX, memStatY, 1, *mFont, mFontSize, 0, 0, 0, 0 );
+	MOAIDraw::DrawString ( mTemp, memStatX, memStatY, 1, *mFont, mFontSize, 0, 0, 0, 0,1 );
 
 	// Restore render state
 	gfxDevice.SetUVTransform ( orgUvMatrix );
@@ -706,24 +706,24 @@ bool MOAIProfilerReportBox::_DrawEntryText ( MOAIProfilerEntry* entry ) {
 		// Draw the name of the profile entry
 		cc8* entryName = entry->mName.GetString ();
 		float offsetX = (float)entry->mDepth * 10;
-		MOAIDraw::DrawString ( entryName, mColumns [ COLUMN_NAME ].mX + offsetX, mCursorY + 1, mColumns [ COLUMN_NAME ].mWidth, mLineOffset );
+		MOAIDraw::DrawString ( entryName, mColumns [ COLUMN_NAME ].mX + offsetX, mCursorY + 1, mColumns [ COLUMN_NAME ].mWidth, mLineOffset,1 );
 		
 		// Draw the values of the profile entry
 		offsetX = 1;
 		sprintf ( mTemp, "%i", entry->mHitCount );
-		MOAIDraw::DrawString ( mTemp, mColumns [ COLUMN_HITS ].mX + offsetX, mCursorY + 1, mColumns [ COLUMN_HITS ].mWidth, mLineOffset );
+		MOAIDraw::DrawString ( mTemp, mColumns [ COLUMN_HITS ].mX + offsetX, mCursorY + 1, mColumns [ COLUMN_HITS ].mWidth, mLineOffset,1 );
 
 		sprintf ( mTemp, "%.1f", entry->mTotalDurationMicroSec / 1000.0f );
-		MOAIDraw::DrawString ( mTemp, mColumns [ COLUMN_DURATION ].mX + offsetX, mCursorY + 1, mColumns [ COLUMN_DURATION ].mWidth, mLineOffset );
+		MOAIDraw::DrawString ( mTemp, mColumns [ COLUMN_DURATION ].mX + offsetX, mCursorY + 1, mColumns [ COLUMN_DURATION ].mWidth, mLineOffset,1 );
 
 		sprintf ( mTemp, "%.1f", entry->mAvgDurationMicroSec / 1000.0f );
-		MOAIDraw::DrawString ( mTemp, mColumns [ COLUMN_AVGDURATION ].mX + offsetX, mCursorY + 1, mColumns [ COLUMN_AVGDURATION ].mWidth, mLineOffset );
+		MOAIDraw::DrawString ( mTemp, mColumns [ COLUMN_AVGDURATION ].mX + offsetX, mCursorY + 1, mColumns [ COLUMN_AVGDURATION ].mWidth, mLineOffset,1 );
 		
 		sprintf ( mTemp, "%.1f", entry->mMinDurationMicroSec / 1000.0f );
-		MOAIDraw::DrawString ( mTemp, mColumns [ COLUMN_MINDURATION ].mX + offsetX, mCursorY + 1, mColumns [ COLUMN_MINDURATION ].mWidth, mLineOffset );
+		MOAIDraw::DrawString ( mTemp, mColumns [ COLUMN_MINDURATION ].mX + offsetX, mCursorY + 1, mColumns [ COLUMN_MINDURATION ].mWidth, mLineOffset,1 );
 
 		sprintf ( mTemp, "%.1f", entry->mMaxDurationMicroSec / 1000.0f );
-		MOAIDraw::DrawString ( mTemp, mColumns [ COLUMN_MAXDURATION ].mX + offsetX, mCursorY + 1, mColumns [ COLUMN_MAXDURATION ].mWidth, mLineOffset );
+		MOAIDraw::DrawString ( mTemp, mColumns [ COLUMN_MAXDURATION ].mX + offsetX, mCursorY + 1, mColumns [ COLUMN_MAXDURATION ].mWidth, mLineOffset,1 );
 
 		mCursorY += mLineOffset;
 
