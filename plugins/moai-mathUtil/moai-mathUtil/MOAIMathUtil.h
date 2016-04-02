@@ -52,6 +52,7 @@ private:
 	static int		_setMap				( lua_State* L );
 
 	static int		_raycast			( lua_State* L );
+	static int		_rayTest			( lua_State* L );
 
 	static int		_indexToGrid		( lua_State* L );
 

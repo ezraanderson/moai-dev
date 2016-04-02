@@ -16,9 +16,16 @@ MESSAGE( STATUS "STEAM_SDK MISSING: " $ENV{STEAM_SDK})
 endif()
 
 
-#set (STEAM_SDK "F:/steam_sdk/steamworks_sdk_133b/sdk/" )	
+
+
+
+
+#set (STEAM_SDK "F:/steam_sdk/steamworks_sdk_133b/sdk/" )
+#set (STEAM_SDK "/home/ezra/Desktop/steam_sdk/steamworks_sdk_133b/sdk")
+	
   set (STEAM_SDK "$ENV{STEAM_SDK}")	
-  set (STEAM_SDK_INCLUDE 		"${STEAM_SDK}/public/steam/" )
+  set (STEAM_SDK_INCLUDE 		"${STEAM_SDK}/public/steam" )
+  include_directories("${STEAM_SDK_INCLUDE}" )
 
 #WINDOWS 32bit
 if ( BUILD_WINDOWS )
@@ -40,14 +47,15 @@ endif ( BUILD_OSX  )
 
 
 
+  MESSAGE( STATUS "STEAM_SDK_INCLUDE: "${STEAM_SDK_INCLUDE} )
+  MESSAGE( STATUS "STEAM_SDK_INCLUDE_LIB: "${STEAM_SDK_INCLUDE_LIB}  )
+  MESSAGE( STATUS "STEAM_SDK_REDIST_LIB: "${STEAM_SDK_REDIST_LIB}  )
+
   set ( MOAI_STEAM_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../moai-steam" )  
-
-
-  file ( GLOB MOAI_STEAM_SRC "${MOAI_STEAM_DIR}/*.cpp" "${MOAI_STEAM_DIR}/*.h" )
-
+  file ( GLOB MOAI_STEAM_SRC "${MOAI_STEAM_DIR}/*.cpp" "${MOAI_STEAM_DIR}/*.h")
   add_library ( moai-steam STATIC ${MOAI_STEAM_SRC} )
 
-  target_include_directories (moai-steam PUBLIC ${STEAM_SDK_INCLUDE} ${MOAI_STEAM_DIR} "${MOAI_STEAM_DIR}/../")
+  target_include_directories (moai-steam PUBLIC "${STEAM_SDK_INCLUDE}" "${MOAI_STEAM_DIR}" "${MOAI_STEAM_DIR}/../")
 
 
 #When you create a .dll there is also a small import lib associated
@@ -58,6 +66,8 @@ endif ( BUILD_OSX  )
 	#target_link_libraries ( moai-steam moai-sim moai-core moai-util steam zlcore )
 	#include_directories(${STEAM_SDK_REDIST_LIB} ${STEAM_SDK_INCLUDE_LIB} )
 	#link_directories(${STEAM_SDK_REDIST_LIB} ${STEAM_SDK_INCLUDE_LIB} )
+
+
 
   target_link_libraries ( moai-steam moai-sim moai-core moai-util  "${STEAM_SDK_REDIST_LIB}" "${STEAM_SDK_INCLUDE_LIB}" zlcore )
   set_target_properties(moai-steam PROPERTIES FOLDER Modules)

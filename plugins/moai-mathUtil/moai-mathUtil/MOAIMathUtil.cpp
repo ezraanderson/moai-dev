@@ -541,65 +541,61 @@ hit.mDistance	= -1;
 hit.mX			= -1;
 hit.mY			= -1;
 
+	float dx=  bx1 - ax1; 
+	float dy=  by1 - ay1;
 
-		  float dx=  bx1 - ax1; 
-		  float dy=  by1 - ay1;
+	float d  = length(dx, dy);
+	float nx = dx/d; 
+	float ny = dy/d;
 
-		  float d  = length(dx, dy);
-		  float nx = dx/d; 
-		  float ny = dy/d;
+	float  tmin = 0;
+	float  tmax = d;
 
-		  float  tmin = 0;
-		  float  tmax = d;
-
-
-		  if (dx == 0) {
-		    if ((ax1 < l) || (ax1 > r)) {
-		      return hit;
-			} 
-		  } else {
-		    float ood = 1/nx;
-		    float t1 = (l - ax1)*ood;
-		    float t2 = (r - ax1)*ood;
-		    if (t1 > t2) {
+	if (dx == 0) {
+	if ((ax1 < l) || (ax1 > r)) {
+		return hit;
+	} 
+	} else {
+	float ood = 1/nx;
+	float t1 = (l - ax1)*ood;
+	float t2 = (r - ax1)*ood;
+	if (t1 > t2) {
 		
-				float temp = t1;
-				t1 = t2;
-				t2 = t1;
+		float temp = t1;
+		t1 = t2;
+		t2 = temp;
 
-			};
-		    tmin = max(tmin, t1); 
-		    tmax = min(tmax, t2); 
+	};
+	tmin = max(tmin, t1); 
+	tmax = min(tmax, t2); 
 
-		    if (tmin > tmax) {
-		      return hit;
-			}
-		  };
+	if (tmin > tmax) {
+		return hit;
+	}
+	};
 
 	
-		  if (dy == 0) {
-		    if ((ay1 < t) || (ay1 > b)) {
-		      return hit;
-			}
-		  } else {
-		    float ood = 1/ny;
-		    float t1 = (t - ay1)*ood;
-		    float t2 = (b - ay1)*ood;
-		    if (t1 > t2) {
+	if (dy == 0) {
+	if ((ay1 < t) || (ay1 > b)) {
+		return hit;
+	}
+	} else {
+	float ood = 1/ny;
+	float t1 = (t - ay1)*ood;
+	float t2 = (b - ay1)*ood;
+	if (t1 > t2) {
 
-              float temp = t1;
-		      t1 = t2;
-			  t2 = temp;
-			}
-		    tmin = max(tmin, t1); 
-		    tmax = min(tmax, t2);
+        float temp = t1;
+		t1 = t2;
+		t2 = temp;
+	}
+	tmin = max(tmin, t1); 
+	tmax = min(tmax, t2);
 
-
-
-		    if (tmin > tmax) {
-		      return hit;
-			}
-		  }
+		if (tmin > tmax) {
+			return hit;
+		}
+	}
 
 
 
@@ -970,28 +966,39 @@ return 2;
 };
 
 
+
+
 //******************************************************************
 // http://playtechs.blogspot.ca/2007/03/raytracing-on-grid.html
-int MOAIMathUtil::_raycast ( lua_State* L ) {
+int MOAIMathUtil::_rayTest ( lua_State* L ) {
+
+//printf("%f %f %f %f \n",x0,y0,x1,y1);
+//lua_getglobal(L, "global_raycast");
+//lua_pushnil ( L );
+//lua_pop ( L, -3 );
+//int i; 
+// for (i = 1; i <= 20; i++) {
+//        lua_pushnumber(L, i);   /* Push the table index */
+//        lua_pushnumber(L, i);  /* Push the cell value */
+//        lua_rawset(L, -3);     /* Stores the pair in the table */
+//    }
+//lua_pushnumber ( state, i-1  );
+//return 1;
+
 
 MOAI_LUA_SETUP ( MOAIMathUtil, "U" )
+float  x0 = state.GetValue < int >( 3, 0 );
+float  y0 = state.GetValue < int >( 4, 0 );
 
-float  x0 = state.GetValue < float >( 2, 0 );
-float  y0 = state.GetValue < float >( 3, 0 );
+float  x1 = state.GetValue < int >( 5, 0 );
+float  y1 = state.GetValue < int >( 6, 0 );
 
-float  x1 = state.GetValue < float >( 4, 0 );
-float  y1 = state.GetValue < float >( 5, 0 );
+lua_pushnil ( L );
+lua_pop ( L, -3 );
 
-
-//int width  = state.GetValue < float >( 6, 0 );
-//int height = state.GetValue < float >( 7, 0 );
-//int tile = state.GetValue < float >( 8, 0 );
-
-int tile = self->mTile;
-
+int tile   = self->mTile;
 int width  = self->mWidth;
 int height = self->mHeight;
-
 
 x0 = x0 / tile;
 y0 = y0 / tile;
@@ -999,7 +1006,6 @@ y0 = y0 / tile;
 x1 = x1 / tile;
 y1 = y1 / tile;
 
-lua_newtable(state);
 u32 total = 0;
 
 double dx = fabs(x1 - x0);
@@ -1053,9 +1059,113 @@ for (; n > 0; --n)
    
 	if ((x >= 0 && x <= width) &&   (y >= 0 && y <= width)) {
 		++total;
-		lua_pushnumber(state, total); 
+		lua_pushnumber(L, total);			 /* Push the table index */
+        lua_pushnumber(L, x +(width*y)+1);  /* Push the cell value */
+        lua_rawset(L, -3);					 /* Stores the pair in the table */
+	}
+
+    if (error > 0)
+    {
+        y += y_inc;
+        error -= dx;
+    }
+    else
+    {
+        x += x_inc;
+        error += dy;
+    }
+}    
+lua_pushnumber ( state, total  );
+return 1;
+}
+
+
+//******************************************************************
+// http://playtechs.blogspot.ca/2007/03/raytracing-on-grid.html
+int MOAIMathUtil::_raycast ( lua_State* L ) {
+
+MOAI_LUA_SETUP ( MOAIMathUtil, "U" )
+
+float  x0 = state.GetValue < float >( 2, 0 );
+float  y0 = state.GetValue < float >( 3, 0 );
+
+float  x1 = state.GetValue < float >( 4, 0 );
+float  y1 = state.GetValue < float >( 5, 0 );
+
+
+//int width  = state.GetValue < float >( 6, 0 );
+//int height = state.GetValue < float >( 7, 0 );
+//int tile = state.GetValue < float >( 8, 0 );
+
+int tile   = self->mTile;
+int width  = self->mWidth;
+int height = self->mHeight;
+
+
+x0 = x0 / tile;
+y0 = y0 / tile;
+
+x1 = x1 / tile;
+y1 = y1 / tile;
+
+//lua_newtable(state);
+
+u32 total = 0;
+
+double dx = fabs(x1 - x0);
+double dy = fabs(y1 - y0);
+
+int x = int(floor(x0));
+int y = int(floor(y0));
+
+int n = 1;
+int x_inc, y_inc;
+double error;
+
+if (dx == 0)
+{
+    x_inc = 0;
+    error = std::numeric_limits<double>::infinity();
+}
+else if (x1 > x0)
+{
+    x_inc = 1;
+    n += int(floor(x1)) - x;
+    error = (floor(x0) + 1 - x0) * dy;
+}
+else
+{
+    x_inc = -1;
+    n += x - int(floor(x1));
+    error = (x0 - floor(x0)) * dy;
+}
+
+if (dy == 0)
+{
+    y_inc = 0;
+    error -= std::numeric_limits<double>::infinity();
+}
+else if (y1 > y0)
+{
+    y_inc = 1;
+    n += int(floor(y1)) - y;
+    error -= (floor(y0) + 1 - y0) * dx;
+}
+else
+{
+    y_inc = -1;
+    n += y - int(floor(y1));
+    error -= (y0 - floor(y0)) * dx;
+}
+
+for (; n > 0; --n)
+{
+   
+	if ((x >= 0 && x <= width) &&   (y >= 0 && y <= width)) {
+		++total;
+		//lua_pushnumber(state, total); 
 		lua_pushnumber(state, x +(width*y)+1);
-		lua_settable(state, -3);
+		//lua_settable(state, -3);
 	}
 
     if (error > 0)
@@ -1070,7 +1180,8 @@ for (; n > 0; --n)
     }
 }
 
-	return 1;
+	//return 1;
+	return total;
 };
 
 
@@ -1225,107 +1336,109 @@ return 0;
 //********************************************************************************************************************
 int MOAIMathUtil::_clipShadow ( lua_State* L ) {
 MOAI_LUA_SETUP ( MOAIMathUtil, "U" )
-Paths  inner(1),shadow(1);
 
-//printf("SHADOW \n");
+//
+//Paths  inner(1),shadow(1);
+//
+////printf("SHADOW \n");
+//
+////SHDOWS
+////shadow[0] << IntPoint(150,210); //1	
+////shadow[0] << IntPoint(240,130); //2
+////shadow[0] << IntPoint(150,130);	//4 : ORDER	
+////shadow[0] << IntPoint(240,210); //3	
+//
+//float light_x = state.GetValue < float >( 3, 0 );
+//float light_y = state.GetValue < float >( 4, 0 );
+//
+//
+//	lua_pushnil ( L );
+//	int x = 0;
+//	int y = 0;
+//	u32 counter = 0;
+//	lua_pushnil ( L );
+//    while ( lua_next ( L, 2 ) != 0 ) {
+//	++counter;
+//			if ( counter == 1 ) {	
+//				x = state.GetValue < float >( -1, 0.0f);
+//			} else {
+//				y = state.GetValue < float >( -1, 0.0f);			
+//			inner[0] << IntPoint(x,y);
+//			counter = 0;		
+//			}				
+//			lua_pop ( L, 1 );
+//	}
+//
+//
+//	//*****************************************************************
+//	//SORT : COSTLY
+//	int sum_x = 0;
+//	int sum_y = 0;
+//	int sCnt  = 0;
+//	for(auto j = inner[0].begin(); j != inner[0].end() ; ++j){		
+//
+//		sum_x = sum_x+j->X;
+//		sum_y = sum_y+j->Y;	
+//		++sCnt;
+//	};
+//	if (sCnt == 0) {
+//		printf("CRASH \n");
+//	} else {
+//		sum_x = sum_x / sCnt;
+//		sum_y = sum_y / sCnt;
+//	}
+//
+//	//SORT INNER POINTS
+//	IntPoint centroid = IntPoint(sum_x,sum_y);
+//	IntPoint light    = IntPoint(light_x,light_y);
+//	std::sort (inner[0].begin(), inner[0].end(), angle_sort(centroid,light));
+//
+//	//ADD TO SHADOW
+//	for(auto j = inner[0].begin(); j != inner[0].end() ; ++j){
+//		shadow[0] << IntPoint(j->X,j->Y);
+//	};
+//
+//	//LOOP BACKWARDS AND PROJECT 
+//   float distance = 400;
+//   float x1		  = light_x;
+//   float y1		  = light_y;
+//
+//	for(auto j = inner[0].rbegin(); j != inner[0].rend() ; ++j){			
+//
+//			float x2 = j->X;
+//			float y2 = j->Y;
+//
+//			float angler = atan2(  (y2 - y1) , (x2 - x1) );
+//
+//			float  dx =x1+distance * (cos(angler));
+//			float  dy =y1+distance * (sin(angler));
+//
+//			shadow[0] << IntPoint(dx,dy);
+//
+//	};
+//
+//
+//
+////********************************************************************
+//c.AddPaths(shadow, ptClip, true);//THIS COPIES THE ARRAY
+//
+//
+//
+//
+//int cnt = 0;
+//for(auto j = shadow[0].begin(); j != shadow[0].end() ; ++j){
+//	int x = j->X;
+//	int y = j->Y;		
+//	++cnt;
+//	lua_pushnumber ( state, x);
+//	lua_pushnumber ( state, y);
+//};
+//
+//return cnt*2;
+//
 
-//SHDOWS
-//shadow[0] << IntPoint(150,210); //1	
-//shadow[0] << IntPoint(240,130); //2
-//shadow[0] << IntPoint(150,130);	//4 : ORDER	
-//shadow[0] << IntPoint(240,210); //3	
+return 0;
 
-float light_x = state.GetValue < float >( 3, 0 );
-float light_y = state.GetValue < float >( 4, 0 );
-
-
-	lua_pushnil ( L );
-	int x = 0;
-	int y = 0;
-	u32 counter = 0;
-	lua_pushnil ( L );
-    while ( lua_next ( L, 2 ) != 0 ) {
-	++counter;
-			if ( counter == 1 ) {	
-				x = state.GetValue < float >( -1, 0.0f);
-			} else {
-				y = state.GetValue < float >( -1, 0.0f);			
-			inner[0] << IntPoint(x,y);
-			counter = 0;		
-			}				
-			lua_pop ( L, 1 );
-	}
-
-
-	//*****************************************************************
-	//SORT : COSTLY
-	int sum_x = 0;
-	int sum_y = 0;
-	int sCnt  = 0;
-	for(auto j = inner[0].begin(); j != inner[0].end() ; ++j){		
-
-		sum_x = sum_x+j->X;
-		sum_y = sum_y+j->Y;	
-		++sCnt;
-	};
-	if (sCnt == 0) {
-		printf("CRASH \n");
-	} else {
-		sum_x = sum_x / sCnt;
-		sum_y = sum_y / sCnt;
-	}
-
-	//SORT INNER POINTS
-	IntPoint centroid = IntPoint(sum_x,sum_y);
-	IntPoint light    = IntPoint(light_x,light_y);
-	std::sort (inner[0].begin(), inner[0].end(), angle_sort(centroid,light));
-
-	//ADD TO SHADOW
-	for(auto j = inner[0].begin(); j != inner[0].end() ; ++j){
-		shadow[0] << IntPoint(j->X,j->Y);
-	};
-
-	//LOOP BACKWARDS AND PROJECT 
-   float distance = 400;
-   float x1		  = light_x;
-   float y1		  = light_y;
-
-	for(auto j = inner[0].rbegin(); j != inner[0].rend() ; ++j){			
-
-			float x2 = j->X;
-			float y2 = j->Y;
-
-			float angler = atan2(  (y2 - y1) , (x2 - x1) );
-
-			float  dx =x1+distance * (cos(angler));
-			float  dy =y1+distance * (sin(angler));
-
-			shadow[0] << IntPoint(dx,dy);
-
-	};
-
-
-
-//********************************************************************
-c.AddPaths(shadow, ptClip, true);//THIS COPIES THE ARRAY
-
-
-
-
-int cnt = 0;
-for(auto j = shadow[0].begin(); j != shadow[0].end() ; ++j){
-	int x = j->X;
-	int y = j->Y;		
-	++cnt;
-	lua_pushnumber ( state, x);
-	lua_pushnumber ( state, y);
-};
-
-return cnt*2;
-
-
-
-//return 0;
 
 };
 
@@ -1501,113 +1614,113 @@ return 0;
 
 int MOAIMathUtil::_clip ( lua_State* L ) {
 MOAI_LUA_SETUP ( MOAIMathUtil, "U" )
-
-//HOLES
-Paths light(1), shadow(1), output;
-
-//LIGHT
-light[0] << IntPoint(180,200); 
-light[0] << IntPoint(260,200);
-light[0] << IntPoint(260,150);
-light[0] << IntPoint(180,150);
-
-
-//SHDOWS
-shadow[0] << IntPoint(150,210); //1	
-shadow[0] << IntPoint(240,130); //2
-shadow[0] << IntPoint(150,130);	//4 : ORDER	
-shadow[0] << IntPoint(240,210); //3	
-
-//*******************************************************
-//SORT ALL SHADOWS BY CENTRIOD
-
-
-	//SORT : COSTLY
-	int sum_x = 0;
-	int sum_y = 0;
-	int sCnt  = 0;
-	for(auto j = shadow[0].begin(); j != shadow[0].end() ; ++j){
-		sum_x = sum_x+j->X;
-		sum_y = sum_y+j->Y;	
-		++sCnt;
-	};
-	sum_x = sum_x / sCnt;
-	sum_y = sum_y / sCnt;
-
-	//	printf("SORT %d %d %d\n",sum_x,sum_y,sCnt);
-	IntPoint centroid = IntPoint(sum_x,sum_y);
-	auto sort_predicate = [&centroid] (const IntPoint& a, const IntPoint& b) -> bool {			
-		float ang1 = atan2f (a.X - centroid.X, a.Y - centroid.Y); 
-		float ang2 = atan2f (b.X - centroid.X, b.Y - centroid.Y);
-		return(ang1 < ang2);   	
-	};
-	std::sort (shadow[0].begin(), shadow[0].end(), sort_predicate);
-
-
-
-
-	//ADD LIGHT AS SUBJECT
-	c.AddPaths(light, ptSubject, true); //THIS COPIES THE ARRAY
-	//ADD ALL SHADOWS AS CLIP
-	c.AddPaths(shadow, ptClip, true);//THIS COPIES THE ARRAY
-	c.AddPaths(shadow, ptClip, true);//THIS COPIES THE ARRAY
-	c.AddPaths(shadow, ptClip, true);//THIS COPIES THE ARRAY
-	c.AddPaths(shadow, ptClip, true);//THIS COPIES THE ARRAY
-	c.AddPaths(shadow, ptClip, true);//THIS COPIES THE ARRAY
-	c.AddPaths(shadow, ptClip, true);//THIS COPIES THE ARRAY
-
-	//REMOVE ALL SHADOWS(CLIPPERS) FROM THE SUBJECT(LIGHT) WITH DIFFERENCE
-	c.Execute(ctDifference, output, pftNonZero, pftNonZero);
-	c.Clear();
-
-
-	//************************************************************
-	std::stringstream buffer;
-	for(auto i = light.begin(); i != light.end() ; ++i)
-	{			
-		//std::cout << *i << std::endl;
-	};
-
-
-	//*********************************************************************
-	//OUT PUT THE THE LIGHT BACK TO LUA
-	int cnt = 0;
-    for( int i = 0; i < output.size(); i++){	
-			for(auto j = output[i].begin(); j != output[i].end() ; ++j){
-				int x = j->X;
-				int y = j->Y;		
-				++cnt;
-				lua_pushnumber ( state, x);
-				lua_pushnumber ( state, y);
-		 };
-    };
-	return cnt*2;
-
-
-
-
-	//************************************************************************
-	//OUTPUT REC
-
-	//int cnt = 0;
-
-	//		for(auto j = shadow[0].begin(); j != shadow[0].end() ; ++j){
-	//			int x = j->X;
-	//			int y = j->Y;		
-	//			++cnt;
-	//			lua_pushnumber ( state, x);
-	//			lua_pushnumber ( state, y);
-	//	 };
- //  
-	//return cnt*2;
-
-
-
-
-
+//
+////HOLES
+//Paths light(1), shadow(1), output;
+//
+////LIGHT
+//light[0] << IntPoint(180,200); 
+//light[0] << IntPoint(260,200);
+//light[0] << IntPoint(260,150);
+//light[0] << IntPoint(180,150);
+//
+//
+////SHDOWS
+//shadow[0] << IntPoint(150,210); //1	
+//shadow[0] << IntPoint(240,130); //2
+//shadow[0] << IntPoint(150,130);	//4 : ORDER	
+//shadow[0] << IntPoint(240,210); //3	
+//
+////*******************************************************
+////SORT ALL SHADOWS BY CENTRIOD
+//
+//
+//	//SORT : COSTLY
+//	int sum_x = 0;
+//	int sum_y = 0;
+//	int sCnt  = 0;
+//	for(auto j = shadow[0].begin(); j != shadow[0].end() ; ++j){
+//		sum_x = sum_x+j->X;
+//		sum_y = sum_y+j->Y;	
+//		++sCnt;
+//	};
+//	sum_x = sum_x / sCnt;
+//	sum_y = sum_y / sCnt;
+//
+//	//	printf("SORT %d %d %d\n",sum_x,sum_y,sCnt);
+//	IntPoint centroid = IntPoint(sum_x,sum_y);
+//	auto sort_predicate = [&centroid] (const IntPoint& a, const IntPoint& b) -> bool {			
+//		float ang1 = atan2f (a.X - centroid.X, a.Y - centroid.Y); 
+//		float ang2 = atan2f (b.X - centroid.X, b.Y - centroid.Y);
+//		return(ang1 < ang2);   	
+//	};
+//	std::sort (shadow[0].begin(), shadow[0].end(), sort_predicate);
+//
+//
+//
+//
+//	//ADD LIGHT AS SUBJECT
+//	c.AddPaths(light, ptSubject, true); //THIS COPIES THE ARRAY
+//	//ADD ALL SHADOWS AS CLIP
+//	c.AddPaths(shadow, ptClip, true);//THIS COPIES THE ARRAY
+//	c.AddPaths(shadow, ptClip, true);//THIS COPIES THE ARRAY
+//	c.AddPaths(shadow, ptClip, true);//THIS COPIES THE ARRAY
+//	c.AddPaths(shadow, ptClip, true);//THIS COPIES THE ARRAY
+//	c.AddPaths(shadow, ptClip, true);//THIS COPIES THE ARRAY
+//	c.AddPaths(shadow, ptClip, true);//THIS COPIES THE ARRAY
+//
+//	//REMOVE ALL SHADOWS(CLIPPERS) FROM THE SUBJECT(LIGHT) WITH DIFFERENCE
+//	c.Execute(ctDifference, output, pftNonZero, pftNonZero);
+//	c.Clear();
+//
+//
+//	//************************************************************
+//	std::stringstream buffer;
+//	for(auto i = light.begin(); i != light.end() ; ++i)
+//	{			
+//		//std::cout << *i << std::endl;
+//	};
+//
+//
+//	//*********************************************************************
+//	//OUT PUT THE THE LIGHT BACK TO LUA
+//	int cnt = 0;
+//    for( int i = 0; i < output.size(); i++){	
+//			for(auto j = output[i].begin(); j != output[i].end() ; ++j){
+//				int x = j->X;
+//				int y = j->Y;		
+//				++cnt;
+//				lua_pushnumber ( state, x);
+//				lua_pushnumber ( state, y);
+//		 };
+//    };
+//	return cnt*2;
+//
+//
+//
+//
+//	//************************************************************************
+//	//OUTPUT REC
+//
+//	//int cnt = 0;
+//
+//	//		for(auto j = shadow[0].begin(); j != shadow[0].end() ; ++j){
+//	//			int x = j->X;
+//	//			int y = j->Y;		
+//	//			++cnt;
+//	//			lua_pushnumber ( state, x);
+//	//			lua_pushnumber ( state, y);
+//	//	 };
+// //  
+//	//return cnt*2;
+//
+//
+//
 
 
 
+
+return 0;
 };
 
 
@@ -1667,7 +1780,7 @@ MOAIMathUtil::MOAIMathUtil () :
 mRot ( 90 ),
 mWidth (300),
 mHeight (300),
-mTile (300)
+mTile (32)
 {
 
 	RTTI_BEGIN
@@ -1731,6 +1844,7 @@ void MOAIMathUtil::RegisterLuaFuncs ( MOAILuaState& state ) {
 		{ "setMap",			 _setMap },
 
 		{ "raycast",		 _raycast },
+		{ "rayTest",		 _rayTest },
 		
 		{"mid_point",        _mid_point},     
 

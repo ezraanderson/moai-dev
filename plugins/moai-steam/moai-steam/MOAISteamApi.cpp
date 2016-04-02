@@ -8,19 +8,13 @@
 //#include <F:/steam_sdk/steamworks_sdk_133b/sdk/public/steam/isteamapps.h>
 //#include <F:/steam_sdk/steamworks_sdk_133b/sdk/public/steam/steam_api.h>
 
-#include <steam_api.h>
-
+#include "steam_api.h"
 
 
 int MOAISteamApi::_start ( lua_State* L ) {
 MOAI_LUA_SETUP ( MOAISteamApi, "U" )
 
-
-
-
 return 0;
-
-
 };
 
 
