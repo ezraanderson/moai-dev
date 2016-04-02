@@ -281,10 +281,10 @@ int MOAISim::_getMemoryUsage ( lua_State* L ) {
 	
 	size_t total = 0;
 	
-	lua_newtable(L);
-	
-	size_t count;
-	
+	//lua_newtable(L);	
+	lua_getglobal(L, "global_performance");
+
+	size_t count;	
 	count = MOAILuaRuntime::Get().GetMemoryUsage ();
 	lua_pushnumber(L, count / divisor);
 	lua_setfield(L, -2, "lua");
@@ -1008,10 +1008,10 @@ void MOAISim::Update () {
 
 
 	if ( this->mForceGC ) {   		
-		// force a full cycle
-		//printf("\n ------------------------------------------------------------ ");
-		//printf("\n >> MOAISim::Update --> ForceGarbageCollection ");
-		//printf("\n ------------------------------------------------------------ \n ");
+		/// force a full cycle
+		printf("\n ------------------------------------------------------------ ");
+		printf("\n >> MOAISim::Update --> ForceGarbageCollection ");
+		printf("\n ------------------------------------------------------------ \n ");
 		MOAILuaRuntime::Get ().ForceGarbageCollection ();
 		this->mForceGC = false;
 	}
@@ -1058,10 +1058,10 @@ void MOAISim::Update () {
 
 
 				#ifndef MOAI_OS_WINDOWS
-					//usleep ( 1000 );
+					usleep ( 1000 );
 				#else
 					// WARNING: sleep on windows is not quite as precise
-					//Sleep ( 1 );
+					Sleep ( 1 );
 				#endif
 		
 
@@ -1073,8 +1073,12 @@ void MOAISim::Update () {
 
 
 	if ( this->mGCActive ) {
+
+		//printf("\n ------------------------------------------------------------ ");
+		//printf("\n >> this->mGCActive ");
+		//printf("\n ------------------------------------------------------------ \n ");
 		// crank the garbage collector
-		lua_gc ( state, LUA_GCSTEP, this->mGCStep );
+		//lua_gc ( state, LUA_GCSTEP, this->mGCStep );
 	}  
 
 

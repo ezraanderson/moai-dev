@@ -92,7 +92,7 @@ void AKUModulesAppFinalize () {
 		AKUUtilAppFinalize ();
 	#endif
 
-	#if AKU_WITH_PLUGINS
+	#if AKU_WITH_PLUGINS	
 		AKUPluginsAppFinalize ();
 	#endif
 }

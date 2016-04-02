@@ -1830,14 +1830,13 @@ int MOAIDraw::_drawLineList ( lua_State* L ) {
     ///gfxDevice.SetBlendMode ( ZGL_BLEND_FACTOR_SRC_ALPHA, ZGL_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA );
     gfxDevice.SetBlendMode ( ZGL_BLEND_FACTOR_ONE, ZGL_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA );
 
-	gfxDevice.SetPrimType (  ZGL_PRIM_LINES );
-
-  
+	gfxDevice.SetPrimType (  ZGL_PRIM_LINES ); 
 
 
     gfxDevice.BeginPrim ();
 
 	u32 counter = 0;
+
 	lua_pushnil ( L );
 
     while ( lua_next ( L, 1 ) != 0 ) {

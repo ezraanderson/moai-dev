@@ -12,13 +12,24 @@
 
 static cc8* _deck2DShaderFSH = SHADER (
 
-	//precision highp float;
-	varying LOWP vec4 colorVarying;
-	varying MEDP vec2 uvVarying;
+	precision highp float;
+
+	//varying LOWP vec4 colorVarying;	
+	//varying MEDP vec2 uvVarying;
+
+	varying highp  vec4 colorVarying;	
+	varying highp  vec2 uvVarying;
+
 	uniform sampler2D sampler;
 
 	void main () {
 		gl_FragColor = texture2D ( sampler, uvVarying ) * colorVarying;
+
+		//gl_FragColor = texture2D ( sampler, uvVarying ) * vec4(0.5,0.5,0.5,0.5);
+
+
+
+
 	}
 );
 
