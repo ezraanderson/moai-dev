@@ -30,6 +30,10 @@ Clipper c;
 #define PIV2 M_PI+M_PI
 #define C360 360.0000000000000000000
 
+//inline double Dot(const Point& a,const Point& b)       { return (a.x*b.x) + (a.y*b.y); }
+//inline double PerpDot(const Point& a,const Point& b)   { return (a.y*b.x) - (a.x*b.y); }
+
+
 float  length(float x, float y) {
   return sqrt(x*x + y*y);
 };
@@ -43,6 +47,10 @@ float getDistance(float x1, float y1, float x2, float y2){;
 };
 float dot(float x1,float y1,float x2,float y2){ 
 return ( x1 * x2) + ( y1 * y2 );
+};
+
+float dotPre(float x1,float y1,float x2,float y2){ 
+return ( y1 * x2) + ( x1 * y2 );
 };
 
 float signed_triangle_area(float ax, float ay, float bx, float by, float cx, float cy) {
@@ -457,6 +465,81 @@ lua_pushnumber ( state, hit.mY );
 return 3;	
 }
 
+//----------------------------------------------------------------//
+//_line_vs_line
+
+int MOAIMathUtil::_line_vs_line_is ( lua_State* L ) {
+MOAI_LUA_SETUP ( MOAIMathUtil, "U" )
+
+//1
+float  _ax1	 = state.GetValue < float >( 2, 0 );
+float  _ay1	 = state.GetValue < float >( 3, 0 );
+
+float  _ax2	 = state.GetValue < float >( 4, 0 );
+float  _ay2	 = state.GetValue < float >( 5, 0 );
+
+//2
+float  _bx1	 = state.GetValue < float >( 6, 0 );
+float  _by1	 = state.GetValue < float >( 7, 0 );
+
+float  _bx2	 = state.GetValue < float >( 8, 0 );
+float  _by2	 = state.GetValue < float >( 9, 0 );
+
+
+//IF ANY THING IS ZERO IT FAILS?? 
+
+//PRE DOT
+//(a.y*b.x) - (a.x*b.y); 
+//Point a(A2-A1);
+//Point b(B2-B1);
+
+float  p1x	 = _ax2 - _ax1;
+float  p1y	 = _ay2 - _ay1;
+
+float  p2x	 = _bx2 - _bx1;
+float  p2y	 = _by2 - _by1;
+
+double f = (p1y*p2x)-(p1x*p2y);  
+if(!f) {
+	lua_pushboolean ( state, false);
+	return 1;    
+};
+
+float  p3x	 =_bx2-_ax2;
+float  p3y	 =_by2-_ay2; 
+
+double aa = (p1y*p3x)-(p1x*p3y);  
+double bb = (p2y*p3x)-(p2x*p3y);
+
+//double aa = PerpDot(a,c);
+//double bb = PerpDot(b,c);
+
+boolean isTrue;
+isTrue = true;
+
+if(f < 0)
+{
+    if(aa > 0)     isTrue = false;
+    if(bb > 0)     isTrue = false;
+    if(aa < f)     isTrue = false;
+    if(bb < f)     isTrue = false;
+}
+else
+{
+    if(aa < 0)    isTrue = false;
+    if(bb < 0)    isTrue = false;
+    if(aa > f)    isTrue = false;
+    if(bb > f)    isTrue = false;
+}
+
+//IS COLLISION POINT
+//double* out = 0;
+//if(out)
+//*out = 1.0 - (aa / f);
+	lua_pushboolean ( state, isTrue);
+    return 1;
+
+}
 
 
 //************************************************************************************************************************
@@ -480,7 +563,7 @@ hit.mY = -1;
 	float my  = ay1 - cy;
 
 	float b = dot(mx, my, dx, dy);
-	float c = dot(mx, my, mx, my) - radius*radius;
+	float c = dot(mx, my, mx, my) - (radius*radius);
 
 	if ((c > 0) && (b > 0)) {
 		return hit;
@@ -634,6 +717,34 @@ lua_pushnumber ( state, hit.mX );
 lua_pushnumber ( state, hit.mY );
 return 3;	
 }
+
+
+
+
+//----------------------------------------------------------------//
+//RECT COLLID
+
+int MOAIMathUtil::_rect_vs_rect_is ( lua_State* L ) {
+
+MOAI_LUA_SETUP ( MOAIMathUtil, "U" )
+
+int x1	= state.GetValue < float >( 2, 0 );//LEFT
+int y1	= state.GetValue < float >( 3, 0 );//TOP
+int w1	= state.GetValue < float >( 4, 0 );//TOP
+int h1  = state.GetValue < float >( 5, 0 );//TOP
+
+int x2	= state.GetValue < float >( 6, 0 );//RIGHT
+int y2	= state.GetValue < float >( 7, 0 );//BOTTOM
+int w2	= state.GetValue < float >( 8, 0 );//TOP
+int h2  = state.GetValue < float >( 9, 0 );//TOP
+
+lua_pushboolean ( state, !(x1 > x2+w2 || x1+w1 < x2 || y1 > y2+h2 || y1+h1 < y2));
+
+return 1;
+}
+
+
+
 
 
 ////----------------------------------------------------------------//
@@ -1183,9 +1294,6 @@ for (; n > 0; --n)
 	//return 1;
 	return total;
 };
-
-
-
 
 
 
@@ -1826,6 +1934,10 @@ void MOAIMathUtil::RegisterLuaFuncs ( MOAILuaState& state ) {
 		
 		{ "getSmallAngle2D",	_getSmallAngle2D },	
 
+
+		{ "rect_vs_rect_is",		_rect_vs_rect_is },
+		{ "line_vs_line_is",		_line_vs_line_is },
+		
 
 		{ "line_vs_line",		_line_vs_line },
 		{ "line_vs_circle",		_line_vs_circle },
