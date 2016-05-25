@@ -29,5 +29,6 @@ void MOAIMathUtilContextInitialize () {
 	//REGISTER_LUA_CLASS ( MOAIMathNeon );
 	REGISTER_LUA_CLASS ( MOAIMathUtil );
 	REGISTER_LUA_CLASS ( MOAILight );
+	REGISTER_LUA_CLASS ( MOAIPolygon );
 };
 //----------------------------------------------------------------//

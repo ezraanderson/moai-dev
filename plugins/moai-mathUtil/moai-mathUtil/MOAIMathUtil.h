@@ -62,7 +62,14 @@ private:
 
 	static int     _rect_vs_rect_is ( lua_State* L );
 	static int     _line_vs_line_is ( lua_State* L );
+	static int     _circle_vs_line_is ( lua_State* L );
+	static int     _circle_vs_circle_is ( lua_State* L );
+	static int     _line_vs_rect_is ( lua_State* L );
 
+	static int     _testBench ( lua_State* L );
+	static int     _distance2DLess ( lua_State* L );
+
+	
 //****************************************************
 static int		_clip			( lua_State* L );
 

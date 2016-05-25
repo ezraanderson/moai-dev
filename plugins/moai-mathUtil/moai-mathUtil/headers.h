@@ -8,4 +8,5 @@
 #include <moai-mathUtil/MOAIMathNeon.h>
 #include <moai-mathUtil/MOAIMathUtil.h>
 #include <moai-mathUtil/MOAILight.h>
+#include <moai-mathUtil/MOAIPolygon.h>
 #endif
