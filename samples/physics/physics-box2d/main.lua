@@ -1,8 +1,4 @@
 ----------------------------------------------------------------
--- Copyright (c) 2010-2013 Zipline Games, Inc. 
--- All Rights Reserved. 
--- http://getmoai.com
-----------------------------------------------------------------
 
 local function printf ( ... )
 	return io.stdout:write ( string.format ( ... ))
@@ -15,12 +11,29 @@ MOAISim.openWindow ( "test", width ,height  )
 viewport = MOAIViewport.new ()
 viewport:setSize ( width, height )
 viewport:setScale (width / (width/640), height / (height/480))
-viewport:setOffset ( -1, 1 )
+
+
+
+---****************************************************************
+---CAMERA
+local camera = MOAICamera2D.new()
+--camera:setScl(2,2)
+
+ --FITTER  
+local  fitter = MOAICameraFitter2D.new ()
+fitter:setViewport ( viewport) --tilemap is in this viewport
+fitter:setCamera ( camera )
+fitter:setBounds (480*-1*0.5, 320*-1*0.5, 480*0.5, 480*0.5 )  
+fitter:start()
+fitter:forceUpdate ()  
 
 
 layer = MOAILayer2D.new ()
 layer:setPartition( MOAIPartition.new() )
 layer:setViewport ( viewport )
+layer:setCamera(camera)
+
+
 MOAISim.pushRenderPass ( layer )
 
 function onCollide ( event )

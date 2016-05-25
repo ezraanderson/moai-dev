@@ -24,7 +24,8 @@ local color_stash = {}
 local color_choices = 16
 
 for i = 1, color_choices do
-  grid:setPalette ( i, math.random (), math.random (), math.random (), 1.0 )
+  --grid:setPalette ( i, math.random (), math.random (), math.random (), 1.0 )
+  grid:setPalette ( i, 1,0,0, 1.0 )
 end
 for x = 1, 8 do
   color_stash[x] = {}
@@ -48,7 +49,9 @@ prop:setGrid ( grid )
 prop:setLoc ( -256, -256 )
 prop:forceUpdate ()
 layer:insertProp ( prop )
-
+print(math.random ())
+print(math.random ())
+print(math.random ())
 ----------------------------------------------------------------
 local xCoord = nil
 local yCoord = nil
@@ -67,7 +70,7 @@ function onPointerEvent ( x, y )
 	xCoord, yCoord = grid:wrapCoord ( xCoord, yCoord )
 	
 	if xCoord then
-	  grid:setScale ( xCoord, yCoord, 0.85 )
+	  grid:setScale ( xCoord, yCoord, 0.55 )
 	  local old_color = grid:getColor ( xCoord, yCoord )
 	  color_stash[xCoord][yCoord] = old_color
 	  local r, g, b, a = grid:getPalette ( old_color )

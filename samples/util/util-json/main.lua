@@ -22,11 +22,23 @@ object = {
 
 
 
-str = MOAIJsonParser.encode ( object )
+str = MOAIJsonParser.encode ( object,MOAIJsonParser.JSON_INDENT )
+
+
+local dataBuffer  = MOAIDataBuffer.new()
+  dataBuffer:setString(str)
+  dataBuffer:save('stance.json')
 
 print ( str )
 
 object = MOAIJsonParser.decode ( str )
+
+
+
+
+
+
+
 
 --[[
 for key, value in pairs ( object ) do

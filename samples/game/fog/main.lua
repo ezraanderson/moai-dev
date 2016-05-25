@@ -22,26 +22,20 @@ local fitter = MOAICameraFitter2D.new ()
       fitter:setViewport ( viewport )
       fitter:setCamera ( camera_main )
       fitter:setBounds ( 1280*-1*0.5, 720*-1*0.5, 1280*0.5, 720*0.5 )
-      fitter:start ()      
-
-      
+      fitter:start ()       
 
 local layer_tilemap = MOAILayer2D.new ()
       layer_tilemap:setViewport ( viewport )
       layer_tilemap:setCamera ( camera_main )      
-      MOAISim.pushRenderPass ( layer_tilemap )
-      
+      MOAISim.pushRenderPass ( layer_tilemap )      
       
 local layer_fog = MOAILayer2D.new ()
       layer_fog:setViewport ( viewport )  
-      MOAISim.pushRenderPass ( layer_fog )    
-      
-
+      MOAISim.pushRenderPass ( layer_fog ) 
 
 local layer_hud = MOAILayer2D.new ()
       layer_hud:setViewport ( viewport )      
       MOAISim.pushRenderPass ( layer_hud )
-
 
 --************************************************************************************************************
 --************************************************************************************************************

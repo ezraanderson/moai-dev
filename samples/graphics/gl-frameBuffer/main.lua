@@ -30,7 +30,9 @@ function initFrameBuffer ()
 
 	local frameBuffer = MOAIFrameBufferTexture.new ()
 	frameBuffer:setRenderTable ({ layer })
-	frameBuffer:init ( 256, 256 )
+	--frameBuffer:init ( 256, 256 )
+print('INIT')
+  frameBuffer:init ( 256,256,MOAIProp.GL_RGB565,MOAITexture.GL_DEPTH_COMPONENT16,MOAITexture.GL_STENCIL_INDEX8 )  
 	frameBuffer:setClearColor ( 1, 0, 0, 1 )
 	MOAIRenderMgr.setBufferTable ({ frameBuffer })
 	
@@ -56,4 +58,4 @@ MOAISim.pushRenderPass ( layer )
 prop = MOAIProp2D.new ()
 prop:setDeck ( gfxQuad )
 layer:insertProp ( prop )
-prop:moveRot ( -180, 1.5 )
+
