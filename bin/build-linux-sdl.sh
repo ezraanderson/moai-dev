@@ -12,6 +12,12 @@
 
 export PATH=$PATH:/home/ezra/cmake/bin
 
+#export STEAM_SDK=/home/ezra/Desktop/steam_sdk/steamworks_sdk_133b/sdk
+
+export STEAM_SDK=/media/sf_moai-dev/steam_sdk/steamworks_sdk_133b/sdk
+
+
+
 cd `dirname $0`/..
 
 if [[ $1 = "--fast" ]]; then
@@ -27,6 +33,12 @@ echo "REBUILDING_________________"
 
 moai_root=$(pwd)
 
+
+
+moai_plugin=/media/sf_moai-dev/plugins
+echo $moai_plugin
+echo $moai_root
+
 cd cmake
 cd /home/ezra/Desktop/build-drive/
 rm -rf build-linux
@@ -36,7 +48,6 @@ cmake \
 -DBUILD_LINUX=TRUE \
 -DSDL_HOST=TRUE \
 -DMOAI_BOX2D=TRUE \
--DMOAI_CHIPMUNK=TRUE \
 -DMOAI_CURL=TRUE \
 -DMOAI_CRYPTO=TRUE \
 -DMOAI_EXPAT=TRUE \
@@ -54,12 +65,18 @@ cmake \
 -DMOAI_VORBIS=TRUE \
 -DMOAI_UNTZ=TRUE \
 -DMOAI_LUAJIT=TRUE \
+-DPLUGIN_MOAI-STEAM=TRUE \
+-DPLUGIN_DIR=$moai_plugin \
 -DMOAI_HTTP_CLIENT=TRUE \
--DPLUGIN_MOAI-CHIPMUNK7=TRUE \
--DPLUGIN_MOAI-MATH=TRUE \
--DPLUGIN_DIR=$moai_root/plugins \
 -DCMAKE_BUILD_TYPE=Release \
 /media/sf_moai-dev/cmake//
+
+
+#-DPLUGIN_MOAI-STEAM=TRUE \
+#-DPLUGIN_DIR=$moai_plugin \
+#-DPLUGIN_MOAI-MATHUTIL=TRUE \
+#-DMOAI_CHIPMUNK=TRUE \
+#-DPLUGIN_MOAI-CHIPMUNK7=TRUE \
 
 fi
 

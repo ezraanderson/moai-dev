@@ -7,7 +7,7 @@ pushd .
 cd "%~dp0%..\cmake"
 
 :: Determine target directory and cmake generator
-set arg1=%1
+set arg1=vs2010
 if "%arg1%"=="" set arg1=vs2012
 set generator=
 if "%arg1%"=="vs2008" set generator=Visual Studio 9 2008
@@ -59,6 +59,7 @@ cmake ^
 -DPLUGIN_MOAI-CHIPMUNK7=TRUE ^
 -DPLUGIN_MOAI-MATHUTIL=TRUE ^
 -DPLUGIN_MOAI-EZRA=TRUE ^
+-DPLUGIN_MOAI-STEAM=FALSE ^
 -DPLUGIN_DIR=F:/moai/pull/moai-dev/plugins ^
 ..\..\
 
