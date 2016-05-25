@@ -1,6 +1,16 @@
 // Copyright (c) 2010-2011 Zipline Games, Inc. All Rights Reserved.
 // http://getmoai.com
 
+
+//FOR MEMORY LEAK
+
+#ifdef _DEBUG
+	#define _CRTDBG_MAP_ALLOC
+	#include <stdlib.h>
+	#include <crtdbg.h>
+	_CrtMemState state;
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -163,25 +173,29 @@ void Init ( int argc, char** argv ) {
 
 
 
-
 	atexit ( Finalize ); // do this *after* SDL_Init
 
 
 
-	//RUN
-	
+	//RUN	
 	//AKUSetWorkingDirectory("F://moai//MOAI_GAMES//games//deaddark//game//lua//");
 	//AKURunScript("F://moai//MOAI_GAMES//games//deaddark//game//lua//main.lua");
-
+	printf("start these files\n");
+	AKUSetWorkingDirectory("F://moai//MOAI_GAMES//games//DEADDARK//game//lua//app_tools//");
+	AKURunScript("F://moai//MOAI_GAMES//games//DEADDARK//game//lua//app_tools//polygon.lua");
 
 }
 
 //----------------------------------------------------------------//
 void MainLoop () {
 
-	Uint32 lastFrame = SDL_GetTicks();
+
+
+
+Uint32 lastFrame = SDL_GetTicks();
 
 	bool running = true;
+
 	while ( running ) {
 
 		SDL_Event sdlEvent;
@@ -308,10 +322,23 @@ void PrintMoaiVersion () {
 	printf("---------------------------------------------------\n");
 #ifdef _DEBUG
 	printf ( "MOAI BUILD : DEBUG\n" );
+	_CrtSetReportMode( _CRT_WARN, _CRTDBG_MODE_DEBUG );
 #else
 	printf ( "MOAI BUILD : RELEASE\n" );
 #endif
 	printf("---------------------------------------------------\n");
+
+
+
+//_CrtSetReportFile( _CRT_WARN, _CRTDBG_FILE_STDOUT );
+
+//printf ( "MEMORY LEAKS :\n" );
+//_CrtDumpMemoryLeaks();
+//_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
+//_CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );
+
+
+
 }
 
 //================================================================//
@@ -326,6 +353,10 @@ int SDLHost ( int argc, char** argv ) {
 	if ( sWindow ) {
 		MainLoop ();
 	}
-
+	#ifdef _DEBUG
+	_CrtMemDumpAllObjectsSince(&state);
+	//_CrtDumpMemoryLeaks();
+	#endif
+	
 	return 0;
 }

@@ -339,14 +339,20 @@ void* zl_malloc ( size_t size ) {
 void* zl_realloc ( void* ptr, size_t size ) {
 
 	if ( sTlsfPool ) {
+		//printf("POOL \n");
 		return tlsf_realloc ( sTlsfPool->mPool, ptr, size );
 	}
+		//printf("OTHER %d \n",size);
+	//realloc ( ptr, size )
+
 	return realloc ( ptr, size );
 }
 
 //----------------------------------------------------------------//
 ZL_TLSF_POOL* zl_tlsf_create_pool ( size_t bytes ) {
 	
+	//printf("is this a leak \n");
+
 	ZLTlsfPool* pool = ( ZLTlsfPool* )malloc ( sizeof ( ZLTlsfPool ));
 	
 	pool->mBuffer = malloc ( bytes );

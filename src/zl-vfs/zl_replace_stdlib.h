@@ -7,7 +7,7 @@
 #include <zl-vfs/headers.h>
 
 #ifdef  __cplusplus
-	extern "C" {
+  extern "C" {
 #endif
 
 //================================================================//
@@ -27,7 +27,7 @@
 #define realloc zl_realloc
 
 #ifdef  __cplusplus
-	}
+  }
 #endif
 
 #endif

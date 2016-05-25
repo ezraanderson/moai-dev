@@ -64,6 +64,7 @@ private:
 	static int		_setTransform			( lua_State* L );
 	static int		_setType				( lua_State* L );
 
+	static int		_heroTo					( lua_State* L );
 	static int		_moveTo					( lua_State* L );
 	static int		_getDir					( lua_State* L );
 	static int		_update					( lua_State* L );

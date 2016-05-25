@@ -579,6 +579,8 @@ void MOAILayer::Draw ( int subPrimID ) {
 		
 		u32 totalResults = 0;
 		
+		//INTERESTING SHOULD< I SORT ON SETTING A PRIOTITY OF A PROP //THEN NOT SORT HERE??
+
 		if ( this->mPartitionCull2D ) {
 			totalResults = this->mPartition->GatherProps ( buffer, 0, viewVolume.mAABB, MOAIProp::CAN_DRAW | MOAIProp::CAN_DRAW_DEBUG );
 		}
@@ -596,9 +598,10 @@ void MOAILayer::Draw ( int subPrimID ) {
 			this->mSortScale [ 3 ]
 		);
 		
+
 		totalResults = buffer.Sort ( this->mSortMode );
 
-			//totalResults = buffer.Sort ( ( u32 )MOAIPartitionResultBuffer::SORT_NONE );
+		//totalResults = buffer.Sort ( ( u32 )MOAIPartitionResultBuffer::SORT_NONE );
 		
 
 		

@@ -1009,9 +1009,9 @@ void MOAISim::Update () {
 
 	if ( this->mForceGC ) {   		
 		/// force a full cycle
-		printf("\n ------------------------------------------------------------ ");
-		printf("\n >> MOAISim::Update --> ForceGarbageCollection ");
-		printf("\n ------------------------------------------------------------ \n ");
+		//printf("\n ------------------------------------------------------------ ");
+		//printf("\n >> MOAISim::Update --> ForceGarbageCollection ");
+		//printf("\n ------------------------------------------------------------ \n ");
 		MOAILuaRuntime::Get ().ForceGarbageCollection ();
 		this->mForceGC = false;
 	}
@@ -1043,7 +1043,7 @@ void MOAISim::Update () {
 
             //IF NOT HTML HOST
                 //#ifndef MOAI_OS_HTML
-                            MOAIRenderMgr::Get ().Render ();
+					  MOAIRenderMgr::Get ().Render ();
                 //#endif
 
 
@@ -1057,12 +1057,12 @@ void MOAISim::Update () {
                 timerStep = this->mStep;
 
 
-				#ifndef MOAI_OS_WINDOWS
-					usleep ( 1000 );
-				#else
-					// WARNING: sleep on windows is not quite as precise
-					Sleep ( 1 );
-				#endif
+				//#ifndef MOAI_OS_WINDOWS
+				//	usleep ( 1000 );
+				//#else
+				//	// WARNING: sleep on windows is not quite as precise
+				//	Sleep ( 1 );
+				//#endif
 		
 
 	
@@ -1077,8 +1077,8 @@ void MOAISim::Update () {
 		//printf("\n ------------------------------------------------------------ ");
 		//printf("\n >> this->mGCActive ");
 		//printf("\n ------------------------------------------------------------ \n ");
-		// crank the garbage collector
-		//lua_gc ( state, LUA_GCSTEP, this->mGCStep );
+		
+		lua_gc ( state, LUA_GCSTEP, this->mGCStep );
 	}  
 
 

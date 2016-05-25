@@ -287,7 +287,7 @@ int MOAILuaRuntime::_traceback ( lua_State *L ) {
 
 	return 0;
 }
-
+	
 //----------------------------------------------------------------//
 void* MOAILuaRuntime::_trackingAlloc ( void *ud, void *ptr, size_t osize, size_t nsize ) {
 	UNUSED ( ud );
@@ -306,7 +306,7 @@ void* MOAILuaRuntime::_trackingAlloc ( void *ud, void *ptr, size_t osize, size_t
 		}
 
 		self.mTotalBytes -= osize;
-		self.mTotalBytes += nsize;
+		self.mTotalBytes += nsize;		
 		return realloc ( ptr, nsize );
 	}
 	
@@ -314,6 +314,8 @@ void* MOAILuaRuntime::_trackingAlloc ( void *ud, void *ptr, size_t osize, size_t
 		free ( ptr );
 		return NULL;
 	}
+
+
 
 	return realloc ( ptr, nsize );
 }

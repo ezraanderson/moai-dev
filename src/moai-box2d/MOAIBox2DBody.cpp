@@ -996,7 +996,39 @@ int MOAIBox2DBody::_setType ( lua_State* L ) {
 }
 
 
+//************************************************************************************
+int MOAIBox2DBody::_heroTo( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAIBox2DBody, "U" )
 
+		float unitsToMeters = self->GetUnitsToMeters ();	
+
+
+		float x1	= state.GetValue < float >( 2, 0.0f )* unitsToMeters;
+		float y1	= state.GetValue < float >( 3, 0.0f )* unitsToMeters;
+		float speed = state.GetValue < float >( 4, 0.0f );
+
+		float x2 = 0;
+		float y2 = 0;
+
+
+		float rad   = atan2(  (y2 - y1) , (x2 - x1) );	
+		float dx 	  = cos(rad) * speed*-1;
+		float dy 	  = sin(rad) * speed*-1; 
+
+		//WHY IS THIS A BUG
+		if ((x1 == 0 ) && (y1 ==0)) {
+			 dx 	  = 0;
+			 dy 	  = 0;
+		};
+
+		b2Vec2 v;
+		v.x		= dx;
+		v.y		= dy;	
+
+		self->mBody->SetLinearVelocity ( v );
+	
+	return 0;
+}
 //************************************************************************************
 
 int MOAIBox2DBody::_moveTo( lua_State* L ) {
@@ -1004,41 +1036,42 @@ int MOAIBox2DBody::_moveTo( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIBox2DBody, "U" )
 	float unitsToMeters = self->GetUnitsToMeters ();
 
-
-
 		b2Vec2 pos = self->mBody->GetPosition ();
 
 		float x1 = pos.x;
 		float y1 = pos.y; 
 
-		float x2 = state.GetValue < float >( 2, 0 )* unitsToMeters;
-		float y2 = state.GetValue < float >( 3, 0 )* unitsToMeters;
+		float x2	= state.GetValue < float >( 2, 1.0f )* unitsToMeters;
+		float y2	= state.GetValue < float >( 3, 1.0f )* unitsToMeters;
 		float speed = state.GetValue < float >( 4, 1.0f );
 
-		float angle   = atan2(  (y2 - y1) , (x2 - x1) );
-		float dx 	  = cos(angle) * speed;
-		float dy 	  = sin(angle) * speed; 
+		float rad   = atan2(  (y2 - y1) , (x2 - x1) );
+
+		float dx 	  = cos(rad) * speed;
+		float dy 	  = sin(rad) * speed; 
 	
 		b2Vec2 v;
 		v.x = dx;
 		v.y = dy;	
+	
 
 		self->mBody->SetLinearVelocity ( v );
 
-
-		//float v_mag		   =  cpfclamp(cpvlength(self->mBody->v),0.01,85);
-		//v = cpvmult(v, (v_mag+15)*0.01);
-		//self->mBody->set = angle+90*(PI/180);
-
+//	printf("%f %f \n",rad);
+//float v_mag		   =  cpfclamp(cpvlength(self->mBody->v),0.01,85);
+//v = cpvmult(v, (v_mag+15)*0.01);
+//self->mBody->set = angle+90*(PI/180);
 //radians = degrees * (pi/180)
 //degrees = radians * (180/pi)
 
 
+		//NEW UPDATE
 		MOAIBox2DBody* moaiBody = ( MOAIBox2DBody* )self->mBody->GetUserData ();
 		moaiBody->ScheduleUpdate ();
 
-		float degree = (angle * (180/M_PI))+90;
-
+		//RETURN RAD
+		float degree = (rad * (180/M_PI))+90;
+	
 		lua_pushnumber ( state, degree );
 	
 	return 1;
@@ -1179,6 +1212,7 @@ void MOAIBox2DBody::RegisterLuaFuncs ( MOAILuaState& state ) {
 		{ "setTransform",			_setTransform },
 		{ "setType",				_setType },
 
+		{ "heroTo",				    _heroTo },
 		{ "moveTo",				    _moveTo },
 		{ "getDir",				    _getDir },
 		{ "update",				    _update },
