@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<manifest 
+    
+xmlns:android="http://schemas.android.com/apk/res/android" 
+android:installLocation="auto"
+android:versionCode="100" 
+android:versionName="1.0.0" 
+package="com.ezraanderson.geohop">
+
+<!-- CHARTBOOST REQUIRED -->
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />    
+
+
+  
+<supports-screens 
+                  android:smallScreens="true"
+                  android:normalScreens="true" 
+                  android:largeScreens="true"
+                  android:xlargeScreens= "true"
+                  android:anyDensity="true"                 
+ />       
+
+ 
+    
+<uses-sdk android:minSdkVersion="13" android:targetSdkVersion="19"/>  
+
+<!-- HONEY COMB AND BUILD
+<uses-sdk android:minSdkVersion="13" android:targetSdkVersion="16"/>
+ -->  
+
+<application 
+android:label="Geo-Hop" 
+android:icon="@drawable/icon" 
+android:allowBackup="true"
+android:enabled="true" 
+android:persistent="false" 
+android:theme="@android:style/Theme.NoTitleBar.Fullscreen"  
+
+>
+
+
+
+<!-- Moai -->
+<activity 
+android:name="MoaiActivity" 
+android:hardwareAccelerated="true" 
+android:launchMode="singleTask"
+android:multiprocess="false"
+android:screenOrientation="landscape" 
+android:configChanges="orientation|keyboardHidden|screenSize"
+
+>
+
+
+<intent-filter>
+  <action   android:name="android.intent.action.MAIN" />
+  <category   android:name="android.intent.category.LAUNCHER" />
+  <category   android:name="tv.ouya.intent.category.GAME"/>
+</intent-filter>
+
+</activity>
+
+
+
+
+</application>
+ 
+ 
+
+
+
+</manifest>   

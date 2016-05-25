@@ -1,0 +1,102 @@
+# view AndroidManifest.xml #generated:43
+-keep class com.amazon.inapp.purchasing.ResponseReceiver { <init>(...); }
+
+# view AndroidManifest.xml #generated:36
+-keep class com.chartboost.sdk.CBImpressionActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:38
+-keep class com.chartboost.sdk.sample.cbtest.CBAmazonIAPActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:17
+-keep class com.chartboost.sdk.sample.cbtest.CBHomeActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:34
+-keep class com.chartboost.sdk.sample.cbtest.CBPostInstallTrackActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:24
+-keep class com.chartboost.sdk.sample.cbtest.CBTestActivityA { <init>(...); }
+
+# view AndroidManifest.xml #generated:26
+-keep class com.chartboost.sdk.sample.cbtest.CBTestActivityB { <init>(...); }
+
+# view AndroidManifest.xml #generated:29
+-keep class com.chartboost.sdk.sample.cbtest.CBTestActivityC { <init>(...); }
+
+# view AndroidManifest.xml #generated:32
+-keep class com.chartboost.sdk.sample.cbtest.CBTestActivitySimple { <init>(...); }
+
+# onClick res/layout/pit.xml #generated:43
+-keepclassmembers class * { *** buttonClicked(...); }
+
+# onClick res/layout/pit.xml #generated:34
+-keepclassmembers class * { *** buyClick(...); }
+
+# onClick res/layout/home.xml #generated:10
+-keepclassmembers class * { *** gotoActivityA(...); }
+
+# onClick res/layout/home.xml #generated:19
+# onClick res/layout/main.xml #generated:46
+# onClick res/layout/simple.xml #generated:17
+-keepclassmembers class * { *** gotoActivityB(...); }
+
+# onClick res/layout/home.xml #generated:33
+# onClick res/layout/main.xml #generated:48
+# onClick res/layout/mainb.xml #generated:22
+-keepclassmembers class * { *** gotoActivityC(...); }
+
+# onClick res/layout/home.xml #generated:41
+-keepclassmembers class * { *** gotoActivitySimple(...); }
+
+# onClick res/layout/home.xml #generated:63
+-keepclassmembers class * { *** gotoAmazonActivityIAP(...); }
+
+# onClick res/layout/home.xml #generated:55
+-keepclassmembers class * { *** gotoGoogleActivityIAP(...); }
+
+# onClick res/layout/amazoniap.xml #generated:49
+-keepclassmembers class * { *** makePurchase(...); }
+
+# onClick res/layout/main.xml #generated:10
+# onClick res/layout/mainb.xml #generated:15
+# onClick res/layout/mainc.xml #generated:10
+# onClick res/layout/pit.xml #generated:14
+# onClick res/layout/simple.xml #generated:10
+-keepclassmembers class * { *** onLoadButtonClick(...); }
+
+# onClick res/layout/main.xml #generated:17
+-keepclassmembers class * { *** onLoadVideoClick(...); }
+
+# onClick res/layout/main.xml #generated:12
+# onClick res/layout/mainb.xml #generated:17
+# onClick res/layout/mainc.xml #generated:12
+# onClick res/layout/pit.xml #generated:21
+# onClick res/layout/simple.xml #generated:12
+-keepclassmembers class * { *** onMoreButtonClick(...); }
+
+# onClick res/layout/main.xml #generated:33
+# onClick res/layout/mainc.xml #generated:24
+-keepclassmembers class * { *** onPreloadClearClick(...); }
+
+# onClick res/layout/main.xml #generated:26
+# onClick res/layout/mainc.xml #generated:17
+-keepclassmembers class * { *** onPreloadClick(...); }
+
+# onClick res/layout/main.xml #generated:28
+# onClick res/layout/mainc.xml #generated:19
+-keepclassmembers class * { *** onPreloadMoreAppsClick(...); }
+
+# onClick res/layout/main.xml #generated:19
+-keepclassmembers class * { *** onPreloadVideoClick(...); }
+
+# onClick res/layout/pit.xml #generated:64
+-keepclassmembers class * { *** trackCustomEventOfType(...); }
+
+# onClick res/layout/pit.xml #generated:77
+-keepclassmembers class * { *** trackInGameScore(...); }
+
+# onClick res/layout/pit.xml #generated:57
+-keepclassmembers class * { *** trackMiscRevenueGeneratingEventOfType(...); }
+
+# onClick res/layout/pit.xml #generated:84
+-keepclassmembers class * { *** trackPlayerCurrencyBalance(...); }
+

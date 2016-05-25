@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+	<FrameLayout
+	    android:id="@+id/surfaceViewParent"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent" />
+	<LinearLayout
+	    android:orientation="vertical"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:padding="10dp">
+	    <LinearLayout android:layout_width="fill_parent" android:layout_height="70dp" android:orientation="horizontal">
+		    <Button  android:layout_margin="10dp" android:layout_height="fill_parent" android:layout_width="fill_parent" android:layout_weight="0.5" android:text="@string/load_interstitial" 
+		    	android:onClick="onLoadButtonClick"></Button>
+		    <Button  android:layout_margin="10dp" android:layout_height="fill_parent" android:layout_width="fill_parent" android:layout_weight="0.5" android:text="@string/more_apps"
+		    	android:onClick="onMoreButtonClick"></Button>
+	    </LinearLayout>
+	    
+		<LinearLayout  android:layout_width="fill_parent" android:layout_height="70dp" android:orientation="horizontal">
+		    <Button  android:layout_margin="10dp" android:layout_height="fill_parent" android:layout_width="0dp" android:layout_weight="0.5" android:text="@string/goto_c"
+		    	android:onClick="gotoActivityC"></Button>
+		</LinearLayout>
+		<RelativeLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/TestContainer" />
+	</LinearLayout>
+</RelativeLayout>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="#1C98BA"
+    android:scrollbars="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:padding="10dp"
+    >
+    <LinearLayout 
+        android:layout_width="fill_parent" 
+        android:layout_height="90dp" 
+        android:orientation="horizontal">
+	    <Button  android:layout_margin="10dp" 
+	        android:layout_height="fill_parent" 
+	        android:layout_width="fill_parent" 
+	        android:layout_weight="0.5" 
+	        android:text="@string/load_interstitial" 
+	    	android:onClick="onLoadButtonClick">
+	    </Button>
+	    <Button  
+	        android:layout_margin="10dp" 
+	        android:layout_height="fill_parent" 
+	        android:layout_width="fill_parent" 
+	        android:layout_weight="0.5" 
+	        android:text="@string/more_apps"
+	    	android:onClick="onMoreButtonClick"></Button>
+    </LinearLayout>
+    
+	<LinearLayout  
+	    android:layout_width="fill_parent" 
+	    android:layout_height="90dp" 
+	    android:orientation="horizontal">
+    <Button
+        android:id="@+id/buyButton"
+	    android:layout_margin="10dp" 
+	    android:layout_height="fill_parent" 
+	    android:layout_width="fill_parent" 
+ 	    android:layout_weight="0.5" 
+        android:onClick="buyClick"
+        android:text="@string/buy_string" />
+
+    <Button
+        android:id="@+id/clickButton"
+	    android:layout_margin="10dp" 
+	    android:layout_height="fill_parent" 
+	    android:layout_width="fill_parent" 
+	    android:layout_weight="0.5" 
+        android:onClick="buttonClicked"
+        android:text="@string/clickme_string" />
+	</LinearLayout>
+	
+	<LinearLayout 
+        android:layout_width="fill_parent" 
+        android:layout_height="90dp" 
+        android:orientation="horizontal">
+	    <Button  android:layout_margin="10dp" 
+	        android:layout_height="fill_parent" 
+	        android:layout_width="fill_parent" 
+	        android:layout_weight="0.5" 
+	        android:text="@string/trackMiscRevenueGeneratingEventOfType" 
+	    	android:onClick="trackMiscRevenueGeneratingEventOfType">
+	    </Button>
+	    <Button  
+	        android:layout_margin="10dp" 
+	        android:layout_height="fill_parent" 
+	        android:layout_width="fill_parent" 
+	        android:layout_weight="0.5" 
+	        android:text="@string/trackCustomEventOfType"
+	    	android:onClick="trackCustomEventOfType"></Button>
+    </LinearLayout>
+    
+	<LinearLayout 
+        android:layout_width="fill_parent" 
+        android:layout_height="90dp" 
+        android:orientation="horizontal">
+	    <Button  android:layout_margin="10dp" 
+	        android:layout_height="fill_parent" 
+	        android:layout_width="fill_parent" 
+	        android:layout_weight="0.5" 
+	        android:text="@string/trackInGameScore" 
+	    	android:onClick="trackInGameScore">
+	    </Button>
+	    <Button  
+	        android:layout_margin="10dp" 
+	        android:layout_height="fill_parent" 
+	        android:layout_width="fill_parent" 
+	        android:layout_weight="0.5" 
+	        android:text="@string/trackPlayerCurrencyBalance"
+	    	android:onClick="trackPlayerCurrencyBalance"></Button>
+    </LinearLayout>
+	
+</LinearLayout>

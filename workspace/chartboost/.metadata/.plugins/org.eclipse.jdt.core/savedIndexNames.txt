@@ -1,0 +1,2 @@
+INDEX VERSION 1.126+D:\pull\moai-dev\workspace\chartboost\.metadata\.plugins\org.eclipse.jdt.core
+1871580498.index

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="com.chartboost.sdk.sample"
+      android:versionCode="6"
+      android:versionName="1.0">
+      
+    <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="18"/>
+	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="com.android.vending.BILLING" />
+	
+    <application 
+      android:icon="@drawable/icon" 
+      android:label="@string/app_name">
+        <activity android:name="com.chartboost.sdk.sample.cbtest.CBHomeActivity"
+                  android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name="com.chartboost.sdk.sample.cbtest.CBTestActivityA"
+                  android:label="@string/app_name" />
+        <activity android:name="com.chartboost.sdk.sample.cbtest.CBTestActivityB"
+                  android:label="@string/app_name"
+                  android:configChanges="keyboardHidden|orientation|screenSize" />
+        <activity android:name="com.chartboost.sdk.sample.cbtest.CBTestActivityC"
+                  android:label="@string/app_name"
+                  android:configChanges="keyboardHidden|orientation|screenSize" />
+        <activity android:name="com.chartboost.sdk.sample.cbtest.CBTestActivitySimple"
+                  android:label="@string/app_name" />
+        <activity android:name="com.chartboost.sdk.sample.cbtest.CBPostInstallTrackActivity"
+                  android:label="@string/app_name" />
+        <activity android:name="com.chartboost.sdk.CBImpressionActivity"
+            android:excludeFromRecents="true" android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity android:name="com.chartboost.sdk.sample.cbtest.CBAmazonIAPActivity"
+                  android:label="@string/app_name" />
+        
+  
+        
+        <receiver android:name="com.amazon.inapp.purchasing.ResponseReceiver">
+			<intent-filter>
+			  <action android:name="com.amazon.inapp.purchasing.NOTIFY"
+					  android:permission="com.amazon.inapp.purchasing.Permission.NOTIFY" />
+			</intent-filter>
+		</receiver>
+		
+    </application>
+</manifest>

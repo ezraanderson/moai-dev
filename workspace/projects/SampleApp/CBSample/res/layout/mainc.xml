@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="#33BA44"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:padding="10dp"
+    >
+    <LinearLayout android:layout_width="fill_parent" android:layout_height="70dp" android:orientation="horizontal">
+	    <Button  android:layout_margin="10dp" android:layout_height="fill_parent" android:layout_width="fill_parent" android:layout_weight="0.5" android:text="@string/load_interstitial" 
+	    	android:onClick="onLoadButtonClick"></Button>
+	    <Button  android:layout_margin="10dp" android:layout_height="fill_parent" android:layout_width="fill_parent" android:layout_weight="0.5" android:text="@string/more_apps"
+	    	android:onClick="onMoreButtonClick"></Button>
+    </LinearLayout>
+   
+   <LinearLayout  android:layout_width="fill_parent" android:layout_height="70dp" android:orientation="horizontal">
+	    <Button  android:layout_margin="10dp" android:layout_height="fill_parent" android:layout_width="fill_parent" android:layout_weight="0.5" android:text="@string/preload_interstitial"
+	    	android:onClick="onPreloadClick"></Button>
+	    <Button  android:layout_margin="10dp" android:layout_height="fill_parent" android:layout_width="fill_parent" android:layout_weight="0.5" android:text="@string/preload_more_apps"
+	    	android:onClick="onPreloadMoreAppsClick"></Button>
+    </LinearLayout>
+    
+    <LinearLayout  android:layout_width="fill_parent" android:layout_height="70dp" android:orientation="horizontal">
+	    <Button  android:layout_margin="10dp" android:layout_height="fill_parent" android:layout_width="fill_parent" android:layout_weight="0.5" android:text="@string/clear_preload_data"
+	    	android:onClick="onPreloadClearClick"></Button>
+	</LinearLayout>
+	<LinearLayout  android:layout_width="fill_parent" android:layout_height="70dp" android:orientation="horizontal">
+	    <CheckBox android:id="@+id/chkImpUseAct" android:layout_margin="10dp" android:layout_height="fill_parent" android:layout_width="0dp" android:layout_weight="0.5" android:text="@string/imp_use_act"></CheckBox>
+	</LinearLayout>
+	<RelativeLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/TestContainer" />
+</LinearLayout>
