@@ -65,6 +65,10 @@ void	_AKUTitleFunc					(  const char* title);
 typedef int ( *DisplayModeFunc ) (int, SDL_DisplayMode *);
 static void SetScreenSize ( DisplayModeFunc func);
 
+ void print_SDL_version(char* preamble, SDL_version* v) {
+   printf("%s %u.%u.%u\n", preamble, v->major, v->minor, v->patch);
+ }
+
 //----------------------------------------------------------------//
 void SetScreenSize(DisplayModeFunc func ) {
 	SDL_DisplayMode dm;
@@ -181,8 +185,9 @@ void Init ( int argc, char** argv ) {
 	//AKUSetWorkingDirectory("F://moai//MOAI_GAMES//games//deaddark//game//lua//");
 	//AKURunScript("F://moai//MOAI_GAMES//games//deaddark//game//lua//main.lua");
 	printf("start these files\n");
-	AKUSetWorkingDirectory("F://moai//MOAI_GAMES//games//DEADDARK//game//lua//app_tools//");
-	AKURunScript("F://moai//MOAI_GAMES//games//DEADDARK//game//lua//app_tools//polygon.lua");
+
+	//AKUSetWorkingDirectory("F://moai//MOAI_GAMES//games//DEADDARK//game//lua//app_tools//");
+	//AKURunScript("F://moai//MOAI_GAMES//games//DEADDARK//game//lua//app_tools//polygon.lua");
 
 }
 
@@ -265,7 +270,12 @@ Uint32 lastFrame = SDL_GetTicks();
 
 				switch ( sdlEvent.button.button ) {
 
+	
+
+
 				case SDL_BUTTON_LEFT:
+
+			
 					AKUEnqueueButtonEvent ( InputDeviceID::DEVICE, InputSensorID::MOUSE_LEFT, ( sdlEvent.type == SDL_MOUSEBUTTONDOWN ));
 					break;
 
@@ -314,28 +324,38 @@ Uint32 lastFrame = SDL_GetTicks();
 
 //----------------------------------------------------------------//
 void PrintMoaiVersion () {
-	static const int length = 255;
-	char version [ length ];
-	AKUGetMoaiVersion ( version, length );
-	printf("--------------------------------------------------\n");
-	printf ( "MOAI VERSION : %s\n", version );
-	printf("---------------------------------------------------\n");
+
+ printf("-----------------------------------------------------------------------------------------\n");	
+ SDL_version ver;
+ SDL_VERSION(&ver);
+ print_SDL_version("SDL VERSION: ", &ver);
+
+
+
+static const int length = 255;
+char version [ length ];
+AKUGetMoaiVersion ( version, length );
+ printf("-----------------------------------------------------------------------------------------\n");	
+printf ( "MOAI VERSION : %s\n", version );
+ printf("-----------------------------------------------------------------------------------------\n");	
+
 #ifdef _DEBUG
 	printf ( "MOAI BUILD : DEBUG\n" );
-	_CrtSetReportMode( _CRT_WARN, _CRTDBG_MODE_DEBUG );
+		//_CrtSetReportMode( _CRT_WARN, _CRTDBG_MODE_DEBUG );
+		//_CrtSetReportFile( _CRT_WARN, _CRTDBG_FILE_STDOUT );
+		//printf ( "MEMORY LEAKS :\n" );
+		//_CrtDumpMemoryLeaks();
+		//_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
+		//_CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );
+
 #else
 	printf ( "MOAI BUILD : RELEASE\n" );
 #endif
-	printf("---------------------------------------------------\n");
+ printf("-----------------------------------------------------------------------------------------\n");	
 
 
 
-//_CrtSetReportFile( _CRT_WARN, _CRTDBG_FILE_STDOUT );
 
-//printf ( "MEMORY LEAKS :\n" );
-//_CrtDumpMemoryLeaks();
-//_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
-//_CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );
 
 
 
@@ -353,10 +373,11 @@ int SDLHost ( int argc, char** argv ) {
 	if ( sWindow ) {
 		MainLoop ();
 	}
-	#ifdef _DEBUG
-	_CrtMemDumpAllObjectsSince(&state);
-	//_CrtDumpMemoryLeaks();
-	#endif
+
+	//#ifdef _DEBUG
+	//_CrtMemDumpAllObjectsSince(&state);
+	////_CrtDumpMemoryLeaks();
+	//#endif
 	
 	return 0;
 }

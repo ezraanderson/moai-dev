@@ -236,6 +236,22 @@ ZLBox MOAITileDeck2D::ComputeMaxBounds () {
 	return this->GetItemBounds ( 0 );
 }
 
+
+//----------------------------------------------------------------//
+/**	Rot Index
+
+*/
+//int MOAITileDeck2D::_transformUV ( lua_State* L ) {
+//	MOAI_LUA_SETUP ( MOAITileDeck2D, "UNN" )
+//
+//	ZLAffine3D mtx;
+//	mtx.RotateZ(90*180/3.14);
+//	self->mQuad.TransformVerts(mtx);
+//
+//	return 0;
+//}
+
+
 //----------------------------------------------------------------//
 void MOAITileDeck2D::DrawIndex ( u32 idx, float xOff, float yOff, float zOff, float xScl, float yScl, float zScl ) {
 	UNUSED ( zScl );
@@ -245,40 +261,27 @@ void MOAITileDeck2D::DrawIndex ( u32 idx, float xOff, float yOff, float zOff, fl
 	
 	gfxDevice.SetVertexMtxMode ( MOAIGfxDevice::VTX_STAGE_MODEL, MOAIGfxDevice::VTX_STAGE_PROJ );
 	gfxDevice.SetUVMtxMode ( MOAIGfxDevice::UV_STAGE_MODEL, MOAIGfxDevice::UV_STAGE_TEXTURE );
+
 	
 	idx = idx - 1;
 	
-	MOAICellCoord coord = this->GetCellCoord ( idx );
-	ZLRect uvRect = this->GetTileRect ( coord );
+	MOAICellCoord coord  = this->GetCellCoord ( idx );
+	ZLRect uvRect		 = this->GetTileRect ( coord );
 	
 	float uScale =  ( uvRect.mXMax - uvRect.mXMin );
 	float vScale = -( uvRect.mYMax - uvRect.mYMin );
 	
 	float uOff = uvRect.mXMin + ( 0.5f * uScale );
 	float vOff = uvRect.mYMin - ( 0.5f * vScale );
-
-
+		
+	
 	//ZLAffine3D mtx;
 
-
-	//	mtx.ScRoTr (
-	//			0.0f, 0.0f, 1.0f,
-	//			0.0f, 0.0f, 0.0f,
-	//			1.0f, 1.0f, 1.0f
-	//		);
-
-	////mtx.RotateZ(1*180/3.14);
-	////mtx.RotateX(1*180/3.14);
-	////mtx.RotateY(1*180/3.14);
-	////this->mQuad.
+	//float radA =90* (PI/180);
+	//mtx.RotateZ(radA);	
 	//this->mQuad.TransformVerts(mtx);
-	//this->mQuad.Draw ( xOff, yOff, 0, xScl, yScl, uOff, vOff, uScale, vScale );
 
-	
-
-
-	this->mQuad.Draw ( xOff, yOff, zOff, xScl, yScl, uOff, vOff, uScale, vScale );
-
+this->mQuad.Draw ( xOff, yOff, zOff, xScl, yScl, uOff, vOff, uScale, vScale );
 
 
 
@@ -333,6 +336,7 @@ void MOAITileDeck2D::RegisterLuaFuncs ( MOAILuaState& state ) {
 		{ "setSize",			_setSize },
 		{ "transform",			_transform },
 		{ "transformUV",		_transformUV },
+		//{ "rotIndex",			_rotIndex },
 		{ NULL, NULL }
 	};
 

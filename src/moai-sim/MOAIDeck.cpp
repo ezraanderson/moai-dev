@@ -126,13 +126,16 @@ void MOAIDeck::Draw ( u32 idx, MOAIDeckRemapper* remapper ) {
 //----------------------------------------------------------------//
 void MOAIDeck::Draw ( u32 idx, MOAIDeckRemapper* remapper, float xOff, float yOff, float zOff, float xScl, float yScl, float zScl ) {
 	
+	//HIDDEN IS VERY IMPORTANT??
+
 	idx = remapper ? remapper->Remap ( idx ) : idx;
 	
 	if ( !idx || ( idx & MOAITileFlags::HIDDEN )) return;
 	
 	xScl = ( idx & MOAITileFlags::XFLIP ) ? -xScl : xScl;
-	yScl = ( idx & MOAITileFlags::YFLIP ) ? -yScl : yScl;
+	yScl = ( idx & MOAITileFlags::YFLIP ) ? -yScl : yScl;	
 	
+
 	this->DrawIndex ( idx & MOAITileFlags::CODE_MASK, xOff, yOff, zOff, xScl, yScl, zScl );
 }
 

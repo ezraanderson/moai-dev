@@ -101,7 +101,7 @@ public:
 	static void			DrawTexture				( float left, float top, float right, float bottom, MOAITexture* texture );
 	static void			DrawTextureUV			(MOAITexture* texture, 
 												float left, float top, float right, float bottom, 
-												float sclX,float sclY,float rot,
+												float rot,
 												float u0,float v0,float u1,float v1 
 												);
 

@@ -86,6 +86,7 @@ enum {
 	ZGL_PIPELINE_COLOR_ARRAY,
 	ZGL_PIPELINE_CULL,
 	ZGL_PIPELINE_DEPTH,
+	ZGL_PIPELINE_STENCIL,
 	ZGL_PIPELINE_NORMAL_ARRAY,
 	ZGL_PIPELINE_SCISSOR,
 	ZGL_PIPELINE_TEXTURE_2D,
@@ -112,7 +113,10 @@ enum {
 	ZGL_PIXEL_FORMAT_DEPTH_COMPONENT24,
 	ZGL_PIXEL_FORMAT_DEPTH_COMPONENT32,
 
-	ZGL_PIXEL_FORMAT_STENCIL_INDEX8,
+	ZGL_STENCIL_INDEX1,
+	ZGL_STENCIL_INDEX4,
+	ZGL_STENCIL_INDEX8,
+	ZGL_STENCIL_INDEX16,
 
 	ZGL_PIXEL_TYPE_BYTE,
 	ZGL_PIXEL_TYPE_COMPRESSED_RGB_PVRTC_2BPPV1_IMG,
@@ -247,8 +251,16 @@ extern void		zglDeleteProgram		( u32 program );
 extern void		zglDeleteRenderbuffer	( u32 buffer );
 extern void		zglDeleteShader			( u32 shader );
 extern void		zglDeleteTexture		( u32 texture );
+
 extern void		zglDepthFunc			( u32 depthFunc );
 extern void		zglDepthMask			( bool flag );
+extern void		zglDepthClear			(  );
+
+extern void		zglStencilFunc			( u32 stencilFunc );
+extern void		zglStencilMask			( bool flag );
+extern void		zglStencilClear			(  );
+
+
 extern void		zglDisable				( u32 cap );
 extern void		zglDrawArrays			( u32 primType, u32 first, u32 count );
 extern void		zglDrawElements			( u32 primType, u32 count, u32 indexType, const void* indices );

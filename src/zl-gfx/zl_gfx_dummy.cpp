@@ -105,6 +105,12 @@ void zglDepthMask ( bool flag ) {
 	UNUSED ( flag );
 }
 
+
+
+
+
+
+
 //----------------------------------------------------------------//
 void zglDisable ( u32 cap ) {
 	UNUSED ( cap );

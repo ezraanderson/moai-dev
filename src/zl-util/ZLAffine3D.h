@@ -450,7 +450,7 @@ public:
 		m[C0_R2]	= 0;
 		
 		m[C1_R0]	= -m[C0_R1];	// -sin
-		m[C1_R1]	= m[C0_R0];	// cos
+		m[C1_R1]	= m[C0_R0];		// cos
 		m[C1_R2]	= 0;
 		
 		m[C2_R0]	= 0;

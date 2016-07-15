@@ -215,6 +215,7 @@ GLenum _remapEnum ( u32 zglEnum ) {
 	#endif
 		case ZGL_PIPELINE_CULL:							return GL_CULL_FACE;
 		case ZGL_PIPELINE_DEPTH:						return GL_DEPTH_TEST;
+	    case ZGL_PIPELINE_STENCIL:						return GL_STENCIL_TEST;
 
 	#if !defined ( MOAI_OS_NACL )
 		  case ZGL_PIPELINE_NORMAL_ARRAY:					return GL_NORMAL_ARRAY;
@@ -233,15 +234,26 @@ GLenum _remapEnum ( u32 zglEnum ) {
 		case ZGL_PIXEL_FORMAT_LUMINANCE_ALPHA:				return GL_LUMINANCE_ALPHA;
 
 		#if !defined ( MOAI_OS_NACL ) && !defined ( MOAI_OS_IPHONE ) && !defined ( MOAI_OS_BLACKBERRY ) && !defined ( MOAI_OS_ANDROID )
-		  case ZGL_PIXEL_FORMAT_RED:							return GL_RED;
+		  case ZGL_PIXEL_FORMAT_RED:						return GL_RED;
 		  case ZGL_PIXEL_FORMAT_RG:							return GL_RG;
 		#endif
 		
-		case ZGL_PIXEL_FORMAT_RGB:							return GL_RGB;			
+		case ZGL_PIXEL_FORMAT_RGB:							return GL_RGB;		
+
 		case ZGL_PIXEL_FORMAT_DEPTH_COMPONENT16:			return GL_DEPTH_COMPONENT16;
 		case ZGL_PIXEL_FORMAT_DEPTH_COMPONENT24:			return GL_DEPTH_COMPONENT24;
 		case ZGL_PIXEL_FORMAT_DEPTH_COMPONENT32:			return GL_DEPTH_COMPONENT32;
 		
+
+		case ZGL_STENCIL_INDEX1:			return GL_DEPTH24_STENCIL8;
+		case ZGL_STENCIL_INDEX4:			return GL_STENCIL_INDEX4;
+		case ZGL_STENCIL_INDEX8:			return GL_STENCIL_INDEX8;
+		case ZGL_STENCIL_INDEX16:			return GL_STENCIL_INDEX16;
+
+		//case ZGL_PIXEL_FORMAT_STENCIL_INDEX8:			return GL_DEPTH_COMPONENT32;
+		//case ZGL_PIXEL_FORMAT_STENCIL_INDEX16:			return GL_DEPTH_COMPONENT32;
+
+
 		#if !defined ( MOAI_OS_NACL ) && !defined ( MOAI_OS_IPHONE ) && !defined ( MOAI_OS_BLACKBERRY ) && !defined ( MOAI_OS_ANDROID )
 		  case ZGL_PIXEL_FORMAT_RGB4:							return GL_RGB4;
 		#endif
@@ -555,9 +567,6 @@ void zglActiveTexture ( u32 textureUnit ) {
 //----------------------------------------------------------------//
 void zglBlendFunc ( u32 sourceFactor, u32 destFactor ) {
 	glBlendFunc ( _remapEnum ( sourceFactor ), _remapEnum ( destFactor ));
-
-	//glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
-
 }
 
 //----------------------------------------------------------------//
@@ -584,6 +593,13 @@ void zglClear ( u32 mask ) {
 
 	glClear ( glMask );
 }
+
+
+
+
+
+
+
 
 //----------------------------------------------------------------//
 void zglClearColor ( float r, float g, float b, float a ) {
@@ -641,6 +657,57 @@ void zglDepthFunc ( u32 depthFunc ) {
 void zglDepthMask ( bool flag ) {
 	glDepthMask ( flag ? GL_TRUE : GL_FALSE );
 }
+
+
+
+//----------------------------------------------------------------//
+void zglDepthClear ( ) {
+	glClear ( GL_DEPTH_BUFFER_BIT );
+}
+
+
+
+
+//----------------------------------------------------------------//
+void zglStencilMask ( bool flag ) {
+	//glStencilMask ( flag ? GL_TRUE : GL_FALSE );
+
+
+
+	 glEnable(GL_DEPTH_TEST); //Enable depth testing
+	 glColorMask(1, 1,1, 1);
+     glStencilFunc(GL_EQUAL, 1, 1);
+     glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+
+}
+//----------------------------------------------------------------//
+void zglStencilFunc ( u32 stencilFunc ) {
+	
+	//glClear ( GL_STENCIL_BUFFER_BIT ); 
+
+	glEnable(GL_STENCIL_TEST); //Enable using the stencil buffer
+
+    glColorMask(0, 0, 0, 0); //Disable drawing colors to the screen
+    glDisable(GL_DEPTH_TEST); //Disable depth testing
+
+	glStencilFunc ( GL_ALWAYS,1,1);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+
+
+
+}
+
+//----------------------------------------------------------------//
+void zglStencilClear (  ) {
+	glClear ( GL_STENCIL_BUFFER_BIT );
+}
+
+
+
+
+
+
 
 //----------------------------------------------------------------//
 void zglDisable ( u32 cap ) {
@@ -1127,6 +1194,7 @@ void zglFramebufferTexture2D ( u32 target, u32 attachment, u32 texture, s32 leve
 
 //----------------------------------------------------------------//
 void zglRenderbufferStorage ( u32 internalFormat, u32 width, u32 height ) {
+
 	glRenderbufferStorage ( GL_RENDERBUFFER, _remapEnum ( internalFormat ), ( GLsizei )width, ( GLsizei )height );
 }
 

@@ -4,7 +4,7 @@
 #include "pch.h"
 #include <moai-sim/MOAIQuadBrush.h>
 #include <moai-sim/MOAIVertexFormatMgr.h>
-
+#include <math.h>
 //================================================================//
 // MOAIQuadBrush
 //================================================================//
@@ -40,29 +40,68 @@ void MOAIQuadBrush::Draw ( float xOff, float yOff, float zOff, float xScale, flo
 //----------------------------------------------------------------//
 void MOAIQuadBrush::Draw ( float xOff, float yOff, float zOff, float xScale, float yScale, float uOff, float vOff, float uScale, float vScale ) {
 	
-	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
+MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
+//
+//float rad	  = 45*(PI/180);
+//float rad_cos = cos(rad);
+//float rad_sin = sin(rad);
+//
+//double x1 = 0;
+//double y1 = 0;
+//
+////0
+//this->mVtx [ 0 ].mX  =-0.5;
+//this->mVtx [ 0 ].mY  = 0.5;
+//
+//x1 = this->mVtx [ 0 ].mX - 0;
+//y1 = this->mVtx [ 0 ].mY - 0;
+//
+//this->mVtx [ 0 ].mX =  x1 * rad_cos - y1 * rad_sin; 
+//this->mVtx [ 0 ].mY =  x1 * rad_sin + y1 * rad_cos;
+//
+////1
+//this->mVtx [ 1 ].mX =  0.5;
+//this->mVtx [ 1 ].mY  = 0.5;
+//
+//x1 = this->mVtx [ 1 ].mX - 0;
+//y1 = this->mVtx [ 1 ].mY - 0;
+//
+//this->mVtx [ 1 ].mX =x1 * rad_cos - y1 * rad_sin; 
+//this->mVtx [ 1 ].mY =x1 * rad_sin + y1 * rad_cos;
+//
+////2
+//this->mVtx [ 2 ].mX  =  0.5;
+//this->mVtx [ 2 ].mY  = -0.5;
+//
+//x1 = this->mVtx [ 2 ].mX - 0;
+//y1 = this->mVtx [ 2 ].mY - 0;
+//
+//this->mVtx [ 2 ].mX = x1 * rad_cos - y1 * rad_sin;  
+//this->mVtx [ 2 ].mY = x1 * rad_sin + y1 * rad_cos;
+//
+////3
+//this->mVtx [ 3 ].mX =  -0.5;
+//this->mVtx [ 3 ].mY  = -0.5;
+//
+//x1 = this->mVtx [ 3 ].mX - 0;
+//y1 = this->mVtx [ 3 ].mY - 0;
+//
+//this->mVtx [ 3 ].mX = x1 * rad_cos - y1 * rad_sin; 
+//this->mVtx [ 3 ].mY = x1 * rad_sin + y1 * rad_cos;
+
+//printf("___________________\n");
+//printf("1: %f %f  \n",this->mVtx [ 0 ].mX,this->mVtx [ 0 ].mY);
+//printf("2: %f %f  \n",this->mVtx [ 1 ].mX,this->mVtx [ 1].mY);
+//printf("3: %f %f \n",this->mVtx [  2 ].mX,this->mVtx [ 2 ].mY);
+//printf("4: %f %f  \n",this->mVtx [ 3 ].mX,this->mVtx [ 3].mY);
 
 
-	//ZLAffine3D mtx;
-	//mtx.Transform ( this->mUV [ 0 ]);
-	//mtx.Transform ( this->mUV [ 1 ]);
-	//mtx.Transform ( this->mUV [ 2 ]);
-	//mtx.Transform ( this->mUV [ 3 ]);
-	//MOAIQuadBrush quad;		
-	//ZLAffine3D mtx;
-	//quad.SetVerts ( 0, 0, 0, 0 );	
-	//quad.SetUVs ( 1, 1, 1, 1 );
-	//mtx.Scale(10.0f,10.0,50.0f);	
-	//mtx.RotateZ(this->mUV);	
-	//quad.TransformVerts(mtx);	
-	//	ZLAffine3D mtx;
-	//	mtx.ScRoTr (this->mVtx[1],this->mVtx[2],this->mVtx[3],this->mVtx[4],);
-	//gfxDevice.WriteQuad ( this->mVtx, this->mUV, xOff, yOff, zOff, xScale, yScale, uOff, vOff, uScale, vScale ); 
+gfxDevice.WriteQuad ( this->mVtx, this->mUV, xOff, yOff, zOff, xScale, yScale, uOff, vOff, uScale, vScale ); 
+
+	
 
 
 
-
-	gfxDevice.WriteQuad ( this->mVtx, this->mUV, xOff, yOff, zOff, xScale, yScale, uOff, vOff, uScale, vScale ); 
 }
 
 //----------------------------------------------------------------//

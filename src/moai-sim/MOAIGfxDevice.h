@@ -85,8 +85,12 @@ private:
 	//static const u32 DEFAULT_BUFFER_SIZE	= 2000000000;
 
 	int				mCullFunc;
+
 	int				mDepthFunc;
 	bool			mDepthMask;
+
+	int				mStencilFunc;
+	bool			mStencilMask;
 
 	MOAIBlendMode	mBlendMode;
 	bool			mBlendEnabled;
@@ -169,9 +173,23 @@ private:
 	static int				_setPenColor			( lua_State* L );
 	static int				_setPenWidth			( lua_State* L );
 	static int				_setPointSize			( lua_State* L );
-    static int				_newShader	    		( lua_State* L );
+    static int				_setShader	    		( lua_State* L );
     static int				_setBlendMode	    	( lua_State* L );
+
+	static int				_setDepthTest	    	( lua_State* L );
+	static int				_setDepthMask			( lua_State* L );
+   static int				_setDepthClear			( lua_State* L );
+
+	static int				_setStencilTest	    	( lua_State* L );
+	static int				_setStencilMask			( lua_State* L );
+   static int				_setStencilClear		( lua_State* L );
+
+    static int				_setBlendAdd	    	( lua_State* L );
 	static int				_setAmbient				( lua_State* L );
+
+	static int				_doFlush				( lua_State* L );
+
+
 	
 	//----------------------------------------------------------------//
 	void					Clear					();
@@ -294,6 +312,10 @@ public:
 
 	void					SetDepthFunc			();
 	void					SetDepthFunc			( int depthFunc );
+
+    void					SetStencilFunc 			();
+	void					SetStencilFunc 			( int depthFunc );
+
 	void					SetDepthMask			( bool depthMask );
 	void					SetFrameBuffer			( MOAIFrameBuffer* frameBuffer );
 	bool					SetGfxState				( MOAIGfxState* gfxState );

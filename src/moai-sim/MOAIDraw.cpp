@@ -623,7 +623,7 @@ int MOAIDraw::_fillRect ( lua_State* L ) {
 	float x1 = state.GetValue < float >( 3, 0.0f );
 	float y1 = state.GetValue < float >( 4, 0.0f );
 
-	MOAIDraw::DrawRectFill ( x0, y0, x1, y1 );
+	MOAIDraw::DrawRectFill ( x0, y0, x1, y1,true );
 	return 0;
 }
 
@@ -1105,20 +1105,9 @@ void MOAIDraw::DrawRectEdges ( ZLRect rect, u32 edges ) {
 
 //----------------------------------------------------------------//
 void MOAIDraw::DrawRectFill ( ZLRect rect, bool asTriStrip ) {
-
 	rect.Bless ();
 	MOAIDraw::DrawRectFill ( rect.mXMin, rect.mYMin, rect.mXMax, rect.mYMax, asTriStrip );
 }
-
-
-
-
-
-
-
-
-
-
 
 
 //----------------------------------------------------------------//
@@ -1133,13 +1122,13 @@ void MOAIDraw::DrawRectFill ( float left, float top, float right, float bottom, 
 			gfxDevice.WriteVtx ( left, top, 0.0f );
 			gfxDevice.WriteFinalColor4b ();
 		
-			gfxDevice.WriteVtx ( right, top, 0.0f );
+			gfxDevice.WriteVtx ( right, top, 0.0f);
 			gfxDevice.WriteFinalColor4b ();
 		
 			gfxDevice.WriteVtx ( left, bottom, 0.0f );
 			gfxDevice.WriteFinalColor4b ();
 		
-			gfxDevice.WriteVtx ( right, bottom, 0.0f );
+			gfxDevice.WriteVtx ( right, bottom, 0.0f);
 			gfxDevice.WriteFinalColor4b ();
 	
 		gfxDevice.EndPrim ();
@@ -1210,57 +1199,32 @@ void MOAIDraw::DrawRectOutline ( float left, float top, float right, float botto
 
 //----------------------------------------------------------------//
 void MOAIDraw::DrawTextureUV (MOAITexture* texture,
-							  float left, float top, float right, float bottom, 
-							  float sclX,float sclY,float rot,
+							  float left, float top, float right, float bottom, 							
+							  float rot,
 							  float u0,float v0,float u1,float v1) {
 
-MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
+	if ( texture ) {	
 
-	if ( texture ) {		
-		gfxDevice.Flush ();
-
-		
-
-		//REMOVE FOR TRANSPARET
-		//gfxDevice.SetBlendMode ( ZGL_BLEND_FACTOR_ONE, ZGL_BLEND_FACTOR_ZERO );
-
+		MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
 		gfxDevice.SetTexture ( texture );
 		gfxDevice.SetShaderPreset ( MOAIShaderMgr::DECK2D_SHADER );
-
-		const ZLColorVec& orgColor = gfxDevice.GetPenColor ();
-
-		gfxDevice.SetPenColor ( 1, 1, 1, 1 );		
 		MOAIQuadBrush::BindVertexFormat ( gfxDevice );
 	
-		MOAIQuadBrush quad;		
-		ZLAffine3D mtx;
-
-		//mtx.ScRoTr (
-		//		2.0f, 2.0f, 0.0f,
-		//		0.0f, 0.0f, 0.2f,
-		//		0.0f, 0.0f, 0.0f
-		//	);
-		//printf("SCALE %f %f \n",sclX,sclY);
-		//printf("ROT %f \n",rot);
-		//printf("UV %f %f %F %F \n",u0,v0,u1,v1);
-
+		ZLAffine3D mtx;	
+		mtx.RotateZ(rot);	
+		//mtx.TransformZ(-1);
+	
+		
+		MOAIQuadBrush quad;	
 		quad.SetVerts ( left, top, right, bottom );	
 		quad.SetUVs ( u0, v0, u1, v1 );
-		mtx.Scale(10.0f,10.0,50.0f);	
-		mtx.RotateZ(rot);			
 
-	
 		quad.TransformVerts(mtx);		
-
-		//UV ??
-			
 		quad.Draw ();
 
 
-		gfxDevice.Flush ();		
-		gfxDevice.SetBlendMode ();
-		gfxDevice.SetPenColor ( orgColor );		
-		MOAIDraw::Bind ();
+
+	   MOAIDraw::Bind ();
 
 	}
 }
@@ -1276,19 +1240,20 @@ int MOAIDraw::_drawTextureUV ( lua_State* L ) {
 	float x1 = state.GetValue < float >( 4, 0.0f );
 	float y1 = state.GetValue < float >( 5, 0.0f );
 
-	float sclX = state.GetValue < float >( 6, 0.0f );
-	float sclY = state.GetValue < float >( 7, 0.0f );
-	float rot = state.GetValue < float >( 8, 0.0f );
+	//float sclX = state.GetValue < float >( 6, 0.0f );
+	//float sclY = state.GetValue < float >( 7, 0.0f );
 
-	float u0 = state.GetValue < float >( 9, 0.0f );
-	float v0 = state.GetValue < float >( 10, 0.0f );
-	float u1 = state.GetValue < float >( 11, 0.0f );
-	float v1 = state.GetValue < float >( 12, 0.0f );
+	float rot = state.GetValue < float >( 6, 0.0f );
+
+	float u0 = state.GetValue < float >( 7, 0.0f );
+	float v0 = state.GetValue < float >( 8, 0.0f );
+	float u1 = state.GetValue < float >( 9, 0.0f );
+	float v1 = state.GetValue < float >( 10, 0.0f );
 
 
 	MOAIDraw::DrawTextureUV (texture, 
 							x0, y0, x1, y1, 
-							sclX,sclY,rot,
+							rot,
 							u0,v0,u1,v1 
 							);
 	return 0;

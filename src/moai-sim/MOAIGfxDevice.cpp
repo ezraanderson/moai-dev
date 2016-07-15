@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2011 Zipline Games, Inc. All Rights Reserved.
+﻿// Copyright (c) 2010-2011 Zipline Games, Inc. All Rights Reserved.
 // http://getmoai.com
 
 #include "pch.h"
@@ -50,6 +50,133 @@ void MOAIGfxDeleter::Delete () {
 			break;
 	}
 }
+
+
+//**************************************************************************************************
+int MOAIGfxDevice::_doFlush( lua_State* L ) {
+	MOAILuaState state ( L );
+	MOAIGfxDevice::Get ().Flush();
+	return 0;
+}
+
+
+
+
+//**************************************************************************************************
+int MOAIGfxDevice::_setBlendMode ( lua_State* L ) {
+
+	MOAILuaState state ( L );
+	int src = state.GetValue < int >( 1, 1 );
+	int dst = state.GetValue < int >( 1, 1 );
+	MOAIGfxDevice::Get ().SetBlendMode ( src,dst );
+	return 0;
+}
+
+
+//**************************************************************************************************
+int MOAIGfxDevice::_setBlendAdd ( lua_State* L ) {
+	MOAILuaState state ( L );
+	//MOAIGfxDevice::Get ().SetBlendMode (  ZGL_BLEND_FACTOR_SRC_ALPHA, ZGL_BLEND_FACTOR_ONE);
+	MOAIGfxDevice::Get ().SetBlendMode (  ZGL_BLEND_FACTOR_ONE, ZGL_BLEND_FACTOR_ONE);
+	return 0;
+}
+
+
+
+
+
+
+
+//**************************************************************************************************
+int MOAIGfxDevice::_setDepthMask ( lua_State* L ) {
+	MOAILuaState state ( L );
+	bool value = state.GetValue < bool >( 1, 1 );
+	zglDepthMask ( value );
+	return 0;
+}
+
+
+
+//**************************************************************************************************
+int MOAIGfxDevice::_setDepthTest ( lua_State* L ) {
+
+	MOAILuaState state ( L );
+	int depth = state.GetValue < int >( 1, 1 );
+	MOAIGfxDevice::Get ().SetDepthFunc(depth);
+	return 0;
+}
+
+//**************************************************************************************************
+int MOAIGfxDevice::_setDepthClear( lua_State* L ) {
+	MOAILuaState state ( L );
+	zglDepthClear();
+	return 0;
+}
+
+
+
+
+
+//**************************************************************************************************
+int MOAIGfxDevice::_setStencilTest ( lua_State* L ) {
+	MOAILuaState state ( L );
+	int depth = state.GetValue < int >( 1, 1 );
+	MOAIGfxDevice::Get ().SetStencilFunc(depth);
+	return 0;
+}
+//**************************************************************************************************
+int MOAIGfxDevice::_setStencilMask ( lua_State* L ) {
+	MOAILuaState state ( L );
+	bool value = state.GetValue < bool >( 1, 1 );
+	zglStencilMask ( value );
+	return 0;
+}
+//**************************************************************************************************
+int MOAIGfxDevice::_setStencilClear( lua_State* L ) {
+	MOAILuaState state ( L );
+	zglStencilClear();
+	return 0;
+}
+
+
+
+
+
+//**************************************************************************************************
+int	MOAIGfxDevice::_setAmbient				( lua_State* L ) {
+	MOAILuaState state ( L );
+	float r = state.GetValue < float >( 1, 1.0f );
+	float g = state.GetValue < float >( 2, 1.0f );
+	float b = state.GetValue < float >( 3, 1.0f );
+	float a = state.GetValue < float >( 4, 1.0f );
+	MOAIGfxDevice::Get ().SetAmbientColor ( r, g, b, a );
+	
+	return 0;
+
+
+};
+
+//**************************************************************************************************
+int	MOAIGfxDevice::_setShader ( lua_State* L ) {
+	MOAILuaState state ( L );	 
+
+		MOAIShader  * shader = state.GetLuaObject < MOAIShader >( 2, true ); 
+
+		MOAIGfxDevice::Get ().Flush ();
+		MOAIGfxDevice::Get ().mShader = shader;
+		
+		if ( shader ) {
+			shader->Bind ();
+		}
+
+	return 0;
+}
+
+
+
+
+
+
 
 //================================================================//
 // local
@@ -166,48 +293,6 @@ int MOAIGfxDevice::_setPenColor ( lua_State* L ) {
 }
 
 
-
-
-
-
-//**************************************************************************************************
-//**************************************************************************************************
-//**************************************************************************************************
-int	MOAIGfxDevice::_setAmbient				( lua_State* L ) {
-	MOAILuaState state ( L );
-	float r = state.GetValue < float >( 1, 1.0f );
-	float g = state.GetValue < float >( 2, 1.0f );
-	float b = state.GetValue < float >( 3, 1.0f );
-	float a = state.GetValue < float >( 4, 1.0f );
-	MOAIGfxDevice::Get ().SetAmbientColor ( r, g, b, a );
-	
-	return 0;
-
-
-};
-
-//**************************************************************************************************
-//EZRA: SHADER
-int	MOAIGfxDevice::_newShader ( lua_State* L ) {
-	MOAILuaState state ( L );	 
-
-		MOAIShader  * shader = state.GetLuaObject < MOAIShader >( 2, true );
-      //  printf("SHADER\n");
-
-		MOAIGfxDevice::Get ().Flush ();
-		MOAIGfxDevice::Get ().mShader = shader;
-		
-		if ( shader ) {
-			shader->Bind ();
-		}
-
-	return 0;
-}
-
-
-
-
-
 //----------------------------------------------------------------//
 /**	@name	setPenWidth
 
@@ -222,19 +307,6 @@ int MOAIGfxDevice::_setPenWidth ( lua_State* L ) {
 	MOAIGfxDevice::Get ().SetPenWidth ( width );
 	return 0;
 }
-
-
-
-
-int MOAIGfxDevice::_setBlendMode ( lua_State* L ) {
-
-	MOAILuaState state ( L );
-	int src = state.GetValue < float >( 1, 1.0f );
-	int dst = state.GetValue < float >( 1, 1.0f );
-	MOAIGfxDevice::Get ().SetBlendMode ( src,dst );
-	return 0;
-}
-
 
 
 
@@ -613,8 +685,13 @@ u32 MOAIGfxDevice::LogErrors () {
 //----------------------------------------------------------------//
 MOAIGfxDevice::MOAIGfxDevice () :
 	mCullFunc ( 0 ),
+
 	mDepthFunc ( 0 ),
 	mDepthMask ( true ),
+
+	mStencilFunc ( 0 ),
+	mStencilMask(true),
+
 	mBlendEnabled ( 0 ),
 	mBuffer ( 0 ),
 	mCpuVertexTransform ( false ),
@@ -729,12 +806,27 @@ void MOAIGfxDevice::RegisterLuaClass ( MOAILuaState& state ) {
 		{ "isProgrammable",				_isProgrammable },
 		{ "setDefaultTexture",			_setDefaultTexture },
 		{ "setListener",				&MOAIGlobalEventSource::_setListener < MOAIGfxDevice > },
+
 		{ "setPenColor",				_setPenColor },
 		{ "setPenWidth",				_setPenWidth },
+
 		{ "setBlendMode",				_setBlendMode },
+		{ "setBlendAdd",				_setBlendAdd },
+
+
+		{ "setDepthTest",				_setDepthTest },
+		{ "setDepthClear",			    _setDepthClear },
+		{ "setDepthMask",				_setDepthMask },
+
+		{ "setStencilTest",				_setStencilTest },		
+		{ "setStencilClear",			_setStencilClear },
+		{ "setStencilMask",				_setStencilMask },
+
 		{ "setPointSize",				_setPointSize },
-        { "newShader",				    _newShader },
+        { "setShader",				    _setShader },
         { "setAmbient",				    _setAmbient },
+		{ "doFlush",				    _doFlush },
+
 
 		{ NULL, NULL }
 	};
@@ -837,6 +929,11 @@ void MOAIGfxDevice::ResetState () {
 	zglDisable ( ZGL_PIPELINE_BLEND );
 	this->mBlendEnabled = false;
 	
+
+
+//*********************************************
+//DEPTH
+
 	// disable backface culling
 	zglDisable ( ZGL_PIPELINE_CULL );
 	this->mCullFunc = 0;
@@ -844,17 +941,36 @@ void MOAIGfxDevice::ResetState () {
 	// disable depth test
 	zglDisable ( ZGL_PIPELINE_DEPTH );
 	this->mDepthFunc = 0;
-	
+
 	// enable depth write
 	zglDepthMask ( true );
 	this->mDepthMask = true;
-	
-	// clear the vertex format
-	this->SetVertexFormat ();
 
-	// clear the shader
-	this->mShader = 0;
+
+//*********************************************
+//STENCIL
+
+			//// disable depth test
+			//zglDisable ( ZGL_PIPELINE_STENCIL );
+			//this->mStencilFunc = 0;
 	
+			//zglStencilMask ( true );
+			//this->mStencilMask = true;
+	
+			//// clear the vertex format
+			//this->SetVertexFormat ();
+
+			//// clear the shader
+			//this->mShader = 0;
+
+
+
+
+	
+
+
+
+
 	// reset the pen width
 	this->mPenWidth = 1.0f;
 	zglLineWidth ( this->mPenWidth );
@@ -1020,6 +1136,32 @@ void MOAIGfxDevice::SetDepthFunc ( int depthFunc ) {
 		}
 	}
 }
+
+//----------------------------------------------------------------//
+void MOAIGfxDevice::SetStencilFunc () {
+	this->SetStencilFunc ( 0 );
+}
+
+//----------------------------------------------------------------//
+void MOAIGfxDevice::SetStencilFunc ( int stencilFunc ) {
+
+	if ( this->mStencilFunc != stencilFunc ) {
+	
+		this->Flush ();
+		this->mStencilFunc = stencilFunc;
+	
+		if ( stencilFunc ) {			
+			zglEnable ( ZGL_PIPELINE_STENCIL );
+			zglStencilFunc ( this->mDepthFunc );
+		}
+		else {
+			zglDisable ( ZGL_PIPELINE_STENCIL );
+		}
+	}
+}
+
+
+
 
 //----------------------------------------------------------------//
 void MOAIGfxDevice::SetDepthMask ( bool depthMask ) {
