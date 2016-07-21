@@ -754,13 +754,6 @@ int MOAILight::_query ( lua_State* L ) {
 	float light_y=state.GetValue   < float >( 5, 0 )*scale;
 	float light_r=state.GetValue   < float >( 6, 0 )*scale;	//DISTANCE FROM CENTER
 
-
-
-
-
-
-
-
 	//COLOR
 	float r=state.GetValue   < float >( 7, 0 );
 	float g=state.GetValue   < float >( 8, 0 );

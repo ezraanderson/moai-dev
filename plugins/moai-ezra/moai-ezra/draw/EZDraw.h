@@ -14,6 +14,7 @@ private:
 	//----------------------------------------------------------------//
 	static int		_drawBlack			( lua_State* L );
 	static int		_drawRoomsB			( lua_State* L );
+	static int		_drawRoomsC			( lua_State* L );
 	static int		_drawBorders		( lua_State* L );	
 	static int		_setBounds			( lua_State* L );
 	
