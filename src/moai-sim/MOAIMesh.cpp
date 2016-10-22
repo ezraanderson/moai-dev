@@ -110,6 +110,11 @@ ZLBox MOAIMesh::ComputeMaxBounds () {
 	return this->GetItemBounds ( 0 );
 }
 
+
+
+
+
+
 //----------------------------------------------------------------//
 void MOAIMesh::DrawIndex ( u32 idx, float xOff, float yOff, float zOff, float xScl, float yScl, float zScl ) {
 	UNUSED ( idx );
@@ -139,7 +144,17 @@ void MOAIMesh::DrawIndex ( u32 idx, float xOff, float yOff, float zOff, float xS
 		// TODO: use gfxDevice to cache buffers
 		if ( this->mIndexBuffer ) {
 			if ( this->mIndexBuffer->LoadGfxState ()) {
-				zglDrawElements ( this->mPrimType, this->mIndexBuffer->GetIndexCount (), ZGL_TYPE_UNSIGNED_SHORT, 0 );
+
+			//	printf("zglDrawElements %d", this->mIndexBuffer->GetIndexCount ());
+
+
+				//ORGINAL
+						//zglDrawElements ( this->mPrimType, this->mIndexBuffer->GetIndexCount (), ZGL_TYPE_UNSIGNED_SHORT, 0 );
+
+				//LOMG
+						zglDrawElements ( this->mPrimType, this->mIndexBuffer->GetIndexCount (), ZGL_TYPE_UNSIGNED_INT,  0 );
+
+				
 			}
 		}
 		else {

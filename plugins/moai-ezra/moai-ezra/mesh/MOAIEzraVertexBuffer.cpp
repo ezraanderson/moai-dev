@@ -67,10 +67,7 @@ void MOAIEzraVertexBuffer::writeFloat_uv (s8 a, s8 b ) {
 
 
 void MOAIEzraVertexBuffer::reset_box ( ) {
-   // printf("buffer size : %d \n",this->mBuffer.Size ());
-	//this->mStream.SetBuffer ( this->mBuffer, this->mBuffer.Size ());
     this->mStream.SetBuffer( this->mBuffer,this->mBuffer.Size ());
-   // this->mStream.SetLength(this->mBuffer.Size ());
 }
 
 void MOAIEzraVertexBuffer::bless_box ( ) {

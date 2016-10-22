@@ -426,6 +426,7 @@ GLenum _remapEnum ( u32 zglEnum ) {
 		case ZGL_TYPE_SHORT:							return GL_SHORT;
 		case ZGL_TYPE_UNSIGNED_BYTE:					return GL_UNSIGNED_BYTE;
 		case ZGL_TYPE_UNSIGNED_INT:						return GL_UNSIGNED_INT;
+		//case ZGL_TYPE_UNSIGNED_LONG:					return GL_UNSIGNED_LONG;
 		case ZGL_TYPE_UNSIGNED_SHORT:					return GL_UNSIGNED_SHORT;
 
 		case ZGL_WRAP_MODE_CLAMP:						return GL_CLAMP_TO_EDGE;
@@ -462,12 +463,12 @@ void zglInitialize () {
 
 	string version = zglGetString ( ZGL_STRING_VERSION );
 
-    printf("Crash \n");
+    
     //for ( u32 i = 0; version.length(); i++ ) {
     for ( u32 i = 0; version.length() > i; i++ ) {
 		version [ i ] = ( char )tolower ( version [ i ]);
 	}
-	   printf("Crash-done \n");
+	  
 
 	string gles = "opengl es";
 	
@@ -747,7 +748,46 @@ void zglDrawArrays ( u32 primType, u32 first, u32 count ) {
 
 }
 
+
+void _CheckGLError(const char* file, int line);
+
+#define CheckGLError() _CheckGLError(__FILE__, __LINE__)
+
+void _CheckGLError(const char* file, int line)
+{
+    GLenum err ( glGetError() );
+
+    while ( err != GL_NO_ERROR )
+    {
+        std::string error;
+        switch ( err )
+        {
+            case GL_INVALID_OPERATION:  error="\nINVALID_OPERATION\n";      break;
+            case GL_INVALID_ENUM:       error="\nINVALID_ENUM\n";           break;
+            case GL_INVALID_VALUE:      error="\nINVALID_VALUE\n";          break;
+            case GL_OUT_OF_MEMORY:      error="\nOUT_OF_MEMORY\n";          break;
+            case GL_INVALID_FRAMEBUFFER_OPERATION:  error="n\INVALID_FRAMEBUFFER_OPERATION\n";  break;
+        }
+        std::cout << "GL_" << error.c_str() <<" - " << file << ":" << line << std::endl;
+        err = glGetError();
+    }
+
+    return;
+}
+
+
+void zglDrawInstance(u32 primType, u32 count, u32 indexType, const void* indices) {
+
+
+
+
+};
+
+
+
+
 //----------------------------------------------------------------//
+
 void zglDrawElements ( u32 primType, u32 count, u32 indexType, const void* indices ) {
 
 	// printf("UPDATING zglDrawElements\n");
@@ -769,11 +809,108 @@ void zglDrawElements ( u32 primType, u32 count, u32 indexType, const void* indic
 //*********************************************************************
 //*********************************************************************
 
+//glDrawElements ( _remapEnum ( primType ), ( GLsizei )count, _remapEnum ( indexType ), ( const GLvoid* )indices );
+
+//glBindBuffer(GL_ARRAY_BUFFER, positionBufferObject);
+//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mVBOIndices);
+//glGetIntegerv( GL_DEPTH_BITS, &depthBits);
+
+//glClearDepth(0);
+//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//glEnable(GL_DEPTH_TEST);
+//glDepthFunc(GL_GEQUAL);
+//glEnable(GL_POLYGON_OFFSET_FILL);
+//glPolygonOffset( -1.0f, -10.0f );
+////glMatrixMode(GL_PROJECTION);
+//glDrawElements ( _remapEnum ( primType ), ( GLsizei )count, _remapEnum ( indexType ), ( const GLvoid* )indices );
+//glPushMatrix ();
+//glPopMatrix (); 
+
+//CheckGLError();
+     
+//float l = -1.0;
+//float r = 1.0;
+//float b = -1.0;
+//float t = 1.0;
+//float n =  1.5;
+//float f = 20.0;
+//float delta = 1;
+//float pz = 1;
+
+
+//GLfloat matrix[16];
+//
+//glFrustum(l, r, b, t, n, f);
+//glGetFloatv(GL_PROJECTION_MATRIX, matrix);
+//glMatrixMode(GL_PROJECTION);
+
+//GLfloat epsilon = -2.0F * f * n * delta / ((f + n) * pz * (pz + delta));
+
+
+//printf("%f \n",matrix[0]);
+
+
+
+//gluPerspective(40,(1280/720),0.1,1000.0);
+
+//glDepthRange(1.0,1.0);
+//glMatrixMode(GL_MODELVIEW);
+//glScalef(0.1f,0.1f,0.1f);
+
+//glEnable(GL_POLYGON_OFFSET_FILL);
+//glPolygonOffset( 1.0f, 1.0f );
+
+
+
+//glDepthFunc(GL_LESS); //default would be GL_LESS
+//glClearDepth(0);      //default would be 1.0f 
+//glDepthRangedNV(-1.0, 1.0);
+//
+//const float zNear = 0.001f;
+//const double viewAngleVertical = 90.0f;
+//const float f = 1.0 / tan(viewAngleVertical / 2.0); // 1.0 / tan == cotangent
+//const float aspect = float(1280) / float(720);
+//
+//
+//GLfloat matrix[16];
+//glGetFloatv(GL_PROJECTION_MATRIX, matrix);
+//glMatrixMode(GL_PROJECTION);
+//
+//matrix[0] = f/aspect;
+//matrix[1] =  0.0f;
+//matrix[2] = 0.0f;
+//matrix[3] =  0.0f;
+//
+//matrix[4] = 0.0f;
+//matrix[5] = f;
+//matrix[6] = 0.0f;
+//matrix[7] = 0.0;
+//
+//matrix[8]	= 0.0f;
+//matrix[9]	= 0.0f;
+//matrix[10]	= 0.0f;
+//matrix[11]	= -1.0f;
+//
+//matrix[12] = 0.0f;
+//matrix[13] = 0.0f;
+//matrix[14] = 2*zNear;
+//matrix[15] = 0.0f;
+//glLoadMatrixf(matrix);
+//glPushMatrix();
+
+//mat4 projectionMatrix =
+//{
+//    f/aspect, 0.0f,    0.0f,  0.0f,
+//        0.0f,    f,    0.0f,  0.0f,
+//        0.0f, 0.0f,    0.0f, -1.0f,
+//        0.0f, 0.0f, 2*zNear,  0.0f
+//};
+
+
 glDrawElements ( _remapEnum ( primType ), ( GLsizei )count, _remapEnum ( indexType ), ( const GLvoid* )indices );
 
 
 
-     
 }
 
 //----------------------------------------------------------------//
@@ -785,6 +922,17 @@ void zglEnable ( u32 cap ) {
 void zglFlush () {
 	glFlush ();
 }
+
+//----------------------------------------------------------------//
+void zglPushMatrix () {
+	glPushMatrix  ();
+}
+//----------------------------------------------------------------//
+void zglPopMatrix  () {
+	glPopMatrix   ();
+}
+
+
 
 //----------------------------------------------------------------//
 u32 zglGetCap ( u32 cap ) {

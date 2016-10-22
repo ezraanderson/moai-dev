@@ -112,8 +112,9 @@ void MOAIPartitionCell::GatherProps ( MOAIPartitionResultBuffer& results, const 
 
 	PropIt propIt = this->mProps.Head ();
 	for ( ; propIt; propIt = propIt->Next ()) {
+	
 		MOAIProp* prop = propIt->Data ();
-		
+		prop->AddToSortBuffer(results);
 		if ( prop == ignore ) continue;
 		
 		if (( mask == 0 ) || ( prop->mMask & mask )) {	
@@ -126,10 +127,11 @@ void MOAIPartitionCell::GatherProps ( MOAIPartitionResultBuffer& results, const 
 
 //----------------------------------------------------------------//
 void MOAIPartitionCell::InsertProp ( MOAIProp& prop ) {
-
+	
 	if ( prop.mCell == this ) return;
-
+	//printf("           InsertProp A\n");
 	if ( prop.mCell ) {
+	//	printf("           InsertProp B\n");
 		prop.mCell->RemoveProp ( prop );
 	}
 	this->mProps.PushBack ( prop.mLinkInCell );

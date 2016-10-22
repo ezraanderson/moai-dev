@@ -4,12 +4,13 @@
 -- http://getmoai.com
 ----------------------------------------------------------------
 
-MOAISim.openWindow ( "test", 320, 480 )
-MOAIGfxDevice.setClearDepth ( true )
+MOAISim.openWindow ( "test", 1280, 700 )
+--MOAIGfxDevice.setClearDepth ( true )
+MOAIGfxDevice.getFrameBuffer ():setClearDepth ( true )
 
 viewport = MOAIViewport.new ()
-viewport:setSize ( 320, 480 )
-viewport:setScale ( 320, 480 )
+viewport:setSize ( 1280, 700 )
+viewport:setScale ( 1280, 700 )
 
 layer = MOAILayer.new ()
 layer:setViewport ( viewport )
@@ -22,51 +23,118 @@ vertexFormat:declareCoord ( 1, MOAIVertexFormat.GL_FLOAT, 3 )
 vertexFormat:declareUV ( 2, MOAIVertexFormat.GL_FLOAT, 2 )
 vertexFormat:declareColor ( 3, MOAIVertexFormat.GL_UNSIGNED_BYTE )
 
+
+
+
+
+
+
+--------------CUBES TIME 8
+cube_cnt = 2
+
 vbo = MOAIVertexBuffer.new ()
 vbo:setFormat ( vertexFormat )
-vbo:reserveVerts ( 8 )
+vbo:reserveVerts (cube_cnt * 8 )
+
+---- 1: top back left
+--vbo:writeFloat ( -16, 16, -16 )
+--vbo:writeFloat ( 0, 1 )
+--vbo:writeColor32 ( 0, 1, 1 )
+
+---- 2: top back right
+--vbo:writeFloat ( 16, 16, -16 )
+--vbo:writeFloat ( 1, 1 )
+--vbo:writeColor32 ( 1, 0, 1 )
+
+---- 3: top front right
+--vbo:writeFloat ( 16, 16, 16 )
+--vbo:writeFloat ( 1, 0 )
+--vbo:writeColor32 ( 0, 1, 0 )
+
+---- 4: top front left
+--vbo:writeFloat ( -16, 16, 16 )
+--vbo:writeFloat ( 0, 0 )
+--vbo:writeColor32 ( 1, 0, 0 )
+
+---- 5: bottom back left
+--vbo:writeFloat ( -16, -16, -16 )
+--vbo:writeFloat ( 0, 1 )
+--vbo:writeColor32 ( 1, 1, 1 )
+
+---- 6: bottom back right
+--vbo:writeFloat ( 16, -16, -16 )
+--vbo:writeFloat ( 1, 1 )
+--vbo:writeColor32 ( 1, 0, 0 )
+
+---- 7: bottom front right
+--vbo:writeFloat ( 16, -16, 16 )
+--vbo:writeFloat ( 1, 0 )
+--vbo:writeColor32 ( 0, 0, 1 )
+
+---- 8: bottom front left
+--vbo:writeFloat ( -16, -16, 16 )
+--vbo:writeFloat ( 0, 0 )
+--vbo:writeColor32 ( 1, 1, 0 )
+
+
+
+local x = 16
+local y = 16
+local z = 16
 
 -- 1: top back left
-vbo:writeFloat ( -64, 64, -64 )
+vbo:writeFloat ( -16*x, 16*y, -16 )
 vbo:writeFloat ( 0, 1 )
 vbo:writeColor32 ( 0, 1, 1 )
 
 -- 2: top back right
-vbo:writeFloat ( 64, 64, -64 )
+vbo:writeFloat ( 16*x, 16*y, -16 )
 vbo:writeFloat ( 1, 1 )
 vbo:writeColor32 ( 1, 0, 1 )
 
 -- 3: top front right
-vbo:writeFloat ( 64, 64, 64 )
+vbo:writeFloat ( 16*x, 16*y, 16 )
 vbo:writeFloat ( 1, 0 )
 vbo:writeColor32 ( 0, 1, 0 )
 
 -- 4: top front left
-vbo:writeFloat ( -64, 64, 64 )
+vbo:writeFloat ( -16*x, 16*y, 16 )
 vbo:writeFloat ( 0, 0 )
 vbo:writeColor32 ( 1, 0, 0 )
 
 -- 5: bottom back left
-vbo:writeFloat ( -64, -64, -64 )
+vbo:writeFloat ( -16*x, -16*y, -16 )
 vbo:writeFloat ( 0, 1 )
 vbo:writeColor32 ( 1, 1, 1 )
 
 -- 6: bottom back right
-vbo:writeFloat ( 64, -64, -64 )
+vbo:writeFloat ( 16*x, -16*y, -16 )
 vbo:writeFloat ( 1, 1 )
 vbo:writeColor32 ( 1, 0, 0 )
 
 -- 7: bottom front right
-vbo:writeFloat ( 64, -64, 64 )
+vbo:writeFloat ( 16*x, -16*y, 16 )
 vbo:writeFloat ( 1, 0 )
 vbo:writeColor32 ( 0, 0, 1 )
 
 -- 8: bottom front left
-vbo:writeFloat ( -64, -64, 64 )
+vbo:writeFloat ( -16*x, -16*y, 16 )
 vbo:writeFloat ( 0, 0 )
 vbo:writeColor32 ( 1, 1, 0 )
 
+
+
+
 vbo:bless ()
+
+
+
+
+
+
+--*************************************************************************
+--INDEX BUFFER *16
+
 
 ibo = MOAIIndexBuffer.new ()
 ibo:reserve ( 36 )
@@ -119,6 +187,11 @@ ibo:setIndex ( 34, 6 )
 ibo:setIndex ( 35, 7 )
 ibo:setIndex ( 36, 8 )
 
+
+
+--***************************************************************************
+--STRIPES
+
 mesh = MOAIMesh.new ()
 mesh:setTexture ( "white.png" )
 mesh:setVertexBuffer ( vbo )
@@ -129,9 +202,9 @@ prop = MOAIProp.new ()
 prop:setDeck ( mesh )
 prop:setCullMode ( MOAIProp.CULL_BACK )
 prop:setDepthTest ( MOAIProp.DEPTH_TEST_LESS_EQUAL )
-prop:moveRot ( 360, 180, 90, 3 )
+prop:moveRot ( 45, 45, 45, 3 )
 layer:insertProp ( prop )
 
 camera = MOAICamera.new ()
-camera:setLoc ( 0, 0, camera:getFocalLength ( 320 ))
+camera:setLoc ( 0, 0, camera:getFocalLength ( 2000 ))
 layer:setCamera ( camera )

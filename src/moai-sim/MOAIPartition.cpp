@@ -38,7 +38,9 @@ int MOAIPartition::_clear ( lua_State* L ) {
 	@out	nil
 */
 int MOAIPartition::_insertProp ( lua_State* L ) {
-	MOAI_LUA_SETUP ( MOAIPartition, "UU" )
+	MOAI_LUA_SETUP(MOAIPartition, "UU")
+
+	
 
 	MOAIProp* prop = state.GetLuaObject < MOAIProp >( 2, true );
 	if ( !prop ) return 0;
@@ -503,9 +505,10 @@ u32 MOAIPartition::GatherProps ( MOAIPartitionResultBuffer& results, MOAIProp* i
 u32 MOAIPartition::GatherProps ( MOAIPartitionResultBuffer& results, MOAIProp* ignore, const ZLFrustum& frustum, u32 mask ) {
 	
 	results.Reset ();
-	
+
 	u32 totalLayers = this->mLevels.Size ();
 	for ( u32 i = 0; i < totalLayers; ++i ) {
+	
 		this->mLevels [ i ].GatherProps ( results, ignore, frustum, this->mPlaneID, mask );
 	}
 	this->mBiggies.GatherProps ( results, ignore, frustum, mask );
@@ -517,11 +520,15 @@ u32 MOAIPartition::GatherProps ( MOAIPartitionResultBuffer& results, MOAIProp* i
 //----------------------------------------------------------------//
 void MOAIPartition::InsertProp ( MOAIProp& prop ) {
 	
+
+
+
 	if ( prop.mPartition == this ) return;
 	
 	this->LuaRetain ( &prop );
 	
 	if ( prop.mPartition ) {
+	
 		prop.mPartition->RemoveProp ( prop );
 	}
 	
@@ -530,6 +537,8 @@ void MOAIPartition::InsertProp ( MOAIProp& prop ) {
 		this->mPriorityCounter = this->mPriorityCounter & PRIORITY_MASK;
 	}
 	
+	//printf("MOAIPartition::InsertProp \n");
+
 	this->mEmpties.InsertProp ( prop );
 	this->AffirmPriority ( prop );
 	

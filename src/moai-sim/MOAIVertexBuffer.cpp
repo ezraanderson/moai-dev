@@ -152,10 +152,67 @@ int MOAIVertexBuffer::_writeFloat ( lua_State* L ) {
 	u32 top = state.GetTop ();
 	for ( u32 i = 2; i <= top; ++i ) {
 		float param = state.GetValue < float >( i, 0.0f );
+		//printf("%f \n ",param);
 		self->mStream.Write < float >( param );
 	}
 	return 0;
 }
+
+
+void MOAIVertexBuffer::writeData (
+		int x,int y,int z,
+		float u, float v, 
+		float r,float g,float b,float a
+	) {
+
+		//printf("%d %d %d \n",x,y,z);
+
+		this->mStream.Write < float >(  (float) x );
+		this->mStream.Write < float >(  (float) y );
+		this->mStream.Write < float >(  (float) z );
+
+		this->mStream.Write ( u );
+		this->mStream.Write ( v );	
+
+/*		this->mStream.Write ( n1 );
+		this->mStream.Write ( n2 );	
+		this->mStream.Write ( n3 );*/	
+
+		u32 color = ZLColor::PackRGBA ( r, g, b, a );
+		this->mStream.Write < u32 >( color );
+
+}
+//*********************************************************//
+void MOAIVertexBuffer::writeVert ( float x,float y,float z){
+	this->mStream.Write < float >(  (float) x );
+	this->mStream.Write < float >(  (float) y );
+	this->mStream.Write < float >(  (float) z );
+};
+//*********************************************************//
+void MOAIVertexBuffer::writeNormal ( float x,float y,float z){
+	this->mStream.Write < float >(  (float) x );
+	this->mStream.Write < float >(  (float) y );
+	this->mStream.Write < float >(  (float) z );
+};
+//*********************************************************//
+void MOAIVertexBuffer::writeUV( float u,float v){
+	this->mStream.Write < float >(  (float) u );
+	this->mStream.Write < float >(  (float) v );	
+};
+
+
+void MOAIVertexBuffer::reset (){
+	
+	this->mStream.SetBuffer ( this->mBuffer, this->mBuffer.Size ());
+};
+
+///*********
+void MOAIVertexBuffer::setCursor (long index ) {
+     this->mStream.SetCursor(0);   
+	 //printf("%d \n",this->mBuffer.Size());
+}
+
+
 
 //----------------------------------------------------------------//
 /**	@name	writeInt8
@@ -237,7 +294,6 @@ void MOAIVertexBuffer::Clear () {
 
 //----------------------------------------------------------------//
 u32 MOAIVertexBuffer::GetVertexCount () {
-
 	if ( this->mFormat ) {
 		return ( u32 )( this->mStream.GetLength () / this->mFormat->GetVertexSize ());
 	}
@@ -245,8 +301,15 @@ u32 MOAIVertexBuffer::GetVertexCount () {
 }
 
 //----------------------------------------------------------------//
-bool MOAIVertexBuffer::IsValid () {
+void MOAIVertexBuffer::ReserveVerts (int total) {
+	if ( this->mFormat ) {
+		this->Reserve ( total * this->mFormat->GetVertexSize ());
+	}
+}
 
+
+//----------------------------------------------------------------//
+bool MOAIVertexBuffer::IsValid () {
 	return ( this->mFormat && this->mStream.GetLength ());
 }
 

@@ -1759,8 +1759,10 @@ void MOAIMathUtil::RegisterLuaFuncs ( MOAILuaState& state ) {
 
 
 		{ "rect_vs_rect_is",	  _rect_vs_rect_is	},
+
 		{ "circle_vs_circle_is",  _circle_vs_circle_is },
 		{ "circle_vs_line_is",	  _circle_vs_line_is },		
+
 		{ "line_vs_rect_is",	  _line_vs_rect_is},
 		{ "line_vs_line_is",	  _line_vs_rect_is},
 

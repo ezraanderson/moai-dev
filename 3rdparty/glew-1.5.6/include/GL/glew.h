@@ -1076,8 +1076,10 @@ GLAPI void GLAPIENTRY glScalef (GLfloat x, GLfloat y, GLfloat z);
 GLAPI void GLAPIENTRY glScissor (GLint x, GLint y, GLsizei width, GLsizei height);
 GLAPI void GLAPIENTRY glSelectBuffer (GLsizei size, GLuint *buffer);
 GLAPI void GLAPIENTRY glShadeModel (GLenum mode);
+
 GLAPI void GLAPIENTRY glStencilFunc (GLenum func, GLint ref, GLuint mask);
 GLAPI void GLAPIENTRY glStencilMask (GLuint mask);
+
 GLAPI void GLAPIENTRY glStencilOp (GLenum fail, GLenum zfail, GLenum zpass);
 GLAPI void GLAPIENTRY glTexCoord1d (GLdouble s);
 GLAPI void GLAPIENTRY glTexCoord1dv (const GLdouble *v);

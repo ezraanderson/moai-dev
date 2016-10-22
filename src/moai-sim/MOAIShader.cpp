@@ -91,6 +91,9 @@ void MOAIShaderUniform::BindPenColor ( float r, float g, float b, float a ) {
 //----------------------------------------------------------------//
 void MOAIShaderUniform::BindPipelineTransforms ( const ZLMatrix4x4& world, const ZLMatrix4x4& view, const ZLMatrix4x4& proj ) {
 
+
+	
+
 	switch ( this->mType ) {
 		
 		case UNIFORM_VIEW_PROJ: {
@@ -116,7 +119,7 @@ void MOAIShaderUniform::BindPipelineTransforms ( const ZLMatrix4x4& world, const
 			break;
 		}
 		case UNIFORM_WORLD_VIEW_PROJ: {
-			
+			//printf("bind pipeline\n");
 			ZLMatrix4x4 mtx = world;
 			mtx.Append ( view );
 			mtx.Append ( proj );
@@ -523,6 +526,24 @@ int MOAIShader::_setVertexAttribute ( lua_State* L ) {
 	return 0;
 }
 
+
+
+int MOAIShader::_makeMe(lua_State* L) {
+	MOAI_LUA_SETUP(MOAIShader, "U")
+	self->MakeMe();
+	return 0;
+}
+
+int MOAIShader::_bindMe(lua_State* L) {
+	MOAI_LUA_SETUP(MOAIShader, "U")
+		self->BindMe();
+	return 0;
+}
+
+
+
+
+
 //================================================================//
 // MOAIShader
 //================================================================//
@@ -533,6 +554,8 @@ bool MOAIShader::ApplyAttrOp ( u32 attrID, MOAIAttrOp& attrOp, u32 op ) {
 	attrID = ( attrID & MOAIAttrOp::ATTR_ID_MASK ) - 1;
 
 	if ( attrID >= this->mUniforms.Size ()) return false;
+
+
 
 	if ( op == MOAIAttrOp::CHECK ) {
 		this->mUniforms [ attrID ].SetAttrFlags ( attrOp );
@@ -601,9 +624,6 @@ u32 MOAIShader::CompileShader ( u32 type, cc8* source ) {
 
 	zglShaderSource ( shader, 3, sources, NULL );
 
-   //zglShaderSource ( shader, 1, &source, NULL );
-
-   printf("COMPILE SHADER \n");
 	zglCompileShader ( shader );
 
 	s32 status;
@@ -692,11 +712,73 @@ void MOAIShader::OnBind () {
 
 	// use shader program.
 	zglUseProgram ( this->mProgram );
-
 	// reload the uniform values
 	for ( u32 i = 0; i < this->mUniforms.Size (); ++i ) {
 		this->mUniforms [ i ].Bind ();
 	}
+}
+
+void MOAIShader::BindMe() {
+
+	zglUseProgram(this->mProgram);
+	for (u32 i = 0; i < this->mUniforms.Size(); ++i) {
+		this->mUniforms[i].Bind();
+	}
+
+}
+//**************************************************************
+void MOAIShader::MakeMe() {
+
+	this->mVertexShader = this->CompileShader(ZGL_SHADER_TYPE_VERTEX, this->mVertexShaderSource);
+	this->mFragmentShader = this->CompileShader(ZGL_SHADER_TYPE_FRAGMENT, this->mFragmentShaderSource);
+	this->mProgram = zglCreateProgram();
+
+	printf("MakeMe %d\n", this->mProgram);
+
+	if (!(this->mVertexShader && this->mFragmentShader && this->mProgram)) {
+		this->Clear();
+		return;
+	}
+
+	zglAttachShader(this->mProgram, this->mVertexShader);
+	zglAttachShader(this->mProgram, this->mFragmentShader);
+
+	// bind attribute locations.
+	// this needs to be done prior to linking.
+	AttributeMapIt attrMapIt = this->mAttributeMap.begin();
+	for (; attrMapIt != this->mAttributeMap.end(); ++attrMapIt) {
+		zglBindAttribLocation(this->mProgram, attrMapIt->first, attrMapIt->second.str());
+	}
+
+	// link program.
+	zglLinkProgram(this->mProgram);
+
+	s32 status;
+	zglGetProgramiv(this->mProgram, ZGL_PROGRAM_INFO_LINK_STATUS, &status);
+
+	if (status == 0) {
+		this->PrintProgramLog(this->mProgram);
+		this->Clear();
+		return;
+	}
+
+	// get the uniform locations
+	for (u32 i = 0; i < this->mUniforms.Size(); ++i) {
+		MOAIShaderUniform& uniform = this->mUniforms[i];
+
+		if (uniform.mType != MOAIShaderUniform::UNIFORM_NONE) {
+			uniform.mAddr = zglGetUniformLocation(this->mProgram, uniform.mName);
+			uniform.mIsDirty = true;
+		}
+	}
+
+	zglDeleteShader(this->mVertexShader);
+	this->mVertexShader = 0;
+
+	zglDeleteShader(this->mFragmentShader);
+	this->mFragmentShader = 0;
+
+
 }
 
 //----------------------------------------------------------------//
@@ -715,7 +797,9 @@ void MOAIShader::OnCreate () {
 	this->mVertexShader = this->CompileShader ( ZGL_SHADER_TYPE_VERTEX, this->mVertexShaderSource );
 	this->mFragmentShader = this->CompileShader ( ZGL_SHADER_TYPE_FRAGMENT, this->mFragmentShaderSource );
 	this->mProgram = zglCreateProgram ();
-	
+
+	printf("MOAIShader::OnCreate %d\n", this->mProgram);
+
 	if ( !( this->mVertexShader && this->mFragmentShader && this->mProgram )) {
 		this->Clear ();
 		return;
@@ -728,6 +812,7 @@ void MOAIShader::OnCreate () {
 	// this needs to be done prior to linking.
 	AttributeMapIt attrMapIt = this->mAttributeMap.begin ();
 	for ( ; attrMapIt != this->mAttributeMap.end (); ++attrMapIt ) {
+		printf(" attrMapIt \n");
 		zglBindAttribLocation ( this->mProgram, attrMapIt->first, attrMapIt->second.str ());
 	}
     
@@ -746,7 +831,7 @@ void MOAIShader::OnCreate () {
 	// get the uniform locations
 	for ( u32 i = 0; i < this->mUniforms.Size (); ++i ) {
 		MOAIShaderUniform& uniform = this->mUniforms [ i ];
-		
+		printf(" MOAIShaderUniform %d \n", i);
 		if ( uniform.mType != MOAIShaderUniform::UNIFORM_NONE ) {
 			uniform.mAddr = zglGetUniformLocation ( this->mProgram, uniform.mName );
 			uniform.mIsDirty = true;
@@ -855,6 +940,8 @@ void MOAIShader::RegisterLuaFuncs ( MOAILuaState& state ) {
 		{ "load",						_load },
 		{ "reserveUniforms",			_reserveUniforms },
 		{ "setVertexAttribute",			_setVertexAttribute },
+		{ "makeMe", _makeMe },
+		{ "bindMe", _bindMe },
 		{ NULL, NULL }
 	};
 	luaL_register ( state, 0, regTable );

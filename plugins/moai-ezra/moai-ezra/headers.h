@@ -14,5 +14,7 @@
 #include <moai-ezra/shell/MOAIShell.h>
 #include <moai-ezra/draw/EZDraw.h>
 #include <moai-ezra/box2d/BOXVehicle.h>
+#include <moai-ezra/voxel/MOAIVoxel.h>
+
 
 #endif

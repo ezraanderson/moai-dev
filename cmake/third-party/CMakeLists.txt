@@ -10,7 +10,7 @@ endif (MSVC)
 
 
 add_subdirectory ( box2d )
-add_subdirectory ( chipmunk )
+#add_subdirectory ( chipmunk )
 add_subdirectory ( contrib )
 add_subdirectory ( crypto )
 add_subdirectory ( curl )

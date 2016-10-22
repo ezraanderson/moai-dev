@@ -57,17 +57,29 @@ function makeBoxMesh ( xMin, yMin, zMin, xMax, yMax, zMax, texture )
 	end
   --********************************
 	local function writeTri ( vbo, p1, p2, p3, uv1, uv2, uv3 )		
+    
 		vbo:writeFloat ( p1.x, p1.y, p1.z )
 		vbo:writeFloat ( uv1.x, uv1.y )
 		vbo:writeColor32 ( 1, 1, 1 )
+    
+    print('x'..p1.x..","..'y'..p1.y..","..'z'.. p1.z..",".. uv1.x..",".. uv1.y..',r,g,b,a')    
+
 		
 		vbo:writeFloat ( p2.x, p2.y, p2.z )
 		vbo:writeFloat ( uv2.x, uv2.y )
 		vbo:writeColor32 ( 1, 1, 1 )
+    
+    print('x'..p2.x..",".. 'y'..p2.y..","..'z'.. p2.z..",".. uv2.x..",".. uv2.y..',r,g,b,a')
+ 
 
 		vbo:writeFloat ( p3.x, p3.y, p3.z )
 		vbo:writeFloat ( uv3.x, uv3.y  )
 		vbo:writeColor32 ( 1, 1, 1 )
+    
+    print('x'..p3.x..",".. 'y'..p3.y..",".. 'z'..p3.z..","..uv3.x..",".. uv3.y..',r,g,b,a')
+    
+    
+    
 	end
 	  --********************************
 	local function writeFace ( vbo, p1, p2, p3, p4, uv1, uv2, uv3, uv4 )
@@ -116,13 +128,13 @@ function makeBoxMesh ( xMin, yMin, zMin, xMax, yMax, zMax, texture )
 	mesh:setTexture ( alpha_texture )
 	mesh:setVertexBuffer ( vbo )
 	mesh:setPrimType ( MOAIMesh.GL_TRIANGLES )
-	--mesh:setHigh(36)
+
 	return mesh
 end
 
 function makeCube ( size, texture )
-	size = size * 0.02
-	return makeBoxMesh ( -size, -size, -size, size, size, size, texture )
+    size = size * 0.01
+    return makeBoxMesh ( -size, -size, -size, size, size, size, texture )
 end
 local mesh = makeCube ( 100, 'fountain.png' )
 
@@ -141,18 +153,18 @@ prop_meshA:setBillboard (true)
 layer:insertProp ( prop_meshA )
 
 
---B
-prop_meshB = MOAIProp.new ()
-prop_meshB:setDeck ( mesh )
-prop_meshB:setShader ( MOAIShaderMgr.getShader ( MOAIShaderMgr.MESH_SHADER ))
-prop_meshB:setCullMode ( MOAIProp.CULL_BACK ) 
-prop_meshB:setDepthTest(MOAIProp.DEPTH_TEST_LESS_EQUAL)
-prop_meshB:setDepthMask(true)
-prop_meshB['sortDistance'] = 0
-prop_meshB['idName'] = 'MESHB'
-prop_meshB:setLoc(-4,0,0)
-prop_meshB:setBillboard (true)
-layer:insertProp ( prop_meshB )
+----B
+--prop_meshB = MOAIProp.new ()
+--prop_meshB:setDeck ( mesh )
+--prop_meshB:setShader ( MOAIShaderMgr.getShader ( MOAIShaderMgr.MESH_SHADER ))
+--prop_meshB:setCullMode ( MOAIProp.CULL_BACK ) 
+--prop_meshB:setDepthTest(MOAIProp.DEPTH_TEST_LESS_EQUAL)
+--prop_meshB:setDepthMask(true)
+--prop_meshB['sortDistance'] = 0
+--prop_meshB['idName'] = 'MESHB'
+--prop_meshB:setLoc(-4,0,0)
+--prop_meshB:setBillboard (true)
+--layer:insertProp ( prop_meshB )
 
 --C
 

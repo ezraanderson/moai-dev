@@ -157,6 +157,8 @@ int	MOAILayer::_insertProp ( lua_State* L ) {
 	if ( !prop ) return 0;
 	if ( prop == self ) return 0;
 
+	//printf("MOAILayer::_insertProp\n");
+
 	self->AffirmPartition ();
 	self->mPartition->InsertProp ( *prop );
 	prop->ScheduleUpdate ();
@@ -574,22 +576,30 @@ void MOAILayer::Draw ( int subPrimID ) {
 	
 	if ( this->mPartition ) {
 		
+	
+
 		MOAIPartitionResultBuffer& buffer = MOAIPartitionResultMgr::Get ().GetBuffer ();
 		const ZLFrustum& viewVolume = gfxDevice.GetViewVolume ();
 		
+		
+
 		u32 totalResults = 0;
 		
 		//INTERESTING SHOULD< I SORT ON SETTING A PRIOTITY OF A PROP //THEN NOT SORT HERE??
 
 		if ( this->mPartitionCull2D ) {
+		
 			totalResults = this->mPartition->GatherProps ( buffer, 0, viewVolume.mAABB, MOAIProp::CAN_DRAW | MOAIProp::CAN_DRAW_DEBUG );
 		}
 		else {
+		//	printf("1.MOAILayer::Draw : \n");
 			totalResults = this->mPartition->GatherProps ( buffer, 0, viewVolume, MOAIProp::CAN_DRAW | MOAIProp::CAN_DRAW_DEBUG );
 		}
 		
 		if ( !totalResults ) return;
 		
+	
+
 		buffer.GenerateKeys (
 			this->mSortMode,
 			this->mSortScale [ 0 ],

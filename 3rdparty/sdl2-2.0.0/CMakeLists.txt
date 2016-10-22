@@ -3,6 +3,9 @@ if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 endif()
 
 cmake_minimum_required(VERSION 2.6)
+
+
+
 project(SDL2 C)
 include(CheckFunctionExists)
 include(CheckLibraryExists)
@@ -546,6 +549,10 @@ else(LIBC)
 endif(LIBC)
 
 
+
+ set(SDL_JOYSTICK 1)
+  
+
 # Enable/disable various subsystems of the SDL library
 foreach(_SUB ${SDL_SUBSYSTEMS})
   string(TOUPPER ${_SUB} _OPT)
@@ -848,8 +855,14 @@ elseif(WINDOWS)
     endif(VIDEO_OPENGL)
   endif(SDL_VIDEO)
 
+
+  
+  
+  
+
   if(SDL_JOYSTICK)
     if(HAVE_DINPUT_H)
+	  MESSAGE(" >>>>>>>>>>>>>>>>> This will never be printed") .
       set(SDL_JOYSTICK_DINPUT 1)
       set(SOURCE_FILES ${SOURCE_FILES} ${SDL2_SOURCE_DIR}/src/joystick/windows/SDL_dxjoystick.c)
       list(APPEND EXTRA_LIBS dinput8 dxguid dxerr)

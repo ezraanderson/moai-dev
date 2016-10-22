@@ -36,7 +36,7 @@ void MOAIEzraContextInitialize () {
 	REGISTER_LUA_CLASS ( MOAIEzraParticleLayer );
 
 	REGISTER_LUA_CLASS ( MOAIShell );
-
+	REGISTER_LUA_CLASS ( MOAIVoxel );
 	REGISTER_LUA_CLASS ( EZDraw );
 
 	REGISTER_LUA_CLASS ( BOXVehicle );

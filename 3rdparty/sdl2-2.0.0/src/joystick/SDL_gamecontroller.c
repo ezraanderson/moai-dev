@@ -18,15 +18,21 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
+
 #include "SDL_config.h"
+
 
 /* This is the game controller API for Simple DirectMedia Layer */
 
 #include "SDL_events.h"
 #include "SDL_assert.h"
+
 #include "SDL_sysjoystick.h"
+
+
 #include "SDL_hints.h"
 #include "SDL_gamecontrollerdb.h"
+
 
 #if !SDL_EVENTS_DISABLED
 #include "../events/SDL_events_c.h"
@@ -86,6 +92,18 @@ typedef struct _ControllerMapping_t
     struct _ControllerMapping_t *next;
 } ControllerMapping_t;
 
+
+
+
+
+
+
+
+
+
+
+
+
 static ControllerMapping_t *s_pSupportedControllers = NULL;
 #ifdef SDL_JOYSTICK_DINPUT
 static ControllerMapping_t *s_pXInputMapping = NULL;
@@ -129,12 +147,12 @@ int SDL_GameControllerEventWatcher(void *userdata, SDL_Event * event)
                         Sint16 value = event->jaxis.value;
                         switch (axis)
                         {
-                            case SDL_CONTROLLER_AXIS_TRIGGERLEFT:
-                            case SDL_CONTROLLER_AXIS_TRIGGERRIGHT:
-                                /* Shift it to be 0 - 32767. */
-                                value = value / 2 + 16384;
-                            default:
-                                break;
+                            //case SDL_CONTROLLER_AXIS_TRIGGERLEFT:
+                            //case SDL_CONTROLLER_AXIS_TRIGGERRIGHT:
+                            //    /* Shift it to be 0 - 32767. */
+                            //    value = value / 2 + 16384;
+                            //default:
+                            //break;
                         }
                         SDL_PrivateGameControllerAxis( controllerlist, axis, value );
                     }
@@ -148,7 +166,12 @@ int SDL_GameControllerEventWatcher(void *userdata, SDL_Event * event)
             }
         }
         break;
-    case SDL_JOYBUTTONDOWN:
+    
+	
+	case SDL_JOYBUTTONDOWN:
+
+
+
     case SDL_JOYBUTTONUP:
         {
             SDL_GameController *controllerlist;
@@ -279,14 +302,22 @@ ControllerMapping_t *SDL_PrivateGetControllerMappingForGUID(SDL_JoystickGUID *gu
 ControllerMapping_t *SDL_PrivateGetControllerMapping(int device_index)
 {
 #ifdef SDL_JOYSTICK_DINPUT
-    if ( SDL_SYS_IsXInputDeviceIndex(device_index) && s_pXInputMapping )
-    {
-        return s_pXInputMapping;
-    }
-    else
+
+
+
+	//if (SDL_SYS_IsXInputDeviceIndex(device_index) && s_pXInputMapping)
+ //   {
+ //      return s_pXInputMapping;
+ //   }
+ //   else
+
+
 #endif
+
     {
-        SDL_JoystickGUID jGUID = SDL_JoystickGetDeviceGUID( device_index );
+
+
+        SDL_JoystickGUID jGUID = SDL_JoystickGetDeviceGUID( device_index );	
         return SDL_PrivateGetControllerMappingForGUID(&jGUID);
     }
 
@@ -298,8 +329,6 @@ static const char* map_StringForControllerAxis[] = {
     "lefty",
     "rightx",
     "righty",
-    "lefttrigger",
-    "righttrigger",
     NULL
 };
 
@@ -344,6 +373,8 @@ static const char* map_StringForControllerButton[] = {
     "rightstick",
     "leftshoulder",
     "rightshoulder",
+	"lefttrigger",
+	"righttrigger",
     "dpup",
     "dpdown",
     "dpleft",
@@ -814,6 +845,7 @@ SDL_GameControllerInit(void)
 const char *
 SDL_GameControllerNameForIndex(int device_index)
 {
+
     ControllerMapping_t *pSupportedController =  SDL_PrivateGetControllerMapping(device_index);
     if ( pSupportedController )
     {
@@ -829,6 +861,7 @@ SDL_GameControllerNameForIndex(int device_index)
 SDL_bool
 SDL_IsGameController(int device_index)
 {
+
     ControllerMapping_t *pSupportedController =  SDL_PrivateGetControllerMapping(device_index);
     if ( pSupportedController )
     {
@@ -872,6 +905,7 @@ SDL_GameControllerOpen(int device_index)
     /* Find a controller mapping */
     pSupportedController =  SDL_PrivateGetControllerMapping(device_index);
     if ( !pSupportedController ) {
+		printf("Couldn't find mapping for device (%d)", device_index);
         SDL_SetError("Couldn't find mapping for device (%d)", device_index );
         return (NULL);
     }

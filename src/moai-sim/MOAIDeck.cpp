@@ -126,6 +126,8 @@ void MOAIDeck::Draw ( u32 idx, MOAIDeckRemapper* remapper ) {
 //----------------------------------------------------------------//
 void MOAIDeck::Draw ( u32 idx, MOAIDeckRemapper* remapper, float xOff, float yOff, float zOff, float xScl, float yScl, float zScl ) {
 	
+	//printf("3.MOAIDeck::Draw : \n");
+
 	//HIDDEN IS VERY IMPORTANT??
 
 	idx = remapper ? remapper->Remap ( idx ) : idx;
@@ -246,6 +248,9 @@ void MOAIDeck::RegisterLuaFuncs ( MOAILuaState& state ) {
 
 //----------------------------------------------------------------//
 void MOAIDeck::SetBoundsDirty () {
-
 	this->mBoundsDirty = true;
+}
+//----------------------------------------------------------------//
+void MOAIDeck::SetBoundsClean() {
+	this->mBoundsDirty = false;
 }

@@ -195,7 +195,7 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${VFS_INCLUDE}")
 
 
 option ( MOAI_BOX2D          FALSE )
-option ( MOAI_CHIPMUNK       FALSE )
+  #option ( MOAI_CHIPMUNK       FALSE )
 option ( MOAI_CURL           FALSE )
 option ( MOAI_CRYPTO         FALSE )
 option ( MOAI_EXPAT          FALSE )
@@ -242,8 +242,8 @@ endmacro(SETUP_MODULE)
 SETUP_MODULE(MOAI_BOX2D MOAI_WITH_BOX2D)
 SETUP_MODULE(MOAI_BOX2D AKU_WITH_BOX2D)
 
-SETUP_MODULE(MOAI_CHIPMUNK MOAI_WITH_CHIPMUNK)
-SETUP_MODULE(MOAI_CHIPMUNK AKU_WITH_CHIPMUNK)
+#SETUP_MODULE(MOAI_CHIPMUNK MOAI_WITH_CHIPMUNK)
+#SETUP_MODULE(MOAI_CHIPMUNK AKU_WITH_CHIPMUNK)
 
 SETUP_MODULE(MOAI_CURL MOAI_WITH_LIBCURL)
 
@@ -326,7 +326,7 @@ add_subdirectory ( moai-sim )
 
 add_subdirectory ( moai-box2d )
 
-add_subdirectory ( moai-chipmunk )
+#add_subdirectory ( moai-chipmunk )
 
 
 add_subdirectory ( moai-untz )
@@ -357,8 +357,11 @@ else (CUSTOM_HOST)
 #  Built In Hosts
 #
 
+
+
 if ( BUILD_LINUX OR BUILD_OSX OR BUILD_WINDOWS )
     if ( SDL_HOST )
+
       add_subdirectory ( host-sdl )
     else ( SDL_HOST ) 
       add_subdirectory ( host-glut )

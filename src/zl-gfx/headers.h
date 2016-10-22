@@ -264,6 +264,8 @@ extern void		zglStencilClear			(  );
 extern void		zglDisable				( u32 cap );
 extern void		zglDrawArrays			( u32 primType, u32 first, u32 count );
 extern void		zglDrawElements			( u32 primType, u32 count, u32 indexType, const void* indices );
+extern void		zglDrawInstance			(u32 primType, u32 count, u32 indexType, const void* indices);
+
 extern void		zglEnable				( u32 cap );
 extern void		zglFlush				();
 extern u32		zglGetCap				( u32 cap );

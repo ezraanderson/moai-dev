@@ -775,6 +775,8 @@ bool MOAIProp::ApplyAttrOp ( u32 attrID, MOAIAttrOp& attrOp, u32 op ) {
 void MOAIProp::Draw ( int subPrimID ) {
 	UNUSED ( subPrimID );
 
+	//printf("2.MOAIProp::Draw: \n");
+
 	if ( !this->IsVisible () ) return;
 	if ( !this->mDeck ) return;
 
@@ -887,6 +889,8 @@ void MOAIProp::DrawItem () {
 	
 	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
 	
+
+
 	if ( this->mFlags & FLAGS_BILLBOARD ) {
 		ZLAffine3D billboardMtx;	
 		billboardMtx.Init ( gfxDevice.GetBillboardMtx ());

@@ -552,6 +552,7 @@ endif(LIBC)
 
 
 # Enable/disable various subsystems of the SDL library
+set (SDL_JOYSTICK 1)
 foreach(_SUB ${SDL_SUBSYSTEMS})
   string(TOUPPER ${_SUB} _OPT)
   if(NOT SDL_${_OPT})
@@ -559,6 +560,12 @@ foreach(_SUB ${SDL_SUBSYSTEMS})
   endif(NOT SDL_${_OPT})
 endforeach()
 if(SDL_JOYSTICK)
+
+message("CAMKE ******* SDL_JOYSTICK *******")
+message("CAMKE ******* SDL_JOYSTICK *******")
+message("CAMKE ******* SDL_JOYSTICK *******")
+
+
   file(GLOB JOYSTICK_SOURCES ${SDL2_SOURCE_DIR}/src/joystick/*.c)
   set(SOURCE_FILES ${SOURCE_FILES} ${JOYSTICK_SOURCES})
 endif(SDL_JOYSTICK)

@@ -15,6 +15,15 @@ project ( moai-box2d )
 
   include_directories ( ${MOAI_BOX2D_INCLUDES} )
 
+if(NOT MSVC)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99") # always use gnu99
+  if(FORCE_CLANG_BLOCKS)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fblocks")
+  endif()
+  set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -ffast-math") # extend release-profile with fast-math
+  set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Wall") # extend debug-profile with -Wall
+endif()
+
   add_library ( moai-box2d STATIC ${MOAI_BOX2D_SRC} )
 
   get_target_property (BOX2D_INCLUDES box2d INCLUDE_DIRECTORIES)

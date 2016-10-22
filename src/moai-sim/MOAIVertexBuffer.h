@@ -35,6 +35,8 @@ private:
 	static int		_writeInt16				( lua_State* L );
 	static int		_writeInt32				( lua_State* L );
 
+
+	
 	//----------------------------------------------------------------//
 	void			Clear					();
 	
@@ -55,6 +57,16 @@ public:
 	void			RegisterLuaFuncs		( MOAILuaState& state );
 	void			Reserve					( u32 size );
 	void			Unbind					();
+
+
+	void			ReserveVerts			(int total); 
+	void			writeVert			(float x,float y,float z);
+	void			writeNormal			(float x,float y,float z);
+	void			writeUV				(float u,float v);
+
+	void			writeData	(int x,int y,int z, float u,float v, float r,float g,float b,float a);
+	void			reset		();
+	void			setCursor	(long index);
 };
 
 #endif

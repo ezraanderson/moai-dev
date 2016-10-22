@@ -4,6 +4,14 @@
 #ifndef	SDLHOST_H
 #define	SDLHOST_H
 
+
+
+
+
+
+
+
+
 //----------------------------------------------------------------//
 int		SDLHost					( int argc, char** arg );
 

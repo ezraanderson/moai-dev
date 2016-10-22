@@ -55,6 +55,10 @@ struct _SDL_Joystick
     struct _SDL_Joystick *next; /* pointer to next joystick we have allocated */
 };
 
+
+
+
+
 /* Function to scan the system for joysticks.
  * Joystick 0 should be the system default joystick.
  * This function should return the number of available joysticks, or -1
@@ -108,9 +112,20 @@ extern SDL_JoystickGUID SDL_SYS_JoystickGetDeviceGUID(int device_index);
 /* Function to return the stable GUID for a opened joystick */
 extern SDL_JoystickGUID SDL_SYS_JoystickGetGUID(SDL_Joystick * joystick);
 
+
 #ifdef SDL_JOYSTICK_DINPUT
 /* Function to get the current instance id of the joystick located at device_index */
-extern SDL_bool SDL_SYS_IsXInputDeviceIndex( int device_index );
+
+
+	
+extern SDL_bool SDL_SYS_IsXInputDeviceIndex(int device_index);
+
+
 #endif
+
+
+
+
+
 
 /* vi: set ts=4 sw=4 expandtab: */

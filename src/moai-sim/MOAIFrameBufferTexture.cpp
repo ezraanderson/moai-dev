@@ -39,7 +39,7 @@ int MOAIFrameBufferTexture::_init ( lua_State* L ) {
 	u32 depthFormat		= state.GetValue < u32 >( 5, 0 );
 	u32 stencilFormat	= state.GetValue < u32 >( 6, 0 );
 	
-	printf("MOAIFrameBufferTexture::_init %d %d %d\n",colorFormat, depthFormat, stencilFormat);
+	//printf("MOAIFrameBufferTexture::_init %d %d %d\n",colorFormat, depthFormat, stencilFormat);
 
 	self->Init ( width, height, colorFormat, depthFormat, stencilFormat );
 	
@@ -177,7 +177,7 @@ if ( !( this->mWidth && this->mHeight && ( this->mColorFormat || this->mDepthFor
 	// TODO: handle error; clear
 	u32 status = zglCheckFramebufferStatus ( ZGL_FRAMEBUFFER_TARGET_DRAW_READ );
 
-	  printf("zglCheckFramebufferStatus %d %d %d\n",status,this->mGLStencilBufferID,this->mStencilFormat );  
+	 // printf("zglCheckFramebufferStatus %d %d %d\n",status,this->mGLStencilBufferID,this->mStencilFormat );  
 
 
 	

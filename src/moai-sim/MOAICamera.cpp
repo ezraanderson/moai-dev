@@ -174,8 +174,7 @@ ZLMatrix4x4 MOAICamera::GetProjMtx ( const MOAIViewport& viewport ) const {
 	}
 	
 
-	proj.Append ( mtx );	
-	// offset
+	proj.Append ( mtx );
 
 	mtx.Translate ( viewport.mOffset.mX, viewport.mOffset.mY, 0.0f );
 	proj.Append ( mtx );
@@ -199,6 +198,114 @@ ZLMatrix4x4 MOAICamera::GetViewMtx () const {
 	return mtx;
 }
 
+
+int MOAICamera::_moveforward ( lua_State* L ) {
+	MOAI_LUA_SETUP ( MOAICamera, "U" )
+
+	ZLAffine3D &mtx =  self->mWorldToLocalMtx;
+	//mtx.m [ ZLAffine3D::C3_R2 ] = mtx.m [ ZLAffine3D::C3_R2 ]-1;
+
+
+	float rot_x = self->GetRot().mX;
+	float rot_y = self->GetRot().mY;
+	float rot_z = self->GetRot().mZ;
+
+	float loc_x = self->GetLoc().mX;
+	float loc_y = self->GetLoc().mY;
+	float loc_z = self->GetLoc().mZ;
+
+
+	float radians = ( 50 * 3.14 ) / 180;
+
+	//mtx.m [ ZLAffine3D::C0_R0 ] = 0;
+	//mtx.m [ ZLAffine3D::C0_R1 ] = 0;
+	//mtx.m [ ZLAffine3D::C0_R2 ] = 0;
+
+	//mtx.m [ ZLAffine3D::C1_R0 ] = 0;
+	//mtx.m [ ZLAffine3D::C1_R1 ] = 0;
+	//mtx.m [ ZLAffine3D::C1_R2 ] = 0;
+
+	//mtx.m [ ZLAffine3D::C2_R0 ] = 0;
+	//mtx.m [ ZLAffine3D::C2_R1 ] = 0;
+	//mtx.m [ ZLAffine3D::C2_R2 ] = 0;
+
+	//mtx.m [ ZLAffine3D::C3_R0 ] = 0;
+	//mtx.m [ ZLAffine3D::C3_R1 ] = 0;
+
+
+
+	//mtx.m [ ZLAffine3D::C3_R2 ] = mtx.m [ ZLAffine3D::C3_R2 ] -1;
+
+	//
+
+
+//	self->mWorldToLocalMtx.m [ ZLAffine3D::C3_R0 ] = 0;
+//	self->mWorldToLocalMtx.m [ ZLAffine3D::C3_R1 ] = 0;
+
+
+
+//[      1       0       0   0 ]   [ xaxis.x  yaxis.x  zaxis.x 0 ]
+//[      0       1       0   0 ] * [ xaxis.y  yaxis.y  zaxis.y 0 ]
+//[      0       0       1   0 ]   [ xaxis.z  yaxis.z  zaxis.z 0 ]
+//[ -eye.x  -eye.y  -eye.z   1 ]   [       0        0        0 1 ]
+//
+//  [         xaxis.x          yaxis.x          zaxis.x  0 ]
+//= [         xaxis.y          yaxis.y          zaxis.y  0 ]
+//  [         xaxis.z          yaxis.z          zaxis.z  0 ]
+//  [ dot(xaxis,-eye)  dot(yaxis,-eye)  dot(zaxis,-eye)  1 ]
+
+
+
+//X
+//	self->mWorldToLocalMtx.m [ ZLAffine3D::C0_R0 ] = 1; //a
+//	self->mWorldToLocalMtx.m [ ZLAffine3D::C0_R1 ] = 0; //b
+//	self->mWorldToLocalMtx.m [ ZLAffine3D::C0_R2 ] = 0; //c
+//
+//////Y
+//	self->mWorldToLocalMtx.m [ ZLAffine3D::C1_R0 ] = 0; //d
+//	self->mWorldToLocalMtx.m [ ZLAffine3D::C1_R1 ] = 1; //e
+//	self->mWorldToLocalMtx.m [ ZLAffine3D::C1_R2 ] = 0; //f
+//
+//////Z
+//	self->mWorldToLocalMtx.m [ ZLAffine3D::C2_R0 ] = 0; //g
+//	self->mWorldToLocalMtx.m [ ZLAffine3D::C2_R1 ] = 0; //h
+//	self->mWorldToLocalMtx.m [ ZLAffine3D::C2_R2 ] = 1; //i
+//
+////1
+//	self->mWorldToLocalMtx.m [ ZLAffine3D::C3_R0 ] = 0; //j
+//	self->mWorldToLocalMtx.m [ ZLAffine3D::C3_R1 ] = 0; //k
+//	self->mWorldToLocalMtx.m [ ZLAffine3D::C3_R2 ] = 0; //l
+
+
+printf("-------------------------------------------------------------------------- \n" );
+printf("%f %f %f \n",self->mWorldToLocalMtx.m [ ZLAffine3D::C0_R0 ] ,self->mWorldToLocalMtx.m [ ZLAffine3D::C0_R1 ] ,self->mWorldToLocalMtx.m [ ZLAffine3D::C0_R2 ] );
+printf("%f %f %f \n",self->mWorldToLocalMtx.m [ ZLAffine3D::C1_R0 ] ,self->mWorldToLocalMtx.m [ ZLAffine3D::C1_R1 ] ,self->mWorldToLocalMtx.m [ ZLAffine3D::C1_R2 ] );
+printf("%f %f %f \n",self->mWorldToLocalMtx.m [ ZLAffine3D::C2_R0 ] ,self->mWorldToLocalMtx.m [ ZLAffine3D::C2_R1 ] ,self->mWorldToLocalMtx.m [ ZLAffine3D::C2_R2 ] );
+printf("%f %f %f \n",self->mWorldToLocalMtx.m [ ZLAffine3D::C3_R0 ] ,self->mWorldToLocalMtx.m [ ZLAffine3D::C3_R1 ] ,self->mWorldToLocalMtx.m [ ZLAffine3D::C3_R2 ] );
+
+
+
+	
+
+	//self->mLocalToWorldMtx.m [ ZLAffine3D::C0_R0 ] = 500;
+	//self->mLocalToWorldMtx.m [ ZLAffine3D::C0_R1 ] = 500;
+	//self->mLocalToWorldMtx.m [ ZLAffine3D::C0_R2 ] = 500;
+
+	//self->mLocalToWorldMtx.m [ ZLAffine3D::C1_R0 ] = 500;
+	//self->mLocalToWorldMtx.m [ ZLAffine3D::C1_R1 ] = 500;
+	//self->mLocalToWorldMtx.m [ ZLAffine3D::C1_R2 ] = 500;
+
+	//self->mLocalToWorldMtx.m [ ZLAffine3D::C2_R0 ] = 500;
+	//self->mLocalToWorldMtx.m [ ZLAffine3D::C2_R1 ] = 500;
+	//self->mLocalToWorldMtx.m [ ZLAffine3D::C2_R2 ] = 500;
+
+
+
+	return 0;
+}
+
+
+
 //----------------------------------------------------------------//
 MOAICamera::MOAICamera () :
 	mFieldOfView ( DEFAULT_HFOV ),
@@ -212,6 +319,15 @@ MOAICamera::MOAICamera () :
 //----------------------------------------------------------------//
 MOAICamera::~MOAICamera () {
 }
+
+
+
+
+
+
+
+
+
 
 //----------------------------------------------------------------//
 void MOAICamera::RegisterLuaClass ( MOAILuaState& state ) {
@@ -231,6 +347,7 @@ void MOAICamera::RegisterLuaFuncs ( MOAILuaState& state ) {
 		{ "setFieldOfView",		_setFieldOfView },
 		{ "setNearPlane",		_setNearPlane },
 		{ "setOrtho",			_setOrtho },
+		{ "moveforward",	    _moveforward },
 		{ NULL, NULL }
 	};
 

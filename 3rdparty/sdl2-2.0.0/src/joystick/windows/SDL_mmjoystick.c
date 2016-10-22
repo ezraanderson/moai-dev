@@ -197,6 +197,8 @@ SDL_bool SDL_SYS_JoystickNeedsPolling()
 const char *
 SDL_SYS_JoystickNameForDeviceIndex(int device_index)
 {
+
+
     if (SYS_JoystickName[device_index] != NULL) {
         return (SYS_JoystickName[device_index]);
     } else {
@@ -223,6 +225,7 @@ SDL_SYS_JoystickOpen(SDL_Joystick * joystick, int device_index)
         { JOYCAPS_HASZ, JOYCAPS_HASR, JOYCAPS_HASU, JOYCAPS_HASV };
     int axis_min[MAX_AXES], axis_max[MAX_AXES];
 
+	//bXInputDevice = SDL_FALSE;
 
     /* shortcut */
     index = device_index;
@@ -411,6 +414,7 @@ SDL_JoystickGUID SDL_SYS_JoystickGetDeviceGUID( int device_index )
     const char *name = SDL_SYS_JoystickNameForDeviceIndex( device_index );
     SDL_zero( guid );
     SDL_memcpy( &guid, name, SDL_min( sizeof(guid), SDL_strlen( name ) ) );
+
     return guid;
 }
 

@@ -8,6 +8,9 @@ if ( BUILD_OSX )
   find_package ( OpenGL REQUIRED )
 endif ( BUILD_OSX )
 
+
+
+
 set ( INCLUDES_MOAIHOSTSDL 
   "${MOAI_ROOT}/src/"
   "${MOAI_ROOT}/src/config-default/"
@@ -16,7 +19,13 @@ set ( INCLUDES_MOAIHOSTSDL
    ${OPENGL_INCLUDE_DIRS}
 )
 
-include_directories ( ${INCLUDES_MOAIHOSTSDL} )
+include_directories ( ${INCLUDES_MOAIHOSTSDL}  )
+
+include_directories($ENV{DXSDK_DIR}/Include)
+link_directories("$ENV{DXSDK_DIR}/Lib/x86")
+
+
+
 
 set ( CMAKE_CURRENT_SOURCE_DIR "${MOAI_ROOT}/src/host-sdl" )
 
@@ -32,6 +41,7 @@ target_link_libraries ( moai
   moai-core
   zlcore
   SDL2-static
+
 )
 
 if ( BUILD_WINDOWS )

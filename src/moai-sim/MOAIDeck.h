@@ -71,7 +71,7 @@ protected:
 	virtual void			DrawIndex				( u32 idx, float xOff, float yOff, float zOff, float xScl, float yScl, float zScl );
 	virtual ZLBox			GetItemBounds			( u32 idx ) = 0;
 	void					SetBoundsDirty			();
-
+	void					SetBoundsClean			();
 public:
 	
 	GET ( u32, ContentMask, mContentMask )

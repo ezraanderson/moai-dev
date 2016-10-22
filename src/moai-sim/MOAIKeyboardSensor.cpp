@@ -73,10 +73,8 @@ int MOAIKeyboardSensor::_keyDown ( lua_State* L ) {
 int MOAIKeyboardSensor::_keyIsDown ( lua_State* L ) {
 	MOAI_LUA_SETUP ( MOAIKeyboardSensor, "U" )
 	
-	if ( state.IsType ( 2, LUA_TSTRING )) {
-		
-		cc8* str = lua_tostring ( state, 2 );
-		
+	if ( state.IsType ( 2, LUA_TSTRING )) {		
+		cc8* str = lua_tostring ( state, 2 );		
 		int count;
 		for ( count = 0; str [ count ]; ++count ) {
 			lua_pushboolean ( state, self->KeyIsDown ( str [ count ]));
@@ -84,8 +82,7 @@ int MOAIKeyboardSensor::_keyIsDown ( lua_State* L ) {
 		return count;
 	}
 	
-	if ( state.IsType ( 2, LUA_TNUMBER )) {
-	
+	if ( state.IsType ( 2, LUA_TNUMBER )) {	
 		u32 keyCode = state.GetValue < u32 >( 2, 0 );
 		lua_pushboolean ( state, self->KeyIsDown ( keyCode ));
 		return 1;

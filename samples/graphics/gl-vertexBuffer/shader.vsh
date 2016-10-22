@@ -12,6 +12,6 @@ varying vec2 uvVarying;
 
 void main () {
     gl_Position = position * transform;
-	uvVarying = uv;
+    uvVarying = uv;
     colorVarying = color;
 }

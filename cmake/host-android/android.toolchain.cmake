@@ -1257,6 +1257,12 @@ endif()
 # NDK flags
 if( ARMEABI OR ARMEABI_V7A )
  set( ANDROID_CXX_FLAGS "${ANDROID_CXX_FLAGS} -fpic -funwind-tables" )
+
+# MESSAGE("THUMB FUCKER")
+
+   set( ANDROID_CXX_FLAGS_RELEASE "-mthumb  -mimplicit-it=thumb -fomit-frame-pointer -fno-strict-aliasing" )
+
+
  if( NOT ANDROID_FORCE_ARM_BUILD AND NOT ARMEABI_V6 )
   set( ANDROID_CXX_FLAGS_RELEASE "-mthumb -fomit-frame-pointer -fno-strict-aliasing" )
   set( ANDROID_CXX_FLAGS_DEBUG   "-marm -fno-omit-frame-pointer -fno-strict-aliasing" )
@@ -1306,8 +1312,10 @@ endif()
 # ABI-specific flags
 if( ARMEABI_V7A )
  set( ANDROID_CXX_FLAGS "${ANDROID_CXX_FLAGS} -march=armv7-a -mfloat-abi=softfp" )
+ MESSAGE(" >> CMAKE ANDROID")
  if( NEON )
-  set( ANDROID_CXX_FLAGS "${ANDROID_CXX_FLAGS} -mfpu=neon" )
+  MESSAGE(" >> CMAKE ANDROID NEON")
+  set( ANDROID_CXX_FLAGS "${ANDROID_CXX_FLAGS} -mfpu=neon"  )
  elseif( VFPV3 )
   set( ANDROID_CXX_FLAGS "${ANDROID_CXX_FLAGS} -mfpu=vfpv3" )
  else()

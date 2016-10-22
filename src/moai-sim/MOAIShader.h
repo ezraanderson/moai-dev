@@ -29,9 +29,16 @@ class MOAITransformBase;
 #endif
 
 #ifdef MOAI_OS_WINDOWS
-    #define		OPENGL_PREPROC		"#version 120\n #define LOWP\n #define MEDP\n"
-    #define		OPENGL_ES_PREPROC	"#version 120\n #define LOWP lowp\n #define MEDP mediump\n"
-    #define		WEBGL_PREPROC       "precision mediump int;\n precision mediump float;\n"
+
+    //#define		OPENGL_PREPROC		"#version 120\n #define LOWP\n #define MEDP\n"
+    //#define		OPENGL_ES_PREPROC	"#version 120\n #define LOWP lowp\n #define MEDP mediump\n"
+    //#define		WEBGL_PREPROC       "precision mediump int;\n precision mediump float;\n"
+
+#define		OPENGL_PREPROC		"#version 330\n #define LOWP\n #define MEDP\n"
+#define		OPENGL_ES_PREPROC	"#version 330\n #define LOWP lowp\n #define MEDP mediump\n"
+#define		WEBGL_PREPROC       "precision mediump int;\n precision mediump float;\n"
+
+
 #endif
 
 
@@ -191,7 +198,8 @@ protected:
 	static int		_load					( lua_State* L );
 	static int		_reserveUniforms		( lua_State* L );
 	static int		_setVertexAttribute		( lua_State* L );
-	
+	static int		_makeMe					(lua_State* L);
+	static int		_bindMe					(lua_State* L);
 	//----------------------------------------------------------------//
 	u32				CompileShader				( u32 type, cc8* source );
 	bool			IsRenewable					();
@@ -216,6 +224,8 @@ public:
 	//----------------------------------------------------------------//
 	bool			ApplyAttrOp				( u32 attrID, MOAIAttrOp& attrOp, u32 op );
 	void			BindUniforms			();
+	void			BindMe();
+	void			MakeMe();
 	void			ClearUniform			( u32 idx );
 	void			ClearUniforms			();
 	void			DeleteShaders			();

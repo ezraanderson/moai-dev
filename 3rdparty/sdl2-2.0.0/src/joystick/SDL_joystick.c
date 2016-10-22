@@ -766,6 +766,7 @@ SDL_JoystickGUID SDL_JoystickGetDeviceGUID(int device_index)
         SDL_zero( emptyGUID );
         return emptyGUID;
     }
+
     return SDL_SYS_JoystickGetDeviceGUID( device_index );
 }
 

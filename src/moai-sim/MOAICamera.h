@@ -22,6 +22,9 @@ private:
 	float		mNearPlane;
 	float		mFarPlane;
 
+
+	MOAIViewport* mView;
+
 	bool		mOrtho;
 
 	//----------------------------------------------------------------//
@@ -33,6 +36,7 @@ private:
 	static int		_setFieldOfView		( lua_State* L );
 	static int		_setNearPlane		( lua_State* L );
 	static int		_setOrtho			( lua_State* L );
+	static int		_moveforward		( lua_State* L );
 	
 public:
 	

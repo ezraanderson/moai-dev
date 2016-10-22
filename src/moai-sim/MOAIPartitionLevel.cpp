@@ -33,6 +33,7 @@ void MOAIPartitionLevel::GatherProps ( MOAIPartitionResultBuffer& results, MOAIP
 
 	u32 totalCells = this->mCells.Size ();
 	for ( u32 i = 0; i < totalCells; ++i ) {
+
 		this->mCells [ i ].GatherProps ( results, ignore, mask );
 	}
 }
@@ -42,6 +43,7 @@ void MOAIPartitionLevel::GatherProps ( MOAIPartitionResultBuffer& results, MOAIP
 	
 	u32 totalCells = this->mCells.Size ();
 	for ( u32 i = 0; i < totalCells; ++i ) {
+	
 		this->mCells [ i ].GatherProps ( results, ignore, point, orientation, mask );
 	}
 }
@@ -77,7 +79,7 @@ void MOAIPartitionLevel::GatherProps ( MOAIPartitionResultBuffer& results, MOAIP
 	
 	for ( int y = 0; y < yTotal; ++y ) {
 		for ( int x = 0; x < xTotal; ++x ) {
-			
+	
 			MOAICellCoord offset = this->mGridSpace.WrapCellCoord ( coord.mX + x, coord.mY - y );
 			int addr = this->mGridSpace.GetCellAddr ( offset );
 			this->mCells [ addr ].GatherProps ( results, ignore, point, mask );
@@ -105,7 +107,7 @@ void MOAIPartitionLevel::GatherProps ( MOAIPartitionResultBuffer& results, MOAIP
 
 	for ( int y = 0; y < yTotal; ++y ) {
 		for ( int x = 0; x < xTotal; ++x ) {
-			
+		
 			MOAICellCoord offset = this->mGridSpace.WrapCellCoord ( coord0.mX + x, coord0.mY + y );
 			u32 addr = this->mGridSpace.GetCellAddr ( offset );
 			this->mCells [ addr ].GatherProps ( results, ignore, box, mask );

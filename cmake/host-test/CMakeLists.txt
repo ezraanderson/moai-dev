@@ -52,9 +52,9 @@ if ( MOAI_BOX2D )
   target_link_libraries ( moai-test-runner moai-box2d )
 endif ( MOAI_BOX2D )
 
-if ( MOAI_CHIPMUNK )
-  target_link_libraries ( moai-test-runner moai-chipmunk )
-endif ( MOAI_CHIPMUNK )
+#if ( MOAI_CHIPMUNK )
+#  target_link_libraries ( moai-test-runner moai-chipmunk )
+#endif ( MOAI_CHIPMUNK )
 
 if ( MOAI_UNTZ  )
   target_link_libraries ( moai-test-runner moai-untz)

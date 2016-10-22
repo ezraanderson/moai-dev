@@ -31,9 +31,9 @@ if ( MOAI_UNTZ )
 endif ( MOAI_UNTZ )
 
 #Chipmunk
-if ( MOAI_CHIPMUNK )
-  target_link_libraries ( host-modules moai-chipmunk )
-endif ( MOAI_CHIPMUNK )
+#if ( MOAI_CHIPMUNK )
+#  target_link_libraries ( host-modules moai-chipmunk )
+#endif ( MOAI_CHIPMUNK )
 
 #Http Client
 if ( MOAI_HTTP_CLIENT )

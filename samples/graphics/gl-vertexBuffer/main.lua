@@ -10,13 +10,19 @@ viewport = MOAIViewport.new ()
 viewport:setSize ( 320, 480 )
 viewport:setScale ( 320, 480 )
 
+local camera = MOAICamera.new ()
+camera:setLoc(0,0,200)
+camera:seekLoc(0,0,1000,5,5)
+
 layer = MOAILayer2D.new ()
 layer:setViewport ( viewport )
+layer:setCamera(camera)
+
 MOAISim.pushRenderPass ( layer )
 
 vertexFormat = MOAIVertexFormat.new ()
 
--- Moai's default shaders expect loc, uv, color
+
 vertexFormat:declareCoord ( 1, MOAIVertexFormat.GL_FLOAT, 2 )
 vertexFormat:declareUV ( 2, MOAIVertexFormat.GL_FLOAT, 2 )
 vertexFormat:declareColor ( 3, MOAIVertexFormat.GL_UNSIGNED_BYTE )
@@ -50,7 +56,7 @@ mesh = MOAIMesh.new ()
 mesh:setTexture ( "moai.png" )
 mesh:setVertexBuffer ( vbo )
 mesh:setPrimType ( MOAIMesh.GL_TRIANGLE_FAN )
-mesh:setHigh(4)
+--mesh:setHigh(4)
 
 if MOAIGfxDevice.isProgrammable () then
 
