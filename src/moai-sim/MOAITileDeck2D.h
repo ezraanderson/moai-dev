@@ -41,6 +41,11 @@ public:
 	
 	//----------------------------------------------------------------//
 	void			DrawIndex				( u32 idx, float xOff, float yOff, float zOff, float xScl, float yScl, float zScl );
+	void			DrawIndex_up			(u32 idx, float xOff, float yOff, float zOff, float xScl, float yScl, float zScl);
+	void			DrawIndex_right			(u32 idx, float xOff, float yOff, float zOff, float xScl, float yScl, float zScl);
+	void			DrawIndex_left			(u32 idx, float xOff, float yOff, float zOff, float xScl, float yScl, float zScl);
+	void			DrawIndex_down			(u32 idx, float xOff, float yOff, float zOff, float xScl, float yScl, float zScl);
+
 					MOAITileDeck2D			();
 					~MOAITileDeck2D			();
 	void			RegisterLuaClass		( MOAILuaState& state );

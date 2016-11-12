@@ -1147,6 +1147,11 @@ void MOAIGridSpace::SerializeOut ( MOAILuaState& state, MOAISerializer& serializ
 //----------------------------------------------------------------//
 void MOAIGridSpace::RegisterLuaClass ( MOAILuaState& state ) {
 
+	state.SetField(-1, "TILE_D_UP", (u32)MOAITileFlags::DUP);
+	state.SetField(-1, "TILE_D_RIGHT", (u32)MOAITileFlags::DRIGHT);
+	state.SetField(-1, "TILE_D_DOWN", (u32)MOAITileFlags::DDOWN);
+	state.SetField(-1, "TILE_D_LEFT", (u32)MOAITileFlags::DLEFT);
+
 	state.SetField ( -1, "TILE_X_FLIP", ( u32 )MOAITileFlags::XFLIP );
 	state.SetField ( -1, "TILE_Y_FLIP", ( u32 )MOAITileFlags::YFLIP );
 	state.SetField ( -1, "TILE_XY_FLIP", ( u32 )MOAITileFlags::FLIP_MASK );

@@ -261,7 +261,6 @@ void MOAITileDeck2D::DrawIndex ( u32 idx, float xOff, float yOff, float zOff, fl
 	
 	gfxDevice.SetVertexMtxMode ( MOAIGfxDevice::VTX_STAGE_MODEL, MOAIGfxDevice::VTX_STAGE_PROJ );
 	gfxDevice.SetUVMtxMode ( MOAIGfxDevice::UV_STAGE_MODEL, MOAIGfxDevice::UV_STAGE_TEXTURE );
-
 	
 	idx = idx - 1;
 	
@@ -272,20 +271,113 @@ void MOAITileDeck2D::DrawIndex ( u32 idx, float xOff, float yOff, float zOff, fl
 	float vScale = -( uvRect.mYMax - uvRect.mYMin );
 	
 	float uOff = uvRect.mXMin + ( 0.5f * uScale );
-	float vOff = uvRect.mYMin - ( 0.5f * vScale );
-		
-	
-	//ZLAffine3D mtx;
+	float vOff = uvRect.mYMin - ( 0.5f * vScale );	
 
-	//float radA =90* (PI/180);
-	//mtx.RotateZ(radA);	
-	//this->mQuad.TransformVerts(mtx);
-
-this->mQuad.Draw ( xOff, yOff, zOff, xScl, yScl, uOff, vOff, uScale, vScale );
-
-
-
+	this->mQuad.Draw ( xOff, yOff, zOff, xScl, yScl, uOff, vOff, uScale, vScale );
 }
+
+
+//----------------------------------------------------------------//
+void MOAITileDeck2D::DrawIndex_up(u32 idx, float xOff, float yOff, float zOff, float xScl, float yScl, float zScl) {
+	UNUSED(zScl);
+
+	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get();
+	MOAIQuadBrush::BindVertexFormat(gfxDevice);
+
+	gfxDevice.SetVertexMtxMode(MOAIGfxDevice::VTX_STAGE_MODEL, MOAIGfxDevice::VTX_STAGE_PROJ);
+	gfxDevice.SetUVMtxMode(MOAIGfxDevice::UV_STAGE_MODEL, MOAIGfxDevice::UV_STAGE_TEXTURE);
+
+	idx = idx - 1;
+
+	MOAICellCoord coord = this->GetCellCoord(idx);
+	ZLRect uvRect = this->GetTileRect(coord);
+
+	float uScale = (uvRect.mXMax - uvRect.mXMin);
+	float vScale = -(uvRect.mYMax - uvRect.mYMin);
+
+	float uOff = uvRect.mXMin + (0.5f * uScale);
+	float vOff = uvRect.mYMin - (0.5f * vScale);
+
+	this->mQuad.Draw_up(xOff, yOff, zOff, xScl, yScl, uOff, vOff, uScale, vScale);
+}
+
+
+//----------------------------------------------------------------//
+void MOAITileDeck2D::DrawIndex_right(u32 idx, float xOff, float yOff, float zOff, float xScl, float yScl, float zScl) {
+	UNUSED(zScl);
+
+	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get();
+	MOAIQuadBrush::BindVertexFormat(gfxDevice);
+
+	gfxDevice.SetVertexMtxMode(MOAIGfxDevice::VTX_STAGE_MODEL, MOAIGfxDevice::VTX_STAGE_PROJ);
+	gfxDevice.SetUVMtxMode(MOAIGfxDevice::UV_STAGE_MODEL, MOAIGfxDevice::UV_STAGE_TEXTURE);
+
+	idx = idx - 1;
+
+	MOAICellCoord coord = this->GetCellCoord(idx);
+	ZLRect uvRect = this->GetTileRect(coord);
+
+	float uScale = (uvRect.mXMax - uvRect.mXMin);
+	float vScale = -(uvRect.mYMax - uvRect.mYMin);
+
+	float uOff = uvRect.mXMin + (0.5f * uScale);
+	float vOff = uvRect.mYMin - (0.5f * vScale);
+
+	this->mQuad.Draw_right(xOff, yOff, zOff, xScl, yScl, uOff, vOff, uScale, vScale);
+}
+
+//----------------------------------------------------------------//
+void MOAITileDeck2D::DrawIndex_down(u32 idx, float xOff, float yOff, float zOff, float xScl, float yScl, float zScl) {
+	UNUSED(zScl);
+
+	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get();
+	MOAIQuadBrush::BindVertexFormat(gfxDevice);
+
+	gfxDevice.SetVertexMtxMode(MOAIGfxDevice::VTX_STAGE_MODEL, MOAIGfxDevice::VTX_STAGE_PROJ);
+	gfxDevice.SetUVMtxMode(MOAIGfxDevice::UV_STAGE_MODEL, MOAIGfxDevice::UV_STAGE_TEXTURE);
+
+	idx = idx - 1;
+
+	MOAICellCoord coord = this->GetCellCoord(idx);
+	ZLRect uvRect = this->GetTileRect(coord);
+
+	float uScale = (uvRect.mXMax - uvRect.mXMin);
+	float vScale = -(uvRect.mYMax - uvRect.mYMin);
+
+	float uOff = uvRect.mXMin + (0.5f * uScale);
+	float vOff = uvRect.mYMin - (0.5f * vScale);
+
+	this->mQuad.Draw_down(xOff, yOff, zOff, xScl, yScl, uOff, vOff, uScale, vScale);
+}
+
+//----------------------------------------------------------------//
+void MOAITileDeck2D::DrawIndex_left(u32 idx, float xOff, float yOff, float zOff, float xScl, float yScl, float zScl) {
+	UNUSED(zScl);
+
+	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get();
+	MOAIQuadBrush::BindVertexFormat(gfxDevice);
+
+	gfxDevice.SetVertexMtxMode(MOAIGfxDevice::VTX_STAGE_MODEL, MOAIGfxDevice::VTX_STAGE_PROJ);
+	gfxDevice.SetUVMtxMode(MOAIGfxDevice::UV_STAGE_MODEL, MOAIGfxDevice::UV_STAGE_TEXTURE);
+
+	idx = idx - 1;
+
+	MOAICellCoord coord = this->GetCellCoord(idx);
+	ZLRect uvRect = this->GetTileRect(coord);
+
+	float uScale = (uvRect.mXMax - uvRect.mXMin);
+	float vScale = -(uvRect.mYMax - uvRect.mYMin);
+
+	float uOff = uvRect.mXMin + (0.5f * uScale);
+	float vOff = uvRect.mYMin - (0.5f * vScale);
+
+	this->mQuad.Draw_left(xOff, yOff, zOff, xScl, yScl, uOff, vOff, uScale, vScale);
+}
+
+
+
+
+
 
 //----------------------------------------------------------------//
 ZLBox MOAITileDeck2D::GetItemBounds ( u32 idx ) {

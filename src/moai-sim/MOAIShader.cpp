@@ -733,7 +733,7 @@ void MOAIShader::MakeMe() {
 	this->mFragmentShader = this->CompileShader(ZGL_SHADER_TYPE_FRAGMENT, this->mFragmentShaderSource);
 	this->mProgram = zglCreateProgram();
 
-	printf("MakeMe %d\n", this->mProgram);
+	//printf("MakeMe %d\n", this->mProgram);
 
 	if (!(this->mVertexShader && this->mFragmentShader && this->mProgram)) {
 		this->Clear();
@@ -798,7 +798,7 @@ void MOAIShader::OnCreate () {
 	this->mFragmentShader = this->CompileShader ( ZGL_SHADER_TYPE_FRAGMENT, this->mFragmentShaderSource );
 	this->mProgram = zglCreateProgram ();
 
-	printf("MOAIShader::OnCreate %d\n", this->mProgram);
+	//printf("MOAIShader::OnCreate %d\n", this->mProgram);
 
 	if ( !( this->mVertexShader && this->mFragmentShader && this->mProgram )) {
 		this->Clear ();
@@ -812,7 +812,7 @@ void MOAIShader::OnCreate () {
 	// this needs to be done prior to linking.
 	AttributeMapIt attrMapIt = this->mAttributeMap.begin ();
 	for ( ; attrMapIt != this->mAttributeMap.end (); ++attrMapIt ) {
-		printf(" attrMapIt \n");
+		//printf(" attrMapIt \n");
 		zglBindAttribLocation ( this->mProgram, attrMapIt->first, attrMapIt->second.str ());
 	}
     
@@ -831,7 +831,7 @@ void MOAIShader::OnCreate () {
 	// get the uniform locations
 	for ( u32 i = 0; i < this->mUniforms.Size (); ++i ) {
 		MOAIShaderUniform& uniform = this->mUniforms [ i ];
-		printf(" MOAIShaderUniform %d \n", i);
+		//printf(" MOAIShaderUniform %d \n", i);
 		if ( uniform.mType != MOAIShaderUniform::UNIFORM_NONE ) {
 			uniform.mAddr = zglGetUniformLocation ( this->mProgram, uniform.mName );
 			uniform.mIsDirty = true;

@@ -41,59 +41,77 @@ void MOAIQuadBrush::Draw ( float xOff, float yOff, float zOff, float xScale, flo
 void MOAIQuadBrush::Draw ( float xOff, float yOff, float zOff, float xScale, float yScale, float uOff, float vOff, float uScale, float vScale ) {
 	
 MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get ();
-//
-//float rad	  = 45*(PI/180);
-//float rad_cos = cos(rad);
-//float rad_sin = sin(rad);
-//
-//double x1 = 0;
-//double y1 = 0;
-//
-////0
-//this->mVtx [ 0 ].mX  =-0.5;
-//this->mVtx [ 0 ].mY  = 0.5;
-//
-//x1 = this->mVtx [ 0 ].mX - 0;
-//y1 = this->mVtx [ 0 ].mY - 0;
-//
+
+
+
+float rad	  = 90*(PI/180);
+float rad_cos = cos(rad);
+float rad_sin = sin(rad);
+
+
+int x[4] = { -0.5, 0.5, 0.5, -0.5 };
+int y[4] = { 0.5, 0.5, -0.5, -0.5 };
+
+double x0 = -0.5;
+double y0 =  0.5;
+
+double x1 = 0.5;
+double y1 = 0.5;
+
+double x2 =  0.5;
+double y2 = -0.5;
+
+double x3 = -0.5;
+double y3 = -0.5;
+
+
+////0 *********************************************************************************
+//x1 = -0.5;
+//y1 = 0.5;
 //this->mVtx [ 0 ].mX =  x1 * rad_cos - y1 * rad_sin; 
 //this->mVtx [ 0 ].mY =  x1 * rad_sin + y1 * rad_cos;
-//
-////1
-//this->mVtx [ 1 ].mX =  0.5;
-//this->mVtx [ 1 ].mY  = 0.5;
-//
-//x1 = this->mVtx [ 1 ].mX - 0;
-//y1 = this->mVtx [ 1 ].mY - 0;
-//
+////1 *********************************************************************************
+//x1 = 0.5;
+//y1 = 0.5;
 //this->mVtx [ 1 ].mX =x1 * rad_cos - y1 * rad_sin; 
 //this->mVtx [ 1 ].mY =x1 * rad_sin + y1 * rad_cos;
-//
-////2
-//this->mVtx [ 2 ].mX  =  0.5;
-//this->mVtx [ 2 ].mY  = -0.5;
-//
-//x1 = this->mVtx [ 2 ].mX - 0;
-//y1 = this->mVtx [ 2 ].mY - 0;
-//
+////2 *********************************************************************************
+//x1 = 0.5;
+//y1 = -0.5;
 //this->mVtx [ 2 ].mX = x1 * rad_cos - y1 * rad_sin;  
 //this->mVtx [ 2 ].mY = x1 * rad_sin + y1 * rad_cos;
-//
-////3
-//this->mVtx [ 3 ].mX =  -0.5;
-//this->mVtx [ 3 ].mY  = -0.5;
-//
-//x1 = this->mVtx [ 3 ].mX - 0;
-//y1 = this->mVtx [ 3 ].mY - 0;
-//
+////3 *********************************************************************************
+//x1 = -0.5;
+//y1 = -0.5;
 //this->mVtx [ 3 ].mX = x1 * rad_cos - y1 * rad_sin; 
 //this->mVtx [ 3 ].mY = x1 * rad_sin + y1 * rad_cos;
 
+
+
+
+//if (true) {
+//	//0 *********************************************************************************
+//	this->mVtx[0].mX = -0.5;
+//	this->mVtx[0].mY = -0.5;
+//	//1 *********************************************************************************
+//	this->mVtx[1].mX = -0.5;
+//	this->mVtx[1].mY =  0.5;
+//	//2 *********************************************************************************
+//	this->mVtx[2].mX =  0.5;
+//	this->mVtx[2].mY =  0.5;
+//	//3 *********************************************************************************
+//	this->mVtx[3].mX =  0.5;
+//	this->mVtx[3].mY = -0.5;
+//
+//}
+
+
+
 //printf("___________________\n");
-//printf("1: %f %f  \n",this->mVtx [ 0 ].mX,this->mVtx [ 0 ].mY);
-//printf("2: %f %f  \n",this->mVtx [ 1 ].mX,this->mVtx [ 1].mY);
-//printf("3: %f %f \n",this->mVtx [  2 ].mX,this->mVtx [ 2 ].mY);
-//printf("4: %f %f  \n",this->mVtx [ 3 ].mX,this->mVtx [ 3].mY);
+//printf("0: %f %f  \n",	this->mVtx [ 0 ].mX,this->mVtx [ 0 ].mY);
+//printf("1: %f %f  \n",	this->mVtx [ 1 ].mX,this->mVtx [ 1 ].mY);
+//printf("2: %f %f \n",	this->mVtx [ 2 ].mX,this->mVtx [ 2 ].mY);
+//printf("3: %f %f  \n",	this->mVtx [ 3 ].mX,this->mVtx [ 3 ].mY);
 
 
 gfxDevice.WriteQuad ( this->mVtx, this->mUV, xOff, yOff, zOff, xScale, yScale, uOff, vOff, uScale, vScale ); 
@@ -103,6 +121,93 @@ gfxDevice.WriteQuad ( this->mVtx, this->mUV, xOff, yOff, zOff, xScale, yScale, u
 
 
 }
+
+
+
+//----------------------------------------------------------------//
+void MOAIQuadBrush::Draw_up(float xOff, float yOff, float zOff, float xScale, float yScale, float uOff, float vOff, float uScale, float vScale) {
+
+
+	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get();
+	//0 *********************************************************************************
+	this->mVtx[0].mX = -0.5;
+	this->mVtx[0].mY = 0.5;
+	//1 *********************************************************************************
+	this->mVtx[1].mX = 0.5;
+	this->mVtx[1].mY =  0.5;
+	//2 *********************************************************************************
+	this->mVtx[2].mX =  0.5;
+	this->mVtx[2].mY =  -0.5;
+	//3 *********************************************************************************
+	this->mVtx[3].mX =  -0.5;
+	this->mVtx[3].mY = -0.5;
+
+	gfxDevice.WriteQuad(this->mVtx, this->mUV, xOff, yOff, zOff, xScale, yScale, uOff, vOff, uScale, vScale);
+
+}
+//----------------------------------------------------------------//
+void MOAIQuadBrush::Draw_right(float xOff, float yOff, float zOff, float xScale, float yScale, float uOff, float vOff, float uScale, float vScale) {
+	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get();
+	//0 *********************************************************************************
+	this->mVtx[0].mX = -0.5;
+	this->mVtx[0].mY = -0.5;
+	//1 *********************************************************************************
+	this->mVtx[1].mX = -0.5;
+	this->mVtx[1].mY = 0.5;
+	//2 *********************************************************************************
+	this->mVtx[2].mX = 0.5;
+	this->mVtx[2].mY = 0.5;
+	//3 *********************************************************************************
+	this->mVtx[3].mX = 0.5;
+	this->mVtx[3].mY = -0.5;
+
+	gfxDevice.WriteQuad(this->mVtx, this->mUV, xOff, yOff, zOff, xScale, yScale, uOff, vOff, uScale, vScale);
+
+}
+
+//----------------------------------------------------------------//
+void MOAIQuadBrush::Draw_down(float xOff, float yOff, float zOff, float xScale, float yScale, float uOff, float vOff, float uScale, float vScale) {
+	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get();
+	//0 *********************************************************************************
+	this->mVtx[0].mX = 0.5;
+	this->mVtx[0].mY = -0.5;
+	//1 *********************************************************************************
+	this->mVtx[1].mX = -0.5;
+	this->mVtx[1].mY = -0.5;
+	//2 *********************************************************************************
+	this->mVtx[2].mX = -0.5;
+	this->mVtx[2].mY = 0.5;
+	//3 *********************************************************************************
+	this->mVtx[3].mX = 0.5;
+	this->mVtx[3].mY = 0.5;
+
+	gfxDevice.WriteQuad(this->mVtx, this->mUV, xOff, yOff, zOff, xScale, yScale, uOff, vOff, uScale, vScale);
+
+}
+
+//----------------------------------------------------------------//
+void MOAIQuadBrush::Draw_left(float xOff, float yOff, float zOff, float xScale, float yScale, float uOff, float vOff, float uScale, float vScale) {
+	MOAIGfxDevice& gfxDevice = MOAIGfxDevice::Get();
+	//0 *********************************************************************************
+	this->mVtx[0].mX = 0.5;
+	this->mVtx[0].mY = 0.5;
+	//1 *********************************************************************************
+	this->mVtx[1].mX = 0.5;
+	this->mVtx[1].mY = -0.5;
+	//2 *********************************************************************************
+	this->mVtx[2].mX = -0.5;
+	this->mVtx[2].mY = -0.5;
+	//3 *********************************************************************************
+	this->mVtx[3].mX = -0.5;
+	this->mVtx[3].mY = 0.5;
+
+	gfxDevice.WriteQuad(this->mVtx, this->mUV, xOff, yOff, zOff, xScale, yScale, uOff, vOff, uScale, vScale);
+
+}
+
+
+
+
 
 //----------------------------------------------------------------//
 ZLRect MOAIQuadBrush::GetUVBounds () {

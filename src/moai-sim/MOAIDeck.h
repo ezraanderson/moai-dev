@@ -69,6 +69,12 @@ protected:
 	//----------------------------------------------------------------//
 	virtual ZLBox			ComputeMaxBounds		() = 0;
 	virtual void			DrawIndex				( u32 idx, float xOff, float yOff, float zOff, float xScl, float yScl, float zScl );
+	virtual void			DrawIndex_up			(u32 idx, float xOff, float yOff, float zOff, float xScl, float yScl, float zScl);
+	virtual void			DrawIndex_right			(u32 idx, float xOff, float yOff, float zOff, float xScl, float yScl, float zScl);
+	virtual void			DrawIndex_down			(u32 idx, float xOff, float yOff, float zOff, float xScl, float yScl, float zScl);
+	virtual void			DrawIndex_left			(u32 idx, float xOff, float yOff, float zOff, float xScl, float yScl, float zScl);
+
+
 	virtual ZLBox			GetItemBounds			( u32 idx ) = 0;
 	void					SetBoundsDirty			();
 	void					SetBoundsClean			();

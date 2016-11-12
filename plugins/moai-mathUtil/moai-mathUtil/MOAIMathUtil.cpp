@@ -1699,6 +1699,41 @@ float  r =  state.GetValue < float >(6 , 0 );
   return 1;
 
 }
+
+
+//********************************************************************************************************************
+//********************************************************************************************************************
+//********************************************************************************************************************
+//TILED
+int  MOAIMathUtil::_tiled_shift(lua_State* L) {
+	MOAI_LUA_SETUP(MOAIMathUtil, "U")
+
+		unsigned   tile = state.GetValue < unsigned >(2, 0);
+
+	const unsigned FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
+	const unsigned FLIPPED_VERTICALLY_FLAG	 = 0x40000000;
+	const unsigned FLIPPED_DIAGONALLY_FLAG	 = 0x20000000;
+
+
+	bool flipped_horizontally	= (tile & FLIPPED_HORIZONTALLY_FLAG);
+	bool flipped_vertically		= (tile & FLIPPED_VERTICALLY_FLAG);
+	bool flipped_diagonally		= (tile & FLIPPED_DIAGONALLY_FLAG);
+
+	// Clear the flags
+	tile &= ~(FLIPPED_HORIZONTALLY_FLAG | FLIPPED_VERTICALLY_FLAG | FLIPPED_DIAGONALLY_FLAG);
+
+
+
+	lua_pushnumber(state, tile);
+
+	lua_pushboolean(state, flipped_horizontally);
+	lua_pushboolean(state, flipped_vertically);
+	lua_pushboolean(state, flipped_diagonally);
+
+
+	return 4;
+
+}
 //*****************************************************************************************************************************
 //*****************************************************************************************************************************
 //*****************************************************************************************************************************
@@ -1732,6 +1767,8 @@ void MOAIMathUtil::RegisterLuaFuncs ( MOAILuaState& state ) {
 
 	// here are the instance methods:
 	luaL_Reg regTable [] = {
+
+		{ "tiled_shift",		_tiled_shift },
 
 		{ "rotate_point",			_rotate_point },
 		{ "rotate_check",			_rotate_check },

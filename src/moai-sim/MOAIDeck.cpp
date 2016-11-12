@@ -127,19 +127,84 @@ void MOAIDeck::Draw ( u32 idx, MOAIDeckRemapper* remapper ) {
 void MOAIDeck::Draw ( u32 idx, MOAIDeckRemapper* remapper, float xOff, float yOff, float zOff, float xScl, float yScl, float zScl ) {
 	
 	//printf("3.MOAIDeck::Draw : \n");
-
 	//HIDDEN IS VERY IMPORTANT??
 
 	idx = remapper ? remapper->Remap ( idx ) : idx;
 	
 	if ( !idx || ( idx & MOAITileFlags::HIDDEN )) return;
 	
+	if (!idx || (idx & MOAITileFlags::DUP)){
+		this->DrawIndex_up(idx & MOAITileFlags::CODE_MASK, xOff, yOff, zOff, xScl, yScl, zScl);
+		return;
+	}
+	else if (!idx || (idx & MOAITileFlags::DRIGHT)) {
+		this->DrawIndex_right(idx & MOAITileFlags::CODE_MASK, xOff, yOff, zOff, xScl, yScl, zScl);
+		return;
+	}
+	else if (!idx || (idx & MOAITileFlags::DDOWN)) {
+		this->DrawIndex_down(idx & MOAITileFlags::CODE_MASK, xOff, yOff, zOff, xScl, yScl, zScl);
+		return;
+	}
+	else if (!idx || (idx & MOAITileFlags::DLEFT)) {
+		this->DrawIndex_left(idx & MOAITileFlags::CODE_MASK, xOff, yOff, zOff, xScl, yScl, zScl);
+		return;
+	}
+
+
 	xScl = ( idx & MOAITileFlags::XFLIP ) ? -xScl : xScl;
 	yScl = ( idx & MOAITileFlags::YFLIP ) ? -yScl : yScl;	
-	
 
 	this->DrawIndex ( idx & MOAITileFlags::CODE_MASK, xOff, yOff, zOff, xScl, yScl, zScl );
 }
+
+
+//----------------------------------------------------------------//
+void MOAIDeck::DrawIndex_up(u32 idx, float xOff, float yOff, float zOff, float xScl, float yScl, float zScl) {
+
+	UNUSED(idx);
+	UNUSED(xOff);
+	UNUSED(yOff);
+	UNUSED(zOff);
+	UNUSED(xScl);
+	UNUSED(yScl);
+	UNUSED(zScl);
+}
+//----------------------------------------------------------------//
+void MOAIDeck::DrawIndex_right(u32 idx, float xOff, float yOff, float zOff, float xScl, float yScl, float zScl) {
+
+	UNUSED(idx);
+	UNUSED(xOff);
+	UNUSED(yOff);
+	UNUSED(zOff);
+	UNUSED(xScl);
+	UNUSED(yScl);
+	UNUSED(zScl);
+}
+
+//----------------------------------------------------------------//
+void MOAIDeck::DrawIndex_down(u32 idx, float xOff, float yOff, float zOff, float xScl, float yScl, float zScl) {
+
+	UNUSED(idx);
+	UNUSED(xOff);
+	UNUSED(yOff);
+	UNUSED(zOff);
+	UNUSED(xScl);
+	UNUSED(yScl);
+	UNUSED(zScl);
+}
+
+//----------------------------------------------------------------//
+void MOAIDeck::DrawIndex_left(u32 idx, float xOff, float yOff, float zOff, float xScl, float yScl, float zScl) {
+
+	UNUSED(idx);
+	UNUSED(xOff);
+	UNUSED(yOff);
+	UNUSED(zOff);
+	UNUSED(xScl);
+	UNUSED(yScl);
+	UNUSED(zScl);
+}
+
 
 //----------------------------------------------------------------//
 void MOAIDeck::DrawIndex ( u32 idx, float xOff, float yOff, float zOff, float xScl, float yScl, float zScl ) {
@@ -177,12 +242,17 @@ ZLBox MOAIDeck::GetBounds ( u32 idx, MOAIDeckRemapper* remapper ) {
 	
 	ZLBox bounds;
 	
+	
+
 	if ( this->mBoundsDeck ) {
 		bounds = this->mBoundsDeck->GetItemBounds ( idx & MOAITileFlags::CODE_MASK );
 	}
 	else {
 		bounds = this->GetItemBounds ( idx & MOAITileFlags::CODE_MASK );
 	}
+
+
+
 
 	if ( idx & MOAITileFlags::FLIP_MASK ) {
 

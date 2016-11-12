@@ -125,6 +125,8 @@ u32 MOAIDeckRemapper::Remap ( u32 idx ) {
 
 	u32 code = ( idx & MOAITileFlags::CODE_MASK ) - 1;
 
+
+
 	if (( code >= this->mBase ) && ( code < this->mRemap.Size ())) {
 	
 		u32 flags = idx & MOAITileFlags::FLAGS_MASK;

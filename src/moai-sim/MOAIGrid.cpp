@@ -367,8 +367,7 @@ void MOAIGrid::SetTile ( u32 addr, u32 tile ) {
 void MOAIGrid::SetTile ( int xTile, int yTile, u32 tile ) {
 
 	MOAICellCoord coord ( xTile, yTile );
-	if ( this->IsValidCoord ( coord )) {
-	
+	if ( this->IsValidCoord ( coord )) {	
 		u32 addr = this->GetCellAddr ( coord );
 		if ( addr < this->mTiles.Size ()) {
 			this->mTiles [ addr ] = tile;
@@ -408,7 +407,7 @@ void MOAIGrid::Draw ( MOAIDeck *deck, MOAIDeckRemapper *remapper, const MOAICell
 		
 
 			MOAICellCoord coord ( x, y );
-			USVec2D loc = this->GetTilePoint ( coord, MOAIGridSpace::TILE_CENTER );
+			USVec2D loc = this->GetTilePoint ( coord, MOAIGridSpace::TILE_CENTER );	
 		
 			deck->Draw ( idx, remapper, loc.mX, loc.mY, 0.0f, tileWidth, tileHeight, 1.0f );
 		}
