@@ -123,40 +123,37 @@ void MOAIDeck::Draw ( u32 idx, MOAIDeckRemapper* remapper ) {
 	this->Draw ( idx, remapper, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f );
 }
 
-//----------------------------------------------------------------//
-void MOAIDeck::Draw ( u32 idx, MOAIDeckRemapper* remapper, float xOff, float yOff, float zOff, float xScl, float yScl, float zScl ) {
-	
-	//printf("3.MOAIDeck::Draw : \n");
-	//HIDDEN IS VERY IMPORTANT??
 
-	idx = remapper ? remapper->Remap ( idx ) : idx;
-	
-	if ( !idx || ( idx & MOAITileFlags::HIDDEN )) return;
-	
-	if (!idx || (idx & MOAITileFlags::DUP)){
-		this->DrawIndex_up(idx & MOAITileFlags::CODE_MASK, xOff, yOff, zOff, xScl, yScl, zScl);
-		return;
-	}
-	else if (!idx || (idx & MOAITileFlags::DRIGHT)) {
-		this->DrawIndex_right(idx & MOAITileFlags::CODE_MASK, xOff, yOff, zOff, xScl, yScl, zScl);
-		return;
-	}
-	else if (!idx || (idx & MOAITileFlags::DDOWN)) {
-		this->DrawIndex_down(idx & MOAITileFlags::CODE_MASK, xOff, yOff, zOff, xScl, yScl, zScl);
-		return;
-	}
-	else if (!idx || (idx & MOAITileFlags::DLEFT)) {
-		this->DrawIndex_left(idx & MOAITileFlags::CODE_MASK, xOff, yOff, zOff, xScl, yScl, zScl);
-		return;
-	}
-
-
-	xScl = ( idx & MOAITileFlags::XFLIP ) ? -xScl : xScl;
-	yScl = ( idx & MOAITileFlags::YFLIP ) ? -yScl : yScl;	
-
-	this->DrawIndex ( idx & MOAITileFlags::CODE_MASK, xOff, yOff, zOff, xScl, yScl, zScl );
+#include <intrin.h>
+uint64_t rdtsc_a(){
+	return __rdtsc();
 }
+//----------------------------------------------------------------//
+void MOAIDeck::Draw(u32 idx, MOAIDeckRemapper* remapper, float xOff, float yOff, float zOff, float xScl, float yScl, float zScl) {
 
+
+	idx = remapper ? remapper->Remap(idx) : idx;
+
+	if (!idx || (idx & MOAITileFlags::HIDDEN)) return;
+
+
+	xScl = (idx & MOAITileFlags::XFLIP) ? -xScl : xScl;
+	yScl = (idx & MOAITileFlags::YFLIP) ? -yScl : yScl;
+	
+	//if (!idx || (idx & MOAITileFlags::R_FLIP)){
+	//	//this->DrawIndex_right(idx & MOAITileFlags::CODE_MASK, xOff, yOff, zOff, xScl, yScl, zScl);
+	//} else {
+	//	//this->DrawIndex_up(idx & MOAITileFlags::CODE_MASK, xOff, yOff, zOff, xScl, yScl, zScl);
+	//}
+
+	if (!idx || (idx & MOAITileFlags::RFLIP)){
+		this->DrawIndex_right(idx & MOAITileFlags::CODE_MASK, xOff, yOff, zOff, xScl, yScl, zScl);
+	}
+	else {
+		this->DrawIndex(idx & MOAITileFlags::CODE_MASK, xOff, yOff, zOff, xScl, yScl, zScl);
+	}
+	
+};
 
 //----------------------------------------------------------------//
 void MOAIDeck::DrawIndex_up(u32 idx, float xOff, float yOff, float zOff, float xScl, float yScl, float zScl) {
