@@ -26,6 +26,7 @@ private:
 	static int		_fill				( lua_State* L );
 	static int		_getTile			( lua_State* L );
 	static int		_getTileFlags		( lua_State* L );
+	static int		_isTileFlags		(lua_State* L);
 	static int		_setRow				( lua_State* L );
 	static int		_setTile			( lua_State* L );
 	static int		_setTileFlags		( lua_State* L );

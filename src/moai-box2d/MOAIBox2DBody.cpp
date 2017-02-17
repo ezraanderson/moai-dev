@@ -1003,8 +1003,8 @@ int MOAIBox2DBody::_heroTo( lua_State* L ) {
 		float unitsToMeters = self->GetUnitsToMeters ();	
 
 
-		float x1	= state.GetValue < float >( 2, 0.0f )* unitsToMeters;
-		float y1	= state.GetValue < float >( 3, 0.0f )* unitsToMeters;
+		float x1 = state.GetValue < float >(2, 0.0f)*unitsToMeters;
+		float y1	= state.GetValue < float >( 3, 0.0f )*unitsToMeters;
 		float speed = state.GetValue < float >( 4, 0.0f );
 
 		float x2 = 0;
@@ -1021,10 +1021,11 @@ int MOAIBox2DBody::_heroTo( lua_State* L ) {
 			 dy 	  = 0;
 		};
 
-		b2Vec2 v;
-		v.x		= dx;
-		v.y		= dy;	
+		//printf("%f %f \n", dx, dy);
 
+		b2Vec2 v;
+		v.x		= (dx);
+		v.y		= (dy);	
 		self->mBody->SetLinearVelocity ( v );
 	
 	return 0;
@@ -1056,14 +1057,6 @@ int MOAIBox2DBody::_moveTo( lua_State* L ) {
 	
 
 		self->mBody->SetLinearVelocity ( v );
-
-//	printf("%f %f \n",rad);
-//float v_mag		   =  cpfclamp(cpvlength(self->mBody->v),0.01,85);
-//v = cpvmult(v, (v_mag+15)*0.01);
-//self->mBody->set = angle+90*(PI/180);
-//radians = degrees * (pi/180)
-//degrees = radians * (180/pi)
-
 
 		//NEW UPDATE
 		MOAIBox2DBody* moaiBody = ( MOAIBox2DBody* )self->mBody->GetUserData ();

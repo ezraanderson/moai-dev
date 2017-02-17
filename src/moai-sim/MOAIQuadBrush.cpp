@@ -137,6 +137,9 @@ void MOAIQuadBrush::Draw_right(float xOff, float yOff, float zOff, float xScale,
 	this->mVtx[3].mX = 0.5;
 	this->mVtx[3].mY = -0.5;
 
+	
+
+
 	gfxDevice.WriteQuad(this->mVtx, this->mUV, xOff, yOff, zOff, xScale, yScale, uOff, vOff, uScale, vScale);
 
 	//NEED TO SET HIS BACK WHY???

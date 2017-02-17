@@ -680,11 +680,9 @@ int MOAIDraw::_drawText ( lua_State* L ) {
 	float shadowOffsetX = state.GetValue < float >( 7, 0.0f );
 	float shadowOffsetY = state.GetValue < float >( 8, 0.0f );
 
-
-
 	int align = state.GetValue < int >( 9, 1 );
 
-	MOAIFont* font = state.GetLuaObject < MOAIFont >( 1, true );
+		MOAIFont* font = state.GetLuaObject < MOAIFont >( 1, true );
 		if ( font ) {
 			float fontSize = state.GetValue < float >( 2, font->GetDefaultSize () );
 			MOAIDraw::DrawString ( text, x, y, scale, *font, fontSize, shadowOffsetX, shadowOffsetY, 0, 0,align );

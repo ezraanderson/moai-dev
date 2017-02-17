@@ -18,6 +18,7 @@
 
 	void main () {
 		gl_FragColor = texture2D ( sampler, uvVarying );
+		//gl_FragColor = texture2D(sampler, uvVarying.rg + 0.5*(1.0 / 4096));
 	}
 );
 

@@ -98,6 +98,31 @@ int MOAIGrid::_getTileFlags ( lua_State* L ) {
 	return 1;
 }
 
+
+int MOAIGrid::_isTileFlags(lua_State* L) {
+	MOAI_LUA_SETUP(MOAIGrid, "UNNN")
+
+	int xTile = state.GetValue < int >(2, 1) - 1;
+	int yTile = state.GetValue < int >(3, 1) - 1;
+	u32 mask = state.GetValue < u32 >(4, 0);
+
+	u32 tile = self->GetTile(xTile, yTile);
+	//printf("mask %d \n", mask);
+	if ((tile & mask) == mask) {
+		lua_pushnumber(state, mask);
+	} else {
+		lua_pushnumber(state, 0);
+	}
+
+	//lua_pushnumber(state, (tile & mask) == mask);
+	return 1;
+	
+
+};
+
+
+
+
 //----------------------------------------------------------------//
 /**	@name	setRow
 	@text	Initializes a grid row given a variable argument list of values.
@@ -294,6 +319,7 @@ void MOAIGrid::RegisterLuaFuncs ( MOAILuaState& state ) {
 		{ "fill",				_fill },
 		{ "getTile",			_getTile },
 		{ "getTileFlags",		_getTileFlags },
+		{ "isTileFlags",		_isTileFlags },
 		{ "setRow",				_setRow },
 		{ "setTile",			_setTile },
 		{ "setTileFlags",		_setTileFlags },

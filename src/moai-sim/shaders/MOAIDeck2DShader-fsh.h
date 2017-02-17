@@ -25,7 +25,7 @@ static cc8* _deck2DShaderFSH = SHADER (
 	void main () {
 		gl_FragColor = texture2D ( sampler, uvVarying ) * colorVarying;
 
-		//gl_FragColor = texture2D ( sampler, uvVarying ) * vec4(0.5,0.5,0.5,0.5);
+		//gl_FragColor = texture2D(sampler, uvVarying.rg + 0.5*(1.0 / 4096));
 
 
 

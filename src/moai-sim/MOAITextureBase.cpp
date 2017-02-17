@@ -452,6 +452,9 @@ void MOAITextureBase::OnBind () {
 		zglTexParameteri ( ZGL_TEXTURE_MIN_FILTER, this->mMinFilter );		
 		zglTexParameteri ( ZGL_TEXTURE_MAG_FILTER, this->mMagFilter );
 
+		zglTexParameteri(ZGL_WRAP_MODE_CLAMP, ZGL_WRAP_MODE_CLAMP);
+
+
 		//ZGL_SAMPLE_NEAREST_MIPMAP_LINEAR
 
 		//zglTexParameteri ( ZGL_TEXTURE_MIN_FILTER, ZGL_SAMPLE_NEAREST_MIPMAP_LINEAR );
