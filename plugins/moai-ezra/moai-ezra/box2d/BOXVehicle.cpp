@@ -19,12 +19,71 @@ return 0;
 //******************************************************************************************************************************************************
 //DRIVE
 int BOXVehicle::_updateDriveF ( lua_State* L ) {
-	MOAI_LUA_SETUP ( BOXVehicle, "U" )
+	MOAI_LUA_SETUP(BOXVehicle, "U")
 
-		b2Vec2    currentForwardNormal = self->mBody->GetWorldVector( b2Vec2(0,1) ); 
-		//dead dark
-		//self->mBody->ApplyForce( 1000 * currentForwardNormal, self->mBody->GetWorldCenter() );
-		self->mBody->ApplyForce( 2000 * currentForwardNormal, self->mBody->GetWorldCenter(),false );	
+		//b2Vec2    currentForwardNormal = self->mBody->GetWorldVector( b2Vec2(0,1) ); 	
+		//self->mBody->ApplyForce( 2000 * currentForwardNormal, self->mBody->GetWorldCenter(),false );
+
+
+		//const b2Vec2 velocity = self->mBody->GetLinearVelocity();
+		//const float32 speed = velocity.Length();
+		////if (speed > 10)
+		//	self->mBody->SetLinearVelocity((10 / speed) * velocity);
+
+		//b2Vec2 v;
+		//v.x = 60*1/32;
+		//v.y = 60*1/32;
+		//self->mBody->SetLinearVelocity(v);
+
+		//self->mBody->SetLinearVelocity(b2Vec2(0,0));
+
+		float mangnitude = 2000;
+		b2Vec2 forceDirection = self->mBody->GetWorldVector(b2Vec2(0, 1));
+		forceDirection = mangnitude * forceDirection;
+		self->mBody->ApplyForce(forceDirection, self->mBody->GetPosition(), true);
+
+		b2Vec2 v = self->mBody->GetLinearVelocity();
+		const float32 speed = v.Normalize();
+		//float maxSpeed = 60*4*1/60;
+		//if (speed > maxSpeed){
+		//////	printf("CLAMP\n");
+		//	self->mBody->SetLinearVelocity(maxSpeed * v);
+		//}
+
+
+
+
+	//	if (v.x > 0) {
+	//		v.x = 60 * 1 / 32;
+	//	};
+	//	if (v.x < 0) {
+	//		v.x = -60 * 1 / 32;
+	//	};
+
+	//	if (v.y > 0) {
+	//		v.y = 60 * 1 / 32;
+	//	};
+	//	if (v.y < 0) {
+	//		v.y = -60 * 1 / 32;
+	//	};
+
+	///*	v.x = 60*1/32;
+	//	v.y = 60*1/32;*/
+	//	self->mBody->SetLinearVelocity(v);
+
+		////printf("%f", speed);
+		//if (speed > 2){
+		//	printf("%f", speed);
+		//	//v.x = floor(v.x);
+		//	//v.y = floor(v.y);
+		//	//self->mBody->SetLinearVelocity(v);
+		//};
+
+	
+
+
+
+
 		return 0;
 };
 
@@ -42,33 +101,15 @@ int BOXVehicle::_updateDriveB ( lua_State* L ) {
 		//	self->mBody->SetLinearVelocity((5 / speed) * velocity);
 		//} else {
 
+		
+		
 		b2Vec2    currentForwardNormal = self->mBody->GetWorldVector( b2Vec2(0,1) ); 	
 		self->mBody->ApplyForce( -1000 * currentForwardNormal, self->mBody->GetWorldCenter(),true );
 
-		//}
 
 
 
-		// self->mBody->ApplyTorque( -15 );
 
-
-		//   b2Vec2 currentForwardNormal = self->mBody->GetWorldVector( b2Vec2(0,1) );
-		//   float currentSpeed = b2Dot(    (b2Dot( currentForwardNormal, self->mBody->GetLinearVelocity() ) * currentForwardNormal) , currentForwardNormal );
-		// //          
-		//	////b2Vec2 currentForwardNormal = m_body->GetWorldVector( b2Vec2(0,1) );
-
-		// //    
-
-		//float desiredSpeed = -100;
-		// //      //apply necessary force
-		//       float force = 0;
-		//       if ( desiredSpeed > currentSpeed )
-		//           force = 1000;
-		//       else if ( desiredSpeed < currentSpeed )
-		//           force = -1000;
-		//       else
-		//           return 1;
-		//       self->mBody->ApplyForce(  force * currentForwardNormal, self->mBody->GetWorldCenter() );
 
 
 

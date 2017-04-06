@@ -70,6 +70,8 @@ private:
 	static int     _distance2DLess ( lua_State* L );
 
 	static int     _tiled_shift(lua_State* L);
+	static int     _bench(lua_State* L);
+
 //****************************************************
 static int		_clip			( lua_State* L );
 

@@ -979,23 +979,32 @@ int MOAIMathUtil::_getSmallAngle2D ( lua_State* L ) {
 MOAI_LUA_SETUP ( MOAIMathUtil, "U" )
 float  x =state.GetValue < float >( 2, 0 );
 float  y =state.GetValue < float >( 3, 0 );
-double arg;
-int f = y-x;
-arg = fmod(f, C360);
-if (arg < 0 )  arg  = arg + C360;
-if (arg > 180) arg  = arg - C360;
+
+//double arg;
+//int f = y-x;
+//arg = fmod(f, C360);
+//if (arg < 0 )  arg  = arg + C360;
+//if (arg > 180) arg  = arg - C360;
+
+x = x * M_PI / 180;
+y = y * M_PI / 180;
+float d = (atan2(sin(x - y), cos(x - y))) * (180.0 / M_PI);
+lua_pushnumber(state, d);
+
+
+//radians * (180.0 / M_PI);
+
+
+//float a = x - y;
+//a -= 360; 
+//	if a > 180;
+//a += 360; 
+//	if a < -180;
 //
-//float a = targetA - sourceA;
-//a -= 360 if { a > 180};
-// a += 360 if a < -180;
-
-
-
 //float value = min((y-x, y-x+2*PI), (y-x-2*PI), key=abs);
-//lua_pushnumber ( state, -arg  );
+//lua_pushnumber(state, -value);
 
 
-lua_pushnumber ( state, atan2(sin(x-y), cos(x-y))  );
 return 1;
 
 };
@@ -1111,16 +1120,17 @@ MOAI_LUA_SETUP ( MOAIMathUtil, "U" )
 
 float  degrees = state.GetValue < float >( 2, 0 );
 
-float  point_x =state.GetValue < float >( 3, 0 );
-float  point_y = state.GetValue < float >( 4, 0 );
+float  point_x  =state.GetValue < float >( 3, 0 );
+float  point_y  =state.GetValue < float >( 4, 0 );
 float  offset_x =state.GetValue < float >( 5, 0 );
 float  offset_y =state.GetValue < float >( 6, 0 );
 
-degrees = degrees * (PI/180);
-float rx  =  point_x + ( cos((degrees))*(offset_x) - sin((degrees)) * (offset_y) );
-float ry  =  point_y + ( sin((degrees))*(offset_x) + cos((degrees)) * (offset_y) );
-lua_pushnumber ( state, rx  );
-lua_pushnumber ( state, ry  );
+	degrees = degrees * (PI/180);
+	float rx  =  point_x + ( cos((degrees))*(offset_x) - sin((degrees)) * (offset_y) );
+	float ry  =  point_y + ( sin((degrees))*(offset_x) + cos((degrees)) * (offset_y) );
+	lua_pushnumber ( state, rx  );
+	lua_pushnumber ( state, ry  );
+
 return 2;	
 }
 //********************************************************************************************************************
@@ -1701,36 +1711,61 @@ float  r =  state.GetValue < float >(6 , 0 );
 }
 
 
+//****************************************************************
+int  MOAIMathUtil::_bench(lua_State* L) {
+
+	long t = GetTimeMs64();
+	for (int a = 0; a < 1000000000; a = a + 1)
+	{
+		float  x = 1000000 / 2;
+	}
+	
+	printf("DIVID  %d \n", (GetTimeMs64()-t));
+	t = GetTimeMs64();
+	for (long a = 0; a < 1000000000; a = a + 1)
+	{
+		float  x = 1000000 * 0.5;
+	};
+
+	printf("MULI  %d \n", (GetTimeMs64()-t));
+	return 0;
+};
+
+
 //********************************************************************************************************************
 //********************************************************************************************************************
 //********************************************************************************************************************
 //TILED
+//float signed_triangle_area(float ax, float ay, float bx, float by, float cx, float cy) {
+
+int BitOff(long val, Byte theBit){
+	return  val &((1 << theBit) ^  0xFFFFFFFF);
+}
+int IsBitSet(long val, Byte theBit){
+	return  (val & (1 << theBit)) != 0;
+}
+
 int  MOAIMathUtil::_tiled_shift(lua_State* L) {
 	MOAI_LUA_SETUP(MOAIMathUtil, "U")
 
-		unsigned   tile = state.GetValue < unsigned >(2, 0);
+	unsigned   tile = state.GetValue < unsigned >(2, 0);
 
-	const unsigned FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
-	const unsigned FLIPPED_VERTICALLY_FLAG	 = 0x40000000;
-	const unsigned FLIPPED_DIAGONALLY_FLAG	 = 0x20000000;
+	const byte FLIPPED_FLAG_X = 31;
+	const byte FLIPPED_FLAG_Y = 23;
+	const byte FLIPPED_FLAG_R = 15;
 
+	bool flipx = IsBitSet(tile, FLIPPED_FLAG_X);
+	bool flipy = IsBitSet(tile, FLIPPED_FLAG_Y);
+	bool flipr = IsBitSet(tile, FLIPPED_FLAG_R);
 
-	bool flipped_horizontally	= (tile & FLIPPED_HORIZONTALLY_FLAG);
-	bool flipped_vertically		= (tile & FLIPPED_VERTICALLY_FLAG);
-	bool flipped_diagonally		= (tile & FLIPPED_DIAGONALLY_FLAG);
-
-	// Clear the flags
-	tile &= ~(FLIPPED_HORIZONTALLY_FLAG | FLIPPED_VERTICALLY_FLAG | FLIPPED_DIAGONALLY_FLAG);
-
-
+	tile = BitOff(tile, FLIPPED_FLAG_X);
+	tile = BitOff(tile, FLIPPED_FLAG_Y);
+	tile = BitOff(tile, FLIPPED_FLAG_R);
 
 	lua_pushnumber(state, tile);
-
-	lua_pushboolean(state, flipped_horizontally);
-	lua_pushboolean(state, flipped_vertically);
-	lua_pushboolean(state, flipped_diagonally);
-
-
+	lua_pushboolean(state, flipx);
+	lua_pushboolean(state, flipy);
+	lua_pushboolean(state, flipr);
 	return 4;
 
 }
@@ -1834,6 +1869,8 @@ void MOAIMathUtil::RegisterLuaFuncs ( MOAILuaState& state ) {
 		{ "AABB",	  _AABB },
 
 		{ "testBench",	  _testBench},
+
+		{ "bench", _bench },
 
 		{ "distance2DLess",	  _distance2DLess},
 		
